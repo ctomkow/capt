@@ -20,13 +20,20 @@ class Verify:
 
         #config loading
         Config.load_configuration()
+
         self.main()
 
 
     def main(self):
 
-        pass
+        ### within a thread... ###
+        print(Config.get_a_device())
+        # call connector...
+        # do stuff
+        # compare
+        # yadda yadda yadda
 
 
 if __name__ == '__main__':
+
     Verify()

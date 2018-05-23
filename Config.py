@@ -7,11 +7,30 @@
 # system imports
 import configparser
 
-
 def load_configuration():
 
     config = configparser.ConfigParser()
     config.read("config.text")
+
+    # define global variables
+    global username
+    global password
+    global glean_state
+    global push_config
+
+    global cpi_version
+    global cpi_ipv4_address
+
+    global dev_type
+    global dev_model
+    global dev_ipv4_address
+
+    global attr_reachability
+    global attr_software
+    global attr_stack_member
+    global attr_active_port
+    global attr_active_uplink
+    global attr_vlan
 
     username           = config['DEFAULT']['username']
     password           = config['DEFAULT']['password']
@@ -31,3 +50,11 @@ def load_configuration():
     attr_active_port   = config['TEST_ATTRIBUTE']['active_port']
     attr_active_uplink = config['TEST_ATTRIBUTE']['active_uplink']
     attr_vlan          = config['TEST_ATTRIBUTE']['vlan']
+
+    # do some final parsing and cleanup
+    dev_ipv4_address   = dev_ipv4_address.split('\n')
+    dev_ipv4_address.pop(0)
+
+def get_a_device():
+
+    return dev_ipv4_address.pop(0)
