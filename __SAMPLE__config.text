@@ -1,0 +1,29 @@
+[DEFAULT]
+username=user
+password=supersecret
+glean_state=true
+push_config=false
+
+[CPI]
+version=0.3
+ipv4_address=10.10.10.10
+
+[DEVICE]
+type=switch
+model=3650
+ipv4_address:
+    20.20.20.20,
+    20.20.20.21,
+    20.20.20.22,
+    20.20.20.23,
+    20.20.20.24,
+    20.20.20.25
+
+# boolean attribute states to pull from CPI (true/false)
+[TEST_ATTRIBUTE]
+reachability=true
+software=true
+stack_member=true
+active_port=true
+active_uplink=true
+vlan=true
