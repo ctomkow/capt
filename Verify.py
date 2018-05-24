@@ -27,10 +27,11 @@ class Verify:
     def main(self):
 
         ### within a thread... ###
-        print(Config.get_a_device())
+        print(Config.get_a_dev())
         # call connector...
-        # do stuff
-        # compare
+        # grab state for device
+        # parse and store only the state specified from Connector module
+        # compare old and new state files
         # yadda yadda yadda
 
 

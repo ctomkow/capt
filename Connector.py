@@ -19,8 +19,9 @@ class Connector:
 
     def get_dev(self, dev_ipv4_address):
 
-        resource = 'https:///webacs/api/v4/data/Devices.json?ipAddress=f"{dev_ipv4_address}"'
-        print resource
+        pass
+        #resource = 'https:///webacs/api/v4/data/Devices.json?ipAddress=f"{dev_ipv4_address}"'
+        #print resource
         #dev = requests.get(resource, auth=(self.username, self.password))
 
         # error handling around this!
