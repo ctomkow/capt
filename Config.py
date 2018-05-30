@@ -7,6 +7,7 @@
 # system imports
 import configparser
 
+
 def load_configuration():
 
     config = configparser.ConfigParser()
@@ -55,6 +56,6 @@ def load_configuration():
     dev_ipv4_address   = dev_ipv4_address.split('\n')
     dev_ipv4_address.pop(0)
 
-def get_a_dev():
+def device():
 
     return dev_ipv4_address.pop(0)
