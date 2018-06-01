@@ -4,7 +4,6 @@
 # Connector class to pull state from Cisco Prime Infrastructure
 # Note: Use API v3 in calls (released in Prime 3.3
 #       When Prime goes to 3.4, change to APIv4
-#       syncDevices call only exists in API v1 it looks like according to documentation (and v1 is depreciated)
 
 
 # 3rd part imports
@@ -38,7 +37,7 @@ class Connector:
         req = requests.get(url, verify=False, auth=(username, password))
         print(json.dumps(req.json(), indent=4))
 
-    # Forcing a sync is broken
+    # Forcing a sync is broken only with switches on IOS-XE 03.03.03 code base
     def sync(self, dev_ipv4_address):
 
         url = f"https://{cpi_ipv4_address}/webacs/api/v3/op/devices/syncDevices.json"
@@ -58,19 +57,25 @@ class Connector:
         req = requests.get(url, verify=False, auth=(username, password))
         return req.json()['queryResponse']['entity'][0]['devicesDTO']['reachability']
 
+    def get_software_version(self, dev_id):
+
+        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Devices/{dev_id}.json"
+        req = requests.get(url, verify=False, auth=(username, password))
+        return req.json()['queryResponse']['entity'][0]['devicesDTO']['softwareVersion']
+
     # Switch chassis info
     def get_stack_members(self, dev_id):
 
         url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/InventoryDetails/{dev_id}.json"
         req = requests.get(url, verify=False, auth=(username, password))
-        return req.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['chassis']
+        return req.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['chassis']['chassis']
 
     # CDP neighbour info gets populated when the device syncs
     def get_cdp_neighbours(self, dev_id):
 
         url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/InventoryDetails/{dev_id}.json"
         req = requests.get(url, verify=False, auth=(username, password))
-        return req.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['cdpNeighbors']
+        return req.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['cdpNeighbors']['cdpNeighbor']
 
 
 

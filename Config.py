@@ -58,4 +58,8 @@ def load_configuration():
 
 def device():
 
-    return dev_ipv4_address.pop(0)
+    return dev_ipv4_address[0]
+
+def remove_device():
+
+    dev_ipv4_address.pop(0)
