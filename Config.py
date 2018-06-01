@@ -53,13 +53,13 @@ def load_configuration():
     attr_vlan          = config['TEST_ATTRIBUTE']['vlan']
 
     # do some final parsing and cleanup
-    dev_ipv4_address   = dev_ipv4_address.split('\n')
-    dev_ipv4_address.pop(0)
+    dev_ipv4_address   = dev_ipv4_address.split('\n') # strip out newlines
+    dev_ipv4_address.pop(0) # remove the empty string at beginning
 
-def device():
-
-    return dev_ipv4_address[0]
-
-def remove_device():
-
-    dev_ipv4_address.pop(0)
+# def device():
+#
+#     return dev_ipv4_address[0]
+#
+# def remove_device():
+#
+#     dev_ipv4_address.pop(0)

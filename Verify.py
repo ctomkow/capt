@@ -6,7 +6,8 @@
 
 # system imports
 import argparse
-import _thread
+import threading
+import json
 
 # local imports
 import Config
@@ -14,7 +15,6 @@ import Connector
 from Connector import Connector
 import Switch
 from Switch import Switch
-import json
 
 
 class Verify:
@@ -31,71 +31,17 @@ class Verify:
 
     def main(self):
 
-        ### within a thread... ###
+        ### THREAD HANDLING ###
+        switch_ipv4_address_list = Config.dev_ipv4_address
+        threads = []
+        for switch_ipv4_address in switch_ipv4_address_list:
+            t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address, Config.username,
+                                                                 Config.password, Config.cpi_ipv4_address))
+            threads.append(t)
+            t.start()
 
-        ### PRE_PROCESSING ###
-        api_call = Connector(Config.username, Config.password, Config.cpi_ipv4_address)
-
-        switch = Switch()
-        switch.ipv4_address = Config.device()
-        switch.id = api_call.get_dev_id(switch.ipv4_address)
-
-
-        ### BEFORE ###
-
-        # set switch state information from Cisco Prime
-
-        switch.reachability = api_call.get_reachability(switch.id)
-        switch.software_version = api_call.get_software_version(switch.id)
-        switch.stack_member = api_call.get_stack_members(switch.id)
-        ########### Need to set VLAN information (don't have a method for this yet in Connector class) ###############
-
-
-
-        print(switch.reachability)
-        print(switch.software_version)
-        print(json.dumps(switch.stack_member, indent=4))
-
-
-
-
-
-
-
-
-
-
-
-        # if dev_reachability == 'REACHABLE':
-        #     print(Config.device() + ' is ' + dev_reachability)
-        # else:
-        #     print(Config.device() + ' is ' + dev_reachability)
-
-
-        # 2. force sync state
-        # 3. get software version
-        # 4. get stack members
-        # 5. get vlans
-        # 6. get CDP neighbour state
-
-        ### RELOAD ###
-
-        ### AFTER ###
-        # 1. get reachability
-        # 2. force sync state
-        # 3. get software version
-        # 4. get stack members
-        # 5. get vlans
-        # 6. get CDP neighbour state
-
-        ### POST_PROCESSING ###
-        Config.remove_device()
-
-
-
-
-
-
+        print('END MAIN PROGRAM, THREADS BE RUNNING STILL')
+        print('WAIT FOR X NUMBER OF THREADS TO FINISH, OUTPUT RESULTS, GET USER INPUT ON ACTION TO PERFORM')
 
         ### TESTING METHOD CALLS ###
 
@@ -136,7 +82,57 @@ class Verify:
         #api_call = Connector(Config.username, Config.password, Config.cpi_ipv4_address)
         #api_call.print_detailed_info(api_call.get_dev_id(Config.device()))
 
+    def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
 
+        ### PRE_PROCESSING ###
+        api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
+
+        switch = Switch()
+        switch.ipv4_address = switch_ipv4_address
+        print(switch.ipv4_address)
+        switch.id = api_call.get_dev_id(switch.ipv4_address)
+        print(switch.id)
+
+        ### BEFORE ###
+
+        # 1. check for reachability
+        switch.reachability = api_call.get_reachability(switch.id)
+        if switch.reachability != 'REACHABLE':
+            print('ERROR: ' + switch.ipv4_address + ' is ' + switch.reachability)
+            ### < ERROR HANDLING HERE > ###
+            ### < LOGGING HERE > ###
+
+        print(switch.ipv4_address + ' is ' + switch.reachability)
+
+        # 2. force sync of switch state
+        api_call.sync(switch.ipv4_address)
+
+        switch.software_version = api_call.get_software_version(switch.id)
+        switch.stack_member = api_call.get_stack_members(switch.id)
+        ########### Need to set VLAN information (don't have a method for this yet in Connector class) ###############
+
+        print(switch.reachability)
+        print(switch.software_version)
+        print(json.dumps(switch.stack_member, indent=4))
+
+        # 1. check reachability
+        # 2. force sync state
+        # 3. get software version
+        # 4. get stack members
+        # 5. get vlans
+        # 6. get CDP neighbour state
+
+        ### RELOAD ###
+
+        ### AFTER ###
+        # 1. get reachability
+        # 2. force sync state
+        # 3. get software version
+        # 4. get stack members
+        # 5. get vlans
+        # 6. get CDP neighbour state
+
+        return True
 
 if __name__ == '__main__':
 
