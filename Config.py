@@ -24,6 +24,7 @@ def load_configuration():
 
     global dev_type
     global dev_model
+    global concurrent_threads
     global dev_ipv4_address
 
     global attr_reachability
@@ -43,6 +44,7 @@ def load_configuration():
 
     dev_type           = config['DEVICE']['type']
     dev_model          = config['DEVICE']['model']
+    concurrent_threads = config['DEVICE']['concurrent_num']
     dev_ipv4_address   = config['DEVICE']['ipv4_address']
 
     attr_reachability  = config['TEST_ATTRIBUTE']['reachability']

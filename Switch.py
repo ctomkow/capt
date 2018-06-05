@@ -16,8 +16,21 @@ class Switch:
 
         global ipv4_address
         global id
-        global reachability
-        global software_version
-        global stack_member        # a list of dictionaries
-        global vlan
-        global cdp_neighbour       # a list of dictionaries
+
+        global pre_reachability
+        global pre_software_version
+        global pre_stack_member        # a list of dictionaries
+        global pre_stack_member_key    # a list of sorted entPhysicalIndex values
+        global pre_vlan
+        global pre_cdp_neighbour       # a list of dictionaries
+        global pre_cdp_neighbour_key   # a list of sorted interfaceIndex values
+        global pre_sync_state
+
+        global post_reachability
+        global post_software_version
+        global post_stack_member        # a list of dictionaries
+        global post_stack_member_key    # a list of sorted entPhysicalIndex values
+        global post_vlan
+        global post_cdp_neighbour       # a list of dictionaries
+        global post_cdp_neighbour_key   # a list of sorted interfaceIndex values
+        global post_sync_state

@@ -5,6 +5,8 @@
 # Note: Use API v3 in calls (released in Prime 3.3
 #       When Prime goes to 3.4, change to APIv4
 
+# system imports
+import urllib3
 
 # 3rd part imports
 import requests
@@ -23,6 +25,8 @@ class Connector:
         username = uname
         password = passwd
         cpi_ipv4_address = cpi_ipv4_addr
+
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
     def print_info(self, dev_id):
@@ -43,6 +47,18 @@ class Connector:
         url = f"https://{cpi_ipv4_address}/webacs/api/v3/op/devices/syncDevices.json"
         payload = { "syncDevicesDTO" : { "devices" : { "device" : [ { "address" : f"{dev_ipv4_address}" } ] } } }
         req = requests.post(url, verify=False, auth=(username, password), json=payload)
+
+    def get_sync_status(self, dev_id):
+
+        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Devices/{dev_id}.json"
+        req = requests.get(url, verify=False, auth=(username, password))
+        return req.json()['queryResponse']['entity'][0]['devicesDTO']['collectionStatus']
+
+    def get_sync_time(self, dev_id):
+
+        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Devices/{dev_id}.json"
+        req = requests.get(url, verify=False, auth=(username, password))
+        return req.json()['queryResponse']['entity'][0]['devicesDTO']['collectionTime']
 
     # device id is needed for most future API calls
     def get_dev_id(self, dev_ipv4_address):
