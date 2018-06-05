@@ -130,6 +130,7 @@ class Verify:
 
         switch.pre_reachability = None
         while switch.pre_reachability != "REACHABLE":
+            time.sleep(5)
             switch.pre_reachability = api_call.get_reachability(switch.id)
             if self.ping(switch.ipv4_address) is False:
                 switch.pre_reachability = "UNREACHABLE"
@@ -192,13 +193,9 @@ class Verify:
         ###### RELOAD ######
         ####################
 
-        print("")
         print(f"{switch.ipv4_address}: Reload switch manually now.")
-        print("")
         input("Press Enter to continue after the reload command has been issued ...")
-        print("")
         print(f"{switch.ipv4_address}: REBOOTING")
-        time.sleep(5)
 
         ###################
         ###### AFTER ######
@@ -208,7 +205,7 @@ class Verify:
 
         switch.post_reachability = None
         while switch.post_reachability != "REACHABLE":
-            time.sleep(5)
+            time.sleep(10)
             switch.post_reachability = api_call.get_reachability(switch.id)
             if self.ping(switch.ipv4_address) is False:
                 switch.post_reachability = "UNREACHABLE"
@@ -221,7 +218,7 @@ class Verify:
         old_sync_time = api_call.get_sync_time(switch.id)
 
         api_call.sync(switch.ipv4_address)
-        print(f"{switch.ipv4_address}: BEGIN SYNC", end='', flush=True)
+        print(f"{switch.ipv4_address}: BEGIN SYNC")
         switch.post_sync_state = None
         while switch.post_sync_state != "COMPLETED":
             time.sleep(5)
@@ -310,8 +307,8 @@ class Verify:
     # needed because Prime is slow to detect connectivity or not
     def ping(self, switch_ipv4_address):
 
-        # use -c for linux, -n for Windows
-        response = os.system(f"ping {switch_ipv4_address}>nul")
+        # use "ping -c 1 -W 1" for linux, -n for Windows
+        response = os.system(f"ping -n 1 -w 1000 {switch_ipv4_address}>nul")
 
         if response == 0:
             return True
