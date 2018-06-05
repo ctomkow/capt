@@ -9,6 +9,7 @@ import argparse
 import threading
 import json
 import time
+import os
 
 # local imports
 import Config
@@ -68,8 +69,8 @@ class Verify:
         ### TESTING METHOD CALLS ###
 
         # # force sync device,need NBI_WRITE access
-        # api_call = Connector(Config.username, Config.password, Config.cpi_ipv4_address)
-        # api_call.sync(Config.device())
+        #api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
+        #api_call.sync(switch_ipv4_address)
         #
         # # get reachability status
         # api_call = Connector(Config.username, Config.password, Config.cpi_ipv4_address)
@@ -129,6 +130,8 @@ class Verify:
         #print("PRE REACHABILITY TESTING")
         time.sleep(0.5)
         switch.pre_reachability = api_call.get_reachability(switch.id)
+        if self.ping(switch.ipv4_address) is False:
+            switch.post_reachability = "UNREACHABLE"
         if switch.pre_reachability != "REACHABLE":
             print(f"ERROR: {switch.ipv4_address} is {switch.pre_reachability}")
             print("Cancelling process. Proceed with upgrade manually")
@@ -173,7 +176,7 @@ class Verify:
         time.sleep(0.5)
         switch.pre_stack_member = api_call.get_stack_members(switch.id)
         sorted_list = sorted(switch.pre_stack_member, key=lambda k: k['name']) # sort the list of dicts
-        switch.pre_stack_member_key = [x['description'] for x in sorted_list] # extract entPhysicalIndex values
+        switch.pre_stack_member_key = [x['description'] for x in sorted_list] # extract description values
         print(switch.pre_stack_member_key)
 
         ###### 5. get VLANs
@@ -207,8 +210,8 @@ class Verify:
         input("Press Enter to continue after the reload command has been issued ...")
         print("")
         # wait five minutes for Prime to update reachability status. I tested with 3 minutes, too short.
-        print("REBOOTING (wait 5 minutes before testing reachability)")
-        time.sleep(300)
+        print("REBOOTING")
+        time.sleep(30)
 
         ###################
         ###### AFTER ######
@@ -221,6 +224,8 @@ class Verify:
         while switch.post_reachability != "REACHABLE":
             time.sleep(5)
             switch.post_reachability = api_call.get_reachability(switch.id)
+            if self.ping(switch.ipv4_address) is False:
+                switch.post_reachability = "UNREACHABLE"
             print('.', end='', flush=True)
 
         print(f"{switch.ipv4_address} is {switch.post_reachability}")
@@ -274,14 +279,14 @@ class Verify:
         if switch.pre_stack_member_key != switch.post_stack_member_key:
             diff_keys = set(switch.pre_stack_member_key).symmetric_difference(set(switch.post_stack_member_key))
             for key in diff_keys:
-                print("DISPLAYING DIFFERENCE IN SWITCH STACK STATE")
+                #print("DISPLAYING DIFFERENCE IN SWITCH STACK STATE")
                 # check which list it exists in pre list of dicts, otherwise search post list of dicts
                 if (any(d["description"] == key for d in switch.pre_stack_member)) is True:
                     print("MISSING STACK MEMBER")
                     stack_member = next((item for item in switch.pre_stack_member if item["description"] == key))
                     print(json.dumps(stack_member, indent=4))
                 elif (any(d["description"] == key for d in switch.post_stack_member)) is True:
-                    print("NEW? STACK MEMBER (implies not properly joined to begin with)")
+                    print("NEW MEMBER (if member says \'Provisioned\' it likely is OS-Mismatch or V-Mismatch)")
                     stack_member = next((item for item in switch.post_stack_member if item["description"] == key))
                     print(json.dumps(stack_member, indent=4))
                 else:
@@ -307,7 +312,7 @@ class Verify:
         if switch.pre_cdp_neighbour_key != switch.post_cdp_neighbour_key:
             diff_keys = set(switch.pre_cdp_neighbour_key).symmetric_difference(set(switch.post_cdp_neighbour_key))
             for key in diff_keys:
-                print("DISPLAYING DIFFERENCE IN CDP NEIGHBOUR STATE")
+                #print("DISPLAYING DIFFERENCE IN CDP NEIGHBOUR STATE")
                 # check which list it exists in pre list of dicts, otherwise search post list of dicts
                 if (any(d["nearEndInterface"] == key for d in switch.pre_cdp_neighbour)) is True:
                     print("MISSING CDP NEIGHBOUR")
@@ -324,6 +329,16 @@ class Verify:
 
 
         return True
+
+    # needed because Prime is slow to detect connectivity or not
+    def ping(self, switch_ipv4_address):
+
+        response = os.system(f"ping -c 1 {switch_ipv4_address}")
+
+        if response == 0:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
 
