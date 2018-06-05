@@ -41,7 +41,8 @@ class Verify:
 
         while len(switch_ipv4_address_list) > 0:
 
-            time.sleep(0.1)
+            # don't make threads so quickly, you may just scare off Cisco Prime
+            time.sleep(1)
 
             # check if thread is alive, if not, remove from list
             threads = [t for t in threads if t.is_alive()]
@@ -62,7 +63,6 @@ class Verify:
                 for t in threads:
                     t.join()
 
-        print("END OF MAIN --- ALL THREADS FINISHED")
 
     def test_method(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
 
@@ -98,17 +98,19 @@ class Verify:
         # print(data)
         #
         # # print basic switch information
-        # api_call = Connector(Config.username, Config.password, Config.cpi_ipv4_address)
-        # api_call.print_info(api_call.get_dev_id(Config.device()))
+        #api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
+        #api_call.print_info(api_call.get_dev_id(switch_ipv4_address))
         #
         # print detailed switch information
-        api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
-        api_call.print_detailed_info(api_call.get_dev_id(switch_ipv4_address))
+        #api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
+        #api_call.print_detailed_info(api_call.get_dev_id(switch_ipv4_address))
+
+        pass
 
 
     def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
 
-        print('START: UPGRADE_CODE')
+        print(f"{switch_ipv4_address}: UPGRADE_CODE")
 
         ############################
         ###### PRE_PROCESSING ######
@@ -117,9 +119,7 @@ class Verify:
 
         switch = Switch()
         switch.ipv4_address = switch_ipv4_address
-        print(f"SWITCH IP: {switch.ipv4_address}")
 
-        time.sleep(0.5)
         switch.id = api_call.get_dev_id(switch.ipv4_address)
 
         ####################
@@ -127,57 +127,50 @@ class Verify:
         ####################
 
         ###### 1. check for reachability
-        #print("PRE REACHABILITY TESTING")
-        time.sleep(0.5)
-        switch.pre_reachability = api_call.get_reachability(switch.id)
-        if self.ping(switch.ipv4_address) is False:
-            switch.post_reachability = "UNREACHABLE"
-        if switch.pre_reachability != "REACHABLE":
-            print(f"ERROR: {switch.ipv4_address} is {switch.pre_reachability}")
-            print("Cancelling process. Proceed with upgrade manually")
-            return False
 
-        print(f"{switch.ipv4_address} is {switch.pre_reachability}")
+        switch.pre_reachability = None
+        while switch.pre_reachability != "REACHABLE":
+            switch.pre_reachability = api_call.get_reachability(switch.id)
+            if self.ping(switch.ipv4_address) is False:
+                switch.pre_reachability = "UNREACHABLE"
+                print('.', end='', flush=True)
+        print("")
+        print(f"{switch.ipv4_address}: {switch.pre_reachability}")
 
         ##### 2. force sync of switch state
-        #print("SYNC SWITCH")
-        time.sleep(0.5)
+
         old_sync_time = api_call.get_sync_time(switch.id)
 
-        time.sleep(0.5)
         api_call.sync(switch.ipv4_address)
-        time.sleep(5)
-        switch.pre_sync_state = api_call.get_sync_status(switch.id)
-        print(switch.pre_sync_state)
+        print(f"{switch.ipv4_address}: BEGIN SYNC")
+        switch.pre_sync_state = None
         while switch.pre_sync_state != "COMPLETED":
             time.sleep(5)
             switch.pre_sync_state = api_call.get_sync_status(switch.id)
             print('.', end='', flush=True)
-        print(switch.pre_sync_state)
+        print("")
+        print(f"{switch.ipv4_address}: {switch.pre_sync_state}")
 
-        time.sleep(0.5)
         new_sync_time = api_call.get_sync_time(switch.id)
         # compare sync times
         if old_sync_time != new_sync_time:
             pass
         else:
-            print("*** ERROR: sync failed. Cancelling process. Proceed with upgrade manually ***")
+            print(f"{switch.ipv4_address}: *** ERROR - sync failed. Cancelling process. Proceed with upgrade manually ***")
             return False
 
         ###### 3. get current software version
-        print("GLEANING SOFTWARE VERSION")
-        time.sleep(0.5)
+
         switch.pre_software_version = api_call.get_software_version(switch.id)
-        print(switch.pre_software_version)
+        print(f"{switch.ipv4_address}: VERSION - {switch.pre_software_version}")
 
         ###### 4. get stack members
         ###### (using 'description' key. It appends the word 'Provisioned' if OS-mismatch or V-mismatch
-        print("GLEANING STACK MEMBER STATE")
-        time.sleep(0.5)
+
         switch.pre_stack_member = api_call.get_stack_members(switch.id)
         sorted_list = sorted(switch.pre_stack_member, key=lambda k: k['name']) # sort the list of dicts
         switch.pre_stack_member_key = [x['description'] for x in sorted_list] # extract description values
-        print(switch.pre_stack_member_key)
+        print(f"{switch.ipv4_address}: STACK MEMBERS - {switch.pre_stack_member_key}")
 
         ###### 5. get VLANs
         ### TO-DO
@@ -186,113 +179,99 @@ class Verify:
 
         ###### 6. get CDP neighbour state
         ###### Using 'nearEndInterface' key. The phyInterface number changes between code upgrade versions
-        print("GLEANING CDP NEIGHBOUR STATE")
-        time.sleep(0.5)
+
         switch.pre_cdp_neighbour = api_call.get_cdp_neighbours(switch.id)
         sorted_list = sorted(switch.pre_cdp_neighbour, key=lambda k: k['nearEndInterface']) # sort the list of dicts
         switch.pre_cdp_neighbour_key = [x['nearEndInterface'] for x in sorted_list] # extract interfaceIndex values
-        print(switch.pre_cdp_neighbour_key)
+        print(f"{switch.ipv4_address}: CDP NEIGHOURS - {switch.pre_cdp_neighbour_key}")
 
         print("")
-        print("PRE-PROCESSING COMPLETE")
+        print(f"{switch.ipv4_address}: PRE-PROCESSING COMPLETE")
 
         ####################
         ###### RELOAD ######
         ####################
 
         print("")
-        print(f"Reload switch {switch.ipv4_address} manually now.")
-        print("")
-        for x in range(0, 3):
-            time.sleep(1)
-            print(".")
+        print(f"{switch.ipv4_address}: Reload switch manually now.")
         print("")
         input("Press Enter to continue after the reload command has been issued ...")
         print("")
-        # wait five minutes for Prime to update reachability status. I tested with 3 minutes, too short.
-        print("REBOOTING")
-        time.sleep(30)
+        print(f"{switch.ipv4_address}: REBOOTING")
+        time.sleep(5)
 
         ###################
         ###### AFTER ######
         ###################
 
         ###### 1. check for reachability
-        #print("POST REACHABILITY TESTING")
-        switch.post_reachability = api_call.get_reachability(switch.id)
-        print(switch.post_reachability)
+
+        switch.post_reachability = None
         while switch.post_reachability != "REACHABLE":
             time.sleep(5)
             switch.post_reachability = api_call.get_reachability(switch.id)
             if self.ping(switch.ipv4_address) is False:
                 switch.post_reachability = "UNREACHABLE"
-            print('.', end='', flush=True)
-
-        print(f"{switch.ipv4_address} is {switch.post_reachability}")
+                print('.', end='', flush=True)
+        print("")
+        print(f"{switch.ipv4_address}: {switch.post_reachability}")
 
         ##### 2. force sync of switch state
-        #print("SYNC SWITCH")
-        time.sleep(0.5)
+
         old_sync_time = api_call.get_sync_time(switch.id)
 
-        time.sleep(0.5)
         api_call.sync(switch.ipv4_address)
-        time.sleep(5)
-        switch.post_sync_state = api_call.get_sync_status(switch.id)
-        print(switch.post_sync_state)
+        print(f"{switch.ipv4_address}: BEGIN SYNC", end='', flush=True)
+        switch.post_sync_state = None
         while switch.post_sync_state != "COMPLETED":
             time.sleep(5)
             switch.post_sync_state = api_call.get_sync_status(switch.id)
             print('.', end='', flush=True)
-        print(switch.post_sync_state)
+        print("")
+        print(f"{switch.ipv4_address}: {switch.post_sync_state}")
 
-        time.sleep(0.5)
         new_sync_time = api_call.get_sync_time(switch.id)
         #compare sync times
         if old_sync_time != new_sync_time:
-            print("Switch sync'd")
+            print(f"{switch.ipv4_address}: SYNCHRONIZED")
         else:
-            print("*** ERROR: sync failed. Cancelling process. Proceed with verification manually ***")
+            print(f"{switch.ipv4_address}: *** ERROR - sync failed. Cancelling process. Proceed with verification manually ***")
             return False
 
         ###### 3. get software version
-        #print("CHECKING SOFTWARE VERSION")
-        time.sleep(0.5)
+
         switch.post_software_version = api_call.get_software_version(switch.id)
 
         # compare
         if switch.pre_software_version == switch.post_software_version:
-            ### ERROR HANDLING
-            print(f"ERROR: software version before and after is the same, {switch.post_software_version}")
+            print(f"{switch.ipv4_address}: ERROR - software version before and after is the same, {switch.post_software_version}")
         else:
-            print(f"Code upgraded to {switch.post_software_version}")
+            print(f"{switch.ipv4_address}: code upgraded to {switch.post_software_version}")
 
         ###### 4. get stack members
-        #print("TESTING FOR STACK MEMBERS")
-        time.sleep(0.5)
+
         switch.post_stack_member = api_call.get_stack_members(switch.id)
         sorted_list = sorted(switch.post_stack_member, key=lambda k: k['name'])  # sort the list of dicts
         switch.post_stack_member_key = [x['description'] for x in sorted_list]  # extract entPhysicalIndex values
-        print(switch.post_stack_member_key)
+        print(f"{switch.ipv4_address}: {switch.post_stack_member_key}")
 
         # test for stack member equality
         if switch.pre_stack_member_key != switch.post_stack_member_key:
             diff_keys = set(switch.pre_stack_member_key).symmetric_difference(set(switch.post_stack_member_key))
             for key in diff_keys:
-                #print("DISPLAYING DIFFERENCE IN SWITCH STACK STATE")
                 # check which list it exists in pre list of dicts, otherwise search post list of dicts
                 if (any(d["description"] == key for d in switch.pre_stack_member)) is True:
-                    print("MISSING STACK MEMBER")
+                    print(f"{switch.ipv4_address}: MISSING STACK MEMBER")
                     stack_member = next((item for item in switch.pre_stack_member if item["description"] == key))
                     print(json.dumps(stack_member, indent=4))
                 elif (any(d["description"] == key for d in switch.post_stack_member)) is True:
-                    print("NEW MEMBER (if member says \'Provisioned\' it likely is OS-Mismatch or V-Mismatch)")
+                    print(f"{switch.ipv4_address}: NEW MEMBER (if member says \'Provisioned\' it likely is OS-Mismatch or V-Mismatch)")
                     stack_member = next((item for item in switch.post_stack_member if item["description"] == key))
                     print(json.dumps(stack_member, indent=4))
                 else:
-                    print(f"ERROR: {key} key not found in either list!")
+                    print(f"{switch.ipv4_address}: ERROR - {key} key not found in either list!")
         else:
-            print("STACK MEMBER STATE IS THE SAME BEFORE AS AFTER")
+            print(f"{switch.ipv4_address}: ALL STACK MEMBERS MATCH")
 
 
         ###### 5. get VLANs
@@ -301,31 +280,29 @@ class Verify:
         #
 
         ###### 6. get CDP neighbour state
-        #print("TESTING FOR CDP NEIGHBOURS")
-        time.sleep(0.5)
+
         switch.post_cdp_neighbour = api_call.get_cdp_neighbours(switch.id)
         sorted_list = sorted(switch.post_cdp_neighbour, key=lambda k: k['nearEndInterface'])  # sort the list of dicts
         switch.post_cdp_neighbour_key = [x['nearEndInterface'] for x in sorted_list]  # extract interfaceIndex values
-        print(switch.post_cdp_neighbour_key)
+        print(f"{switch.ipv4_address}: {switch.post_cdp_neighbour_key}")
 
         # test for CDP neighbour equality
         if switch.pre_cdp_neighbour_key != switch.post_cdp_neighbour_key:
             diff_keys = set(switch.pre_cdp_neighbour_key).symmetric_difference(set(switch.post_cdp_neighbour_key))
             for key in diff_keys:
-                #print("DISPLAYING DIFFERENCE IN CDP NEIGHBOUR STATE")
                 # check which list it exists in pre list of dicts, otherwise search post list of dicts
                 if (any(d["nearEndInterface"] == key for d in switch.pre_cdp_neighbour)) is True:
-                    print("MISSING CDP NEIGHBOUR")
+                    print(f"{switch.ipv4_address}: MISSING CDP NEIGHBOUR")
                     cdp_neighbour = next((item for item in switch.pre_cdp_neighbour if item["nearEndInterface"] == key))
                     print(json.dumps(cdp_neighbour, indent=4))
                 elif (any(d["nearEndInterface"] == key for d in switch.post_cdp_neighbour)) is True:
-                    print("NEW CDP NEIGHBOUR FOUND")
+                    print(f"{switch.ipv4_address}: NEW CDP NEIGHBOUR FOUND")
                     cdp_neighbour = next((item for item in switch.post_cdp_neighbour if item["nearEndInterface"] == key))
                     print(json.dumps(cdp_neighbour, indent=4))
                 else:
-                    print(f"ERROR: {key} key not found in either list!")
+                    print(f"{switch.ipv4_address}: ERROR - {key} key not found in either list!")
         else:
-            print("ALL CDP NEIGHBOURS MATCH CORRECTLY")
+            print(f"{switch.ipv4_address}: ALL CDP NEIGHBOURS MATCH")
 
 
         return True
@@ -333,7 +310,8 @@ class Verify:
     # needed because Prime is slow to detect connectivity or not
     def ping(self, switch_ipv4_address):
 
-        response = os.system(f"ping -c 1 {switch_ipv4_address}")
+        # use -c for linux, -n for Windows
+        response = os.system(f"ping {switch_ipv4_address}>nul")
 
         if response == 0:
             return True
