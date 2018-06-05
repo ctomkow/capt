@@ -26,7 +26,7 @@ class Connector:
         password = passwd
         cpi_ipv4_address = cpi_ipv4_addr
 
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        #urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
     def print_info(self, dev_id):
