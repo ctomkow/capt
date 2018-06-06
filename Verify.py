@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Craig Tomkow
 # May 22, 2018
 #
