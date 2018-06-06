@@ -77,7 +77,7 @@ class Connector:
 
     def print_client_summary(self, dev_id):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Clients/{dev_id}.json"
+        url = "https://{}/webacs/api/v3/data/Clients/{}.json".format(cpi_ipv4_address, dev_id)
 
         try:
             req = requests.get(url, verify=False, auth=(username, password))
@@ -100,8 +100,8 @@ class Connector:
     # Forcing a sync is broken only with switches on IOS-XE 03.03.03 code base
     def sync(self, dev_ipv4_address):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/op/devices/syncDevices.json"
-        payload = { "syncDevicesDTO" : { "devices" : { "device" : [ { "address" : f"{dev_ipv4_address}" } ] } } }
+        url = "https://{}/webacs/api/v3/op/devices/syncDevices.json".format(cpi_ipv4_address)
+        payload = { "syncDevicesDTO" : { "devices" : { "device" : [ { "address" : "{}".format(dev_ipv4_address) } ] } } }
 
         try:
             req = requests.post(url, verify=False, auth=(username, password), json=payload)
@@ -121,7 +121,7 @@ class Connector:
 
     def get_sync_status(self, dev_id):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Devices/{dev_id}.json"
+        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(cpi_ipv4_address, dev_id)
 
         try:
             req = requests.get(url, verify=False, auth=(username, password))
@@ -143,7 +143,7 @@ class Connector:
 
     def get_sync_time(self, dev_id):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Devices/{dev_id}.json"
+        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(cpi_ipv4_address, dev_id)
 
         try:
             req = requests.get(url, verify=False, auth=(username, password))
@@ -166,7 +166,7 @@ class Connector:
     # device id is needed for most future API calls
     def get_dev_id(self, dev_ipv4_address):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Devices.json?ipAddress=\"{dev_ipv4_address}\""
+        url = "https://{}/webacs/api/v3/data/Devices.json?ipAddress=\"{}\"".format(cpi_ipv4_address, dev_ipv4_address)
 
         try:
             req = requests.get(url, verify=False, auth=(username, password))
@@ -188,7 +188,7 @@ class Connector:
 
     def get_reachability(self, dev_id):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Devices/{dev_id}.json"
+        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(cpi_ipv4_address, dev_id)
 
         try:
             req = requests.get(url, verify=False, auth=(username, password))
@@ -210,7 +210,7 @@ class Connector:
 
     def get_software_version(self, dev_id):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Devices/{dev_id}.json"
+        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(cpi_ipv4_address, dev_id)
 
         try:
             req = requests.get(url, verify=False, auth=(username, password))
@@ -233,7 +233,7 @@ class Connector:
     # Switch chassis info
     def get_stack_members(self, dev_id):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/InventoryDetails/{dev_id}.json"
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(cpi_ipv4_address, dev_id)
 
         try:
             req = requests.get(url, verify=False, auth=(username, password))
@@ -256,7 +256,7 @@ class Connector:
     # CDP neighbour info gets populated when the device syncs
     def get_cdp_neighbours(self, dev_id):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/InventoryDetails/{dev_id}.json"
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(cpi_ipv4_address, dev_id)
 
         try:
             req = requests.get(url, verify=False, auth=(username, password))

@@ -112,7 +112,7 @@ class Verify:
 
     def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
 
-        print(f"{switch_ipv4_address}: UPGRADE_CODE")
+        print("{}: UPGRADE_CODE".format(switch_ipv4_address))
 
         ############################
         ###### PRE_PROCESSING ######
@@ -145,14 +145,14 @@ class Verify:
         old_sync_time = api_call.get_sync_time(switch.id)
 
         api_call.sync(switch.ipv4_address)
-        print(f"{switch.ipv4_address}: BEGIN SYNC")
+        print("{}: BEGIN SYNC".format(switch.ipv4_address))
         switch.pre_sync_state = None
         while switch.pre_sync_state != "COMPLETED":
             time.sleep(5)
             switch.pre_sync_state = api_call.get_sync_status(switch.id)
             print('.', end='', flush=True)
         print("")
-        print(f"{switch.ipv4_address}: {switch.pre_sync_state}")
+        print("{}: {}".format(switch.ipv4_address, switch.pre_sync_state))
 
         new_sync_time = api_call.get_sync_time(switch.id)
         # compare sync times
@@ -165,7 +165,7 @@ class Verify:
         ###### 3. get current software version
 
         switch.pre_software_version = api_call.get_software_version(switch.id)
-        print(f"{switch.ipv4_address}: VERSION - {switch.pre_software_version}")
+        print("{}: VERSION - {}".format(switch.ipv4_address, switch.pre_software_version))
 
         ###### 4. get stack members
         ###### (using 'description' key. It appends the word 'Provisioned' if OS-mismatch or V-mismatch
@@ -173,7 +173,7 @@ class Verify:
         switch.pre_stack_member = api_call.get_stack_members(switch.id)
         sorted_list = sorted(switch.pre_stack_member, key=lambda k: k['name']) # sort the list of dicts
         switch.pre_stack_member_key = [x['description'] for x in sorted_list] # extract description values
-        print(f"{switch.ipv4_address}: STACK MEMBERS - {switch.pre_stack_member_key}")
+        print("{}: STACK MEMBERS - {}".format(switch.ipv4_address, switch.pre_stack_member_key))
 
         ###### 5. get VLANs
         ### TO-DO
@@ -186,18 +186,18 @@ class Verify:
         switch.pre_cdp_neighbour = api_call.get_cdp_neighbours(switch.id)
         sorted_list = sorted(switch.pre_cdp_neighbour, key=lambda k: k['nearEndInterface']) # sort the list of dicts
         switch.pre_cdp_neighbour_key = [x['nearEndInterface'] for x in sorted_list] # extract interfaceIndex values
-        print(f"{switch.ipv4_address}: CDP NEIGHOURS - {switch.pre_cdp_neighbour_key}")
+        print("{}: CDP NEIGHOURS - {}",format(switch.ipv4_address, switch.pre_cdp_neighbour_key))
 
         print("")
-        print(f"{switch.ipv4_address}: PRE-PROCESSING COMPLETE")
+        print("{}: PRE-PROCESSING COMPLETE".format(switch.ipv4_address))
 
         ####################
         ###### RELOAD ######
         ####################
 
-        print(f"{switch.ipv4_address}: Reload switch manually now.")
+        print("{}: Reload switch manually now.".format(switch.ipv4_address))
         input("Press Enter to continue after the reload command has been issued ...")
-        print(f"{switch.ipv4_address}: REBOOTING")
+        print("{}: REBOOTING".format(switch.ipv4_address))
 
         ###################
         ###### AFTER ######
@@ -213,28 +213,28 @@ class Verify:
                 switch.post_reachability = "UNREACHABLE"
                 print('.', end='', flush=True)
         print("")
-        print(f"{switch.ipv4_address}: {switch.post_reachability}")
+        print("{}: {}".format(switch.ipv4_address, switch.post_reachability))
 
         ##### 2. force sync of switch state
 
         old_sync_time = api_call.get_sync_time(switch.id)
 
         api_call.sync(switch.ipv4_address)
-        print(f"{switch.ipv4_address}: BEGIN SYNC")
+        print("{}: BEGIN SYNC".format(switch.ipv4_address))
         switch.post_sync_state = None
         while switch.post_sync_state != "COMPLETED":
             time.sleep(5)
             switch.post_sync_state = api_call.get_sync_status(switch.id)
             print('.', end='', flush=True)
         print("")
-        print(f"{switch.ipv4_address}: {switch.post_sync_state}")
+        print("{}: {}".format(switch.ipv4_address, switch.post_sync_state))
 
         new_sync_time = api_call.get_sync_time(switch.id)
         #compare sync times
         if old_sync_time != new_sync_time:
-            print(f"{switch.ipv4_address}: SYNCHRONIZED")
+            print("{}: SYNCHRONIZED".format(switch.ipv4_address))
         else:
-            print(f"{switch.ipv4_address}: *** ERROR - sync failed. Cancelling process. Proceed with verification manually ***")
+            print("{}: *** ERROR - sync failed. Cancelling process. Proceed with verification manually ***".format(switch.ipv4_address))
             return False
 
         ###### 3. get software version
@@ -243,16 +243,16 @@ class Verify:
 
         # compare
         if switch.pre_software_version == switch.post_software_version:
-            print(f"{switch.ipv4_address}: ERROR - software version before and after is the same, {switch.post_software_version}")
+            print("{}: ERROR - software version before and after is the same, {switch.post_software_version}".format(switch.ipv4_address))
         else:
-            print(f"{switch.ipv4_address}: VERSION - {switch.post_software_version}")
+            print("{}: VERSION - {}".format(switch.ipv4_address, switch.post_software_version))
 
         ###### 4. get stack members
 
         switch.post_stack_member = api_call.get_stack_members(switch.id)
         sorted_list = sorted(switch.post_stack_member, key=lambda k: k['name'])  # sort the list of dicts
         switch.post_stack_member_key = [x['description'] for x in sorted_list]  # extract entPhysicalIndex values
-        print(f"{switch.ipv4_address}: STACK MEMBERS - {switch.post_stack_member_key}")
+        print("{}: STACK MEMBERS - {}".format(switch.ipv4_address, switch.post_stack_member_key))
 
         # test for stack member equality
         if switch.pre_stack_member_key != switch.post_stack_member_key:
@@ -260,17 +260,17 @@ class Verify:
             for key in diff_keys:
                 # check which list it exists in pre list of dicts, otherwise search post list of dicts
                 if (any(d["description"] == key for d in switch.pre_stack_member)) is True:
-                    print(f"{switch.ipv4_address}: MISSING STACK MEMBER")
+                    print("{}: MISSING STACK MEMBER".format(switch.ipv4_address))
                     stack_member = next((item for item in switch.pre_stack_member if item["description"] == key))
                     print(json.dumps(stack_member, indent=4))
                 elif (any(d["description"] == key for d in switch.post_stack_member)) is True:
-                    print(f"{switch.ipv4_address}: NEW MEMBER (if member says \'Provisioned\' it likely is OS-Mismatch or V-Mismatch)")
+                    print("{}: NEW MEMBER (if member says \'Provisioned\' it likely is OS-Mismatch or V-Mismatch)".format(switch.ipv4_address))
                     stack_member = next((item for item in switch.post_stack_member if item["description"] == key))
                     print(json.dumps(stack_member, indent=4))
                 else:
-                    print(f"{switch.ipv4_address}: ERROR - {key} key not found in either list!")
+                    print("{}: ERROR - {} key not found in either list!".format(switch.ipv4_address, key))
         else:
-            print(f"{switch.ipv4_address}: ALL STACK MEMBERS MATCH")
+            print("{}: ALL STACK MEMBERS MATCH".format(switch.ipv4_address))
 
 
         ###### 5. get VLANs
@@ -283,7 +283,7 @@ class Verify:
         switch.post_cdp_neighbour = api_call.get_cdp_neighbours(switch.id)
         sorted_list = sorted(switch.post_cdp_neighbour, key=lambda k: k['nearEndInterface'])  # sort the list of dicts
         switch.post_cdp_neighbour_key = [x['nearEndInterface'] for x in sorted_list]  # extract interfaceIndex values
-        print(f"{switch.ipv4_address}: CDP NEIGHBOURS - {switch.post_cdp_neighbour_key}")
+        print("{}: CDP NEIGHBOURS - {}".format(switch.ipv4_address, switch.post_cdp_neighbour_key))
 
         # test for CDP neighbour equality
         if switch.pre_cdp_neighbour_key != switch.post_cdp_neighbour_key:
@@ -291,17 +291,17 @@ class Verify:
             for key in diff_keys:
                 # check which list it exists in pre list of dicts, otherwise search post list of dicts
                 if (any(d["nearEndInterface"] == key for d in switch.pre_cdp_neighbour)) is True:
-                    print(f"{switch.ipv4_address}: MISSING CDP NEIGHBOUR")
+                    print("{}: MISSING CDP NEIGHBOUR".format(switch.ipv4_address))
                     cdp_neighbour = next((item for item in switch.pre_cdp_neighbour if item["nearEndInterface"] == key))
                     print(json.dumps(cdp_neighbour, indent=4))
                 elif (any(d["nearEndInterface"] == key for d in switch.post_cdp_neighbour)) is True:
-                    print(f"{switch.ipv4_address}: NEW CDP NEIGHBOUR FOUND")
+                    print("{}: NEW CDP NEIGHBOUR FOUND".format(switch.ipv4_address))
                     cdp_neighbour = next((item for item in switch.post_cdp_neighbour if item["nearEndInterface"] == key))
                     print(json.dumps(cdp_neighbour, indent=4))
                 else:
-                    print(f"{switch.ipv4_address}: ERROR - {key} key not found in either list!")
+                    print("{}: ERROR - {} key not found in either list!".format(switch.ipv4_address, key))
         else:
-            print(f"{switch.ipv4_address}: ALL CDP NEIGHBOURS MATCH")
+            print("{}: ALL CDP NEIGHBOURS MATCH".format(switch.ipv4_address))
 
 
         return True
