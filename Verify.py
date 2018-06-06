@@ -103,7 +103,7 @@ class Verify:
         # print basic switch information
         api_call.print_info(switch.id)
 
-        print detailed switch information
+        #print detailed switch information
         api_call.print_detailed_info(switch.id)
 
         # print client summary
