@@ -52,7 +52,7 @@ class Verify:
 
             # spawn thread if max concurrent number is not reached
             if t_count < max_threads:
-                t = threading.Thread(target=self.test_method, args=(switch_ipv4_address_list.pop(), Config.username,
+                t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list.pop(), Config.username,
                                                                          Config.password, Config.cpi_ipv4_address))
                 threads.append(t)
                 t.start()
@@ -186,7 +186,7 @@ class Verify:
         switch.pre_cdp_neighbour = api_call.get_cdp_neighbours(switch.id)
         sorted_list = sorted(switch.pre_cdp_neighbour, key=lambda k: k['nearEndInterface']) # sort the list of dicts
         switch.pre_cdp_neighbour_key = [x['nearEndInterface'] for x in sorted_list] # extract interfaceIndex values
-        print("{}: CDP NEIGHOURS - {}",format(switch.ipv4_address, switch.pre_cdp_neighbour_key))
+        print("{}: CDP NEIGHOURS - {}".format(switch.ipv4_address, switch.pre_cdp_neighbour_key))
 
         print("")
         print("{}: PRE-PROCESSING COMPLETE".format(switch.ipv4_address))
@@ -243,7 +243,7 @@ class Verify:
 
         # compare
         if switch.pre_software_version == switch.post_software_version:
-            print("{}: ERROR - software version before and after is the same, {switch.post_software_version}".format(switch.ipv4_address))
+            print("{}: ERROR - software version before and after is the same, {}".format(switch.ipv4_address, switch.post_software_version))
         else:
             print("{}: VERSION - {}".format(switch.ipv4_address, switch.post_software_version))
 
