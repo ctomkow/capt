@@ -267,9 +267,9 @@ class Verify:
     def push_config(self, switch_ipv4_address, config_user_exec, config_priv_exec, config_global_config):
 
         if config_user_exec[0] != "false":
-            os.system("swITch.py -a auth.txt -c {} -i {},cisco_ios".format(config_user_exec, switch_ipv4_address))
+            os.system("swITch.py -a auth.txt -c {} -i {},cisco_ios".format(config_user_exec[0], switch_ipv4_address))
         elif config_priv_exec[0] != "false":
-            os.system("swITch.py -ea auth.txt -c {} -i {},cisco_ios".format(config_priv_exec, switch_ipv4_address))
+            os.system("swITch.py -ea auth.txt -c {} -i {},cisco_ios".format(config_priv_exec[0], switch_ipv4_address))
         elif config_global_config[0] != "false":
             print("Need to update swITch.py to work with new netmiko config parameter")
 
