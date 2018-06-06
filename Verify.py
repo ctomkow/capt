@@ -52,7 +52,7 @@ class Verify:
 
             # spawn thread if max concurrent number is not reached
             if t_count < max_threads:
-                t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list.pop(), Config.username,
+                t = threading.Thread(target=self.test_method, args=(switch_ipv4_address_list.pop(), Config.username,
                                                                          Config.password, Config.cpi_ipv4_address))
                 threads.append(t)
                 t.start()
@@ -105,7 +105,9 @@ class Verify:
         #api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
         #api_call.print_detailed_info(api_call.get_dev_id(switch_ipv4_address))
 
-        pass
+        # print client summary
+        api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
+        api_call.print_client_summary(api_call.get_dev_id(switch_ipv4_address))
 
 
     def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
@@ -243,14 +245,14 @@ class Verify:
         if switch.pre_software_version == switch.post_software_version:
             print(f"{switch.ipv4_address}: ERROR - software version before and after is the same, {switch.post_software_version}")
         else:
-            print(f"{switch.ipv4_address}: code upgraded to {switch.post_software_version}")
+            print(f"{switch.ipv4_address}: VERSION - {switch.post_software_version}")
 
         ###### 4. get stack members
 
         switch.post_stack_member = api_call.get_stack_members(switch.id)
         sorted_list = sorted(switch.post_stack_member, key=lambda k: k['name'])  # sort the list of dicts
         switch.post_stack_member_key = [x['description'] for x in sorted_list]  # extract entPhysicalIndex values
-        print(f"{switch.ipv4_address}: {switch.post_stack_member_key}")
+        print(f"{switch.ipv4_address}: STACK MEMBERS - {switch.post_stack_member_key}")
 
         # test for stack member equality
         if switch.pre_stack_member_key != switch.post_stack_member_key:
@@ -281,7 +283,7 @@ class Verify:
         switch.post_cdp_neighbour = api_call.get_cdp_neighbours(switch.id)
         sorted_list = sorted(switch.post_cdp_neighbour, key=lambda k: k['nearEndInterface'])  # sort the list of dicts
         switch.post_cdp_neighbour_key = [x['nearEndInterface'] for x in sorted_list]  # extract interfaceIndex values
-        print(f"{switch.ipv4_address}: {switch.post_cdp_neighbour_key}")
+        print(f"{switch.ipv4_address}: CDP NEIGHBOURS - {switch.post_cdp_neighbour_key}")
 
         # test for CDP neighbour equality
         if switch.pre_cdp_neighbour_key != switch.post_cdp_neighbour_key:

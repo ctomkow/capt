@@ -64,7 +64,29 @@ class Connector:
             if req.status_code == 503:
                 # too many requests at once
                 time.sleep(1)
-                self.print_info(dev_id)
+                self.print_detailed_info(dev_id)
+            else:
+                print(error)
+                sys.exit(1)
+        except requests.exceptions.RequestException as e:
+            # catch-all failure, exit program
+            print(e)
+            sys.exit(1)
+
+        print(json.dumps(req.json(), indent=4))
+
+    def print_client_summary(self, dev_id):
+
+        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Clients/{dev_id}.json"
+
+        try:
+            req = requests.get(url, verify=False, auth=(username, password))
+            req.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            if req.status_code == 503:
+                # too many requests at once
+                time.sleep(1)
+                self.print_client_summary(dev_id)
             else:
                 print(error)
                 sys.exit(1)
@@ -88,7 +110,7 @@ class Connector:
             if req.status_code == 503:
                 # too many requests at once
                 time.sleep(1)
-                self.print_info(dev_id)
+                self.sync(dev_ipv4_address)
             else:
                 print(error)
                 sys.exit(1)
@@ -108,7 +130,7 @@ class Connector:
             if req.status_code == 503:
                 # too many requests at once
                 time.sleep(1)
-                self.print_info(dev_id)
+                self.get_sync_status(dev_id)
             else:
                 print(error)
                 sys.exit(1)
@@ -130,7 +152,7 @@ class Connector:
             if req.status_code == 503:
                 # too many requests at once
                 time.sleep(1)
-                self.print_info(dev_id)
+                self.get_sync_time(dev_id)
             else:
                 print(error)
                 sys.exit(1)
@@ -175,7 +197,7 @@ class Connector:
             if req.status_code == 503:
                 # too many requests at once
                 time.sleep(1)
-                self.print_info(dev_id)
+                self.get_reachability(dev_id)
             else:
                 print(error)
                 sys.exit(1)
@@ -197,7 +219,7 @@ class Connector:
             if req.status_code == 503:
                 # too many requests at once
                 time.sleep(1)
-                self.print_info(dev_id)
+                self.get_software_version(dev_id)
             else:
                 print(error)
                 sys.exit(1)
@@ -220,7 +242,7 @@ class Connector:
             if req.status_code == 503:
                 # too many requests at once
                 time.sleep(1)
-                self.print_info(dev_id)
+                self.get_stack_members(dev_id)
             else:
                 print(error)
                 sys.exit(1)
@@ -243,7 +265,7 @@ class Connector:
             if req.status_code == 503:
                 # too many requests at once
                 time.sleep(1)
-                self.print_info(dev_id)
+                self.get_cdp_neighbours(dev_id)
             else:
                 print(error)
                 sys.exit(1)
