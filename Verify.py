@@ -309,8 +309,8 @@ class Verify:
     # needed because Prime is slow to detect connectivity or not
     def ping(self, switch_ipv4_address):
 
-        # use "ping -c 1 -W 1" for linux, -n for Windows
-        response = os.system(f"ping -n 1 -w 1000 {switch_ipv4_address}>nul")
+        # use "ping -c 1 -W 1" for linux; "ping -n 1 -w 1000" for Windows
+        response = os.system("ping -c 1 -W 1 {}>nul".format(switch_ipv4_address))
 
         if response == 0:
             return True
