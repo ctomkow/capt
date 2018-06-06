@@ -138,7 +138,7 @@ class Verify:
                 switch.pre_reachability = "UNREACHABLE"
                 print('.', end='', flush=True)
         print("")
-        print(f"{switch.ipv4_address}: {switch.pre_reachability}")
+        print("{}: {}".format(switch.ipv4_address, switch.pre_reachability))
 
         ##### 2. force sync of switch state
 
@@ -159,7 +159,7 @@ class Verify:
         if old_sync_time != new_sync_time:
             pass
         else:
-            print(f"{switch.ipv4_address}: *** ERROR - sync failed. Cancelling process. Proceed with upgrade manually ***")
+            print("{}: *** ERROR - sync failed. Cancelling process. Proceed with upgrade manually ***".format(switch.ipv4_address))
             return False
 
         ###### 3. get current software version
