@@ -33,7 +33,7 @@ class Connector:
 
     def print_info(self, dev_id):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/Devices/{dev_id}.json"
+        url = "https://{}/webacs/api/v3/data/Devices/{dev_id}.json".format(cpi_ipv4_address, dev_id)
 
         try:
             req = requests.get(url, verify=False, auth=(username, password))
@@ -55,7 +55,7 @@ class Connector:
 
     def print_detailed_info(self, dev_id):
 
-        url = f"https://{cpi_ipv4_address}/webacs/api/v3/data/InventoryDetails/{dev_id}.json"
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(cpi_ipv4_address, dev_id)
 
         try:
             req = requests.get(url, verify=False, auth=(username, password))

@@ -68,46 +68,46 @@ class Verify:
 
         ### TESTING METHOD CALLS ###
 
-        # # force sync device,need NBI_WRITE access
-        #api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
-        #api_call.sync(switch_ipv4_address)
-        #
-        # # get reachability status
-        # api_call = Connector(Config.username, Config.password, Config.cpi_ipv4_address)
-        # dev_reachability = api_call.get_reachability(api_call.get_dev_id(Config.device()))
-        # print(json.dumps(dev_reachability, indent=4))
-        #
-        # # get software version
-        # api_call = Connector(Config.username, Config.password, Config.cpi_ipv4_address)
-        # dev_software_version = api_call.get_software_version(api_call.get_dev_id(Config.device()))
-        # print(json.dumps(dev_software_version, indent=4))
-        #
-        # # get switch stack info
-        # api_call = Connector(Config.username, Config.password, Config.cpi_ipv4_address)
-        # dev_stack_info = api_call.get_stack_members(api_call.get_dev_id(Config.device()))
-        # print(json.dumps(dev_stack_info, indent=4))
-        #
-        # # CDP neighbour call
-        # api_call = Connector(Config.username, Config.password, Config.cpi_ipv4_address)
-        # dev_cdp_neighbours = api_call.get_cdp_neighbours(api_call.get_dev_id(Config.device()))
-        # cdp_neighbours_list = dev_cdp_neighbours
-        # sorted_list = sorted(cdp_neighbours_list, key=lambda k: k['interfaceIndex']) # sort the list of dicts
-        # sorted_interfaceIndex = [x['interfaceIndex'] for x in sorted_list] # extract interfaceIndex values
-        #
-        # data = next((item for item in dev_cdp_neighbours if item["neighborDeviceName"] == "SEPC0626BD2690F"))
-        # print(data)
-        #
-        # # print basic switch information
-        #api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
-        #api_call.print_info(api_call.get_dev_id(switch_ipv4_address))
-        #
-        # print detailed switch information
-        #api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
-        #api_call.print_detailed_info(api_call.get_dev_id(switch_ipv4_address))
+        api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
+
+        switch = Switch()
+        switch.ipv4_address = switch_ipv4_address
+
+        switch.id = api_call.get_dev_id(switch.ipv4_address)
+
+
+        # force sync device,need NBI_WRITE access
+        api_call.sync(switch_ipv4_address)
+
+        # get reachability status
+        dev_reachability = api_call.get_reachability(switch.id)
+        print(json.dumps(dev_reachability, indent=4))
+
+        # get software version
+        dev_software_version = api_call.get_software_version(switch.id)
+        print(json.dumps(dev_software_version, indent=4))
+
+        # get switch stack info
+        dev_stack_info = api_call.get_stack_members(switch.id)
+        print(json.dumps(dev_stack_info, indent=4))
+
+        # CDP neighbour call
+        dev_cdp_neighbours = api_call.get_cdp_neighbours(switch.id)
+        cdp_neighbours_list = dev_cdp_neighbours
+        sorted_list = sorted(cdp_neighbours_list, key=lambda k: k['interfaceIndex']) # sort the list of dicts
+        sorted_interfaceIndex = [x['interfaceIndex'] for x in sorted_list] # extract interfaceIndex values
+
+        data = next((item for item in dev_cdp_neighbours if item["neighborDeviceName"] == "SEPC0626BD2690F"))
+        print(data)
+
+        # print basic switch information
+        api_call.print_info(switch.id)
+
+        print detailed switch information
+        api_call.print_detailed_info(switch.id)
 
         # print client summary
-        api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
-        api_call.print_client_summary(api_call.get_dev_id(switch_ipv4_address))
+        api_call.print_client_summary(switch.id)
 
 
     def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
