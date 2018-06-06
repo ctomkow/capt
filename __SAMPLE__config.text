@@ -1,29 +1,29 @@
 [DEFAULT]
 username=user
-password=supersecret
-glean_state=true
-push_config=false
+password=secret
 
 [CPI]
-version=0.3
+version=3.3
 ipv4_address=10.10.10.10
 
 [DEVICE]
 type=switch
-model=3650
+concurrent=1
 ipv4_address:
     20.20.20.20
-    20.20.20.21
-    20.20.20.22
-    20.20.20.23
-    20.20.20.24
-    20.20.20.25
 
-# boolean attribute states to pull from CPI (true/false)
-[TEST_ATTRIBUTE]
-reachability=true
-software=true
-stack_member=true
-active_port=true
-active_uplink=true
-vlan=true
+# true/false; order of execution {1 .. 9}, 0 for false
+[PROCEDURE]
+code_upgrade:true,2
+push_config:true,1
+
+[CONFIG]
+user_exec:
+    show int status
+    show version
+priv_exec:
+    show runn
+    wr mem
+global_config:
+    int gi1/0/1
+    description TEST

@@ -16,44 +16,46 @@ def load_configuration():
     # define global variables
     global username
     global password
-    global glean_state
-    global push_config
 
     global cpi_version
     global cpi_ipv4_address
 
     global dev_type
-    global dev_model
-    global concurrent_threads
+    global dev_concurrent_threads
     global dev_ipv4_address
 
-    global attr_reachability
-    global attr_software
-    global attr_stack_member
-    global attr_active_port
-    global attr_active_uplink
-    global attr_vlan
+    global proc_code_upgrade
+    global proc_push_config
 
-    username           = config['DEFAULT']['username']
-    password           = config['DEFAULT']['password']
-    glean_state        = config['DEFAULT']['glean_state']
-    push_config        = config['DEFAULT']['push_config']
+    global config_user_exec
+    global config_priv_exec
+    global config_global_config
 
-    cpi_version        = config['CPI']['version']
-    cpi_ipv4_address   = config['CPI']['ipv4_address']
+    username               = config['DEFAULT']['username']
+    password               = config['DEFAULT']['password']
 
-    dev_type           = config['DEVICE']['type']
-    dev_model          = config['DEVICE']['model']
-    concurrent_threads = config['DEVICE']['concurrent_num']
-    dev_ipv4_address   = config['DEVICE']['ipv4_address']
+    cpi_version            = config['CPI']['version']
+    cpi_ipv4_address       = config['CPI']['ipv4_address']
 
-    attr_reachability  = config['TEST_ATTRIBUTE']['reachability']
-    attr_software      = config['TEST_ATTRIBUTE']['software']
-    attr_stack_member  = config['TEST_ATTRIBUTE']['stack_member']
-    attr_active_port   = config['TEST_ATTRIBUTE']['active_port']
-    attr_active_uplink = config['TEST_ATTRIBUTE']['active_uplink']
-    attr_vlan          = config['TEST_ATTRIBUTE']['vlan']
+    dev_type               = config['DEVICE']['type']
+    dev_concurrent_threads = config['DEVICE']['concurrent']
+    dev_ipv4_address       = config['DEVICE']['ipv4_address']
 
-    # do some final parsing and cleanup
-    dev_ipv4_address   = dev_ipv4_address.split('\n') # strip out newlines
-    dev_ipv4_address.pop(0) # remove the empty string at beginning
+    proc_code_upgrade      = config['PROCEDURE']['code_upgrade']
+    proc_push_config       = config['PROCEDURE']['push_config']
+
+    config_user_exec       = config['CONFIG']['user_exec']
+    config_priv_exec       = config['CONFIG']['priv_exec']
+    config_global_config   = config['CONFIG']['global_config']
+
+    # strip out newlines
+    dev_ipv4_address = dev_ipv4_address.split('\n')
+    config_user_exec = config_user_exec.split('\n')
+    config_priv_exec = config_priv_exec.split('\n')
+    config_global_config = config_global_config.split('\n')
+
+    # remove the empty string at beginning
+    dev_ipv4_address.pop(0)
+    config_user_exec.pop(0)
+    config_priv_exec.pop(0)
+    config_global_config.pop(0)

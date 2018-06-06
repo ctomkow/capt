@@ -33,9 +33,10 @@ class Verify:
 
     def main(self):
 
-        ### THREAD HANDLING ###
         switch_ipv4_address_list = Config.dev_ipv4_address
-        max_threads = int(Config.concurrent_threads)
+        max_threads = int(Config.dev_concurrent_threads)
+
+        proc_list = []
 
         threads = []
 
@@ -48,12 +49,14 @@ class Verify:
             threads = [t for t in threads if t.is_alive()]
             t_count = len(threads)
 
-            #print(t_count)
-
             # spawn thread if max concurrent number is not reached
             if t_count < max_threads:
-                t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list.pop(), Config.username,
-                                                                         Config.password, Config.cpi_ipv4_address))
+
+                #t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list.pop(), Config.username,
+                #                                                         Config.password, Config.cpi_ipv4_address))
+
+                t = threading.Thread(target=self.push_config(switch_ipv4_address_list.pop(), Config.config_user_exec,
+                                                             Config.config_priv_exec, Config.config_global_config))
                 threads.append(t)
                 t.start()
                 t_count += 1
@@ -62,53 +65,6 @@ class Verify:
             if len(switch_ipv4_address_list) == 0:
                 for t in threads:
                     t.join()
-
-
-    def test_method(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
-
-        ### TESTING METHOD CALLS ###
-
-        api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
-
-        switch = Switch()
-        switch.ipv4_address = switch_ipv4_address
-
-        switch.id = api_call.get_dev_id(switch.ipv4_address)
-
-
-        # force sync device,need NBI_WRITE access
-        api_call.sync(switch_ipv4_address)
-
-        # get reachability status
-        dev_reachability = api_call.get_reachability(switch.id)
-        print(json.dumps(dev_reachability, indent=4))
-
-        # get software version
-        dev_software_version = api_call.get_software_version(switch.id)
-        print(json.dumps(dev_software_version, indent=4))
-
-        # get switch stack info
-        dev_stack_info = api_call.get_stack_members(switch.id)
-        print(json.dumps(dev_stack_info, indent=4))
-
-        # CDP neighbour call
-        dev_cdp_neighbours = api_call.get_cdp_neighbours(switch.id)
-        cdp_neighbours_list = dev_cdp_neighbours
-        sorted_list = sorted(cdp_neighbours_list, key=lambda k: k['interfaceIndex']) # sort the list of dicts
-        sorted_interfaceIndex = [x['interfaceIndex'] for x in sorted_list] # extract interfaceIndex values
-
-        data = next((item for item in dev_cdp_neighbours if item["neighborDeviceName"] == "SEPC0626BD2690F"))
-        print(data)
-
-        # print basic switch information
-        api_call.print_info(switch.id)
-
-        #print detailed switch information
-        api_call.print_detailed_info(switch.id)
-
-        # print client summary
-        api_call.print_client_summary(switch.id)
-
 
     def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
 
@@ -306,6 +262,15 @@ class Verify:
 
         return True
 
+    def push_config(self, switch_ipv4_address, config_user_exec, config_priv_exec, config_global_config):
+
+        if config_user_exec[0] != "false":
+            os.system("swITch.py -a auth.txt -c {} -i {},cisco_ios".format(config_user_exec, switch_ipv4_address))
+        elif config_priv_exec[0] != "false":
+            os.system("swITch.py -ea auth.txt -c {} -i {},cisco_ios".format(config_priv_exec, switch_ipv4_address))
+        elif config_global_config[0] != "false":
+            print("Need to update swITch.py to work with new netmiko config parameter")
+
     # needed because Prime is slow to detect connectivity or not
     def ping(self, switch_ipv4_address):
 
@@ -316,6 +281,51 @@ class Verify:
             return True
         else:
             return False
+
+    def test_api_calls(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
+
+        ### TESTING METHOD CALLS ###
+
+        api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address)
+
+        switch = Switch()
+        switch.ipv4_address = switch_ipv4_address
+
+        switch.id = api_call.get_dev_id(switch.ipv4_address)
+
+
+        # force sync device,need NBI_WRITE access
+        api_call.sync(switch_ipv4_address)
+
+        # get reachability status
+        dev_reachability = api_call.get_reachability(switch.id)
+        print(json.dumps(dev_reachability, indent=4))
+
+        # get software version
+        dev_software_version = api_call.get_software_version(switch.id)
+        print(json.dumps(dev_software_version, indent=4))
+
+        # get switch stack info
+        dev_stack_info = api_call.get_stack_members(switch.id)
+        print(json.dumps(dev_stack_info, indent=4))
+
+        # CDP neighbour call
+        dev_cdp_neighbours = api_call.get_cdp_neighbours(switch.id)
+        cdp_neighbours_list = dev_cdp_neighbours
+        sorted_list = sorted(cdp_neighbours_list, key=lambda k: k['interfaceIndex']) # sort the list of dicts
+        sorted_interfaceIndex = [x['interfaceIndex'] for x in sorted_list] # extract interfaceIndex values
+
+        data = next((item for item in dev_cdp_neighbours if item["neighborDeviceName"] == "SEPC0626BD2690F"))
+        print(data)
+
+        # print basic switch information
+        api_call.print_info(switch.id)
+
+        #print detailed switch information
+        api_call.print_detailed_info(switch.id)
+
+        # print client summary
+        api_call.print_client_summary(switch.id)
 
 if __name__ == '__main__':
 
