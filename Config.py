@@ -26,6 +26,7 @@ def load_configuration():
 
     global proc_code_upgrade
     global proc_push_config
+    global proc_test_api_calls
 
     global config_user_exec
     global config_priv_exec
@@ -43,6 +44,7 @@ def load_configuration():
 
     proc_code_upgrade      = config['PROCEDURE']['code_upgrade']
     proc_push_config       = config['PROCEDURE']['push_config']
+    proc_test_api_calls    = config['PROCEDURE']['test_api_calls']
 
     config_user_exec       = config['CONFIG']['user_exec']
     config_priv_exec       = config['CONFIG']['priv_exec']

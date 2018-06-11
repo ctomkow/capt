@@ -12,6 +12,7 @@ import threading
 import json
 import time
 import os
+import sys
 
 # local imports
 import Config
@@ -38,7 +39,11 @@ class Verify:
         switch_ipv4_address_list = Config.dev_ipv4_address
         max_threads = int(Config.dev_concurrent_threads)
 
-        proc_list = []
+        proc_dict = {}
+        proc_dict[Config.proc_code_upgrade]   = 'code_upgrade'
+        proc_dict[Config.proc_push_config]    = 'push_config'
+        proc_dict[Config.proc_test_api_calls] = 'test_api_calls'
+        del proc_dict['false']  # remove procedures that should not be executed (there is only one 'true' key anyway cause its a dictionary)
 
         threads = []
 
@@ -48,26 +53,35 @@ class Verify:
             threads = [t for t in threads if t.is_alive()]
             t_count = len(threads)
 
+
+
             # spawn thread if max concurrent number is not reached
             if t_count < max_threads:
 
-                #t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list.pop(), Config.username,
-                #                                                         Config.password, Config.cpi_ipv4_address))
-
-                #t = threading.Thread(target=self.push_config(switch_ipv4_address_list.pop(), Config.config_user_exec,
-                #                                             Config.config_priv_exec, Config.config_global_config))
-
-                t = threading.Thread(target=self.test_api_calls, args=(switch_ipv4_address_list.pop(), Config.username,
-                                                                         Config.password, Config.cpi_ipv4_address))
+                try:
+                    if proc_dict['true'] == 'code_upgrade':
+                        t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list[0], Config.username,
+                                                                                Config.password, Config.cpi_ipv4_address))
+                    elif proc_dict['true'] == 'push_config':
+                        t = threading.Thread(target=self.push_config(switch_ipv4_address_list[0], Config.config_user_exec,
+                                                                                Config.config_priv_exec, Config.config_global_config))
+                    elif proc_dict['true'] == 'test_api_calls':
+                        t = threading.Thread(target=self.test_api_calls, args=(switch_ipv4_address_list[0], Config.username,
+                                                                                Config.password, Config.cpi_ipv4_address))
+                except KeyError:
+                    print("No procedure selected as 'true' in config.text")
+                    sys.exit(1)
 
                 threads.append(t)
                 t.start()
                 t_count += 1
 
-            # when last device is popped off list, wait for ALL threads to finish
-            if len(switch_ipv4_address_list) == 0:
-                for t in threads:
-                    t.join()
+                switch_ipv4_address_list.pop()  # remove referenced switch
+
+                # when last device is popped off list, wait for ALL threads to finish
+                if len(switch_ipv4_address_list) == 0:
+                    for t in threads:
+                        t.join()
 
     def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
 
@@ -323,7 +337,7 @@ class Verify:
         api_call.print_info(switch.id)
         #
         # #print detailed switch information
-        #api_call.print_detailed_info(switch.id)
+        # api_call.print_detailed_info(switch.id)
         #
         # # print client summary
         # api_call.print_client_summary(switch.id)
