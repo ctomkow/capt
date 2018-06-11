@@ -168,10 +168,9 @@ class Verify:
         ###### RELOAD ######
         ####################
 
-        print("{}: Reload switch manually now.".format(switch.ipv4_address))
-        input("Press Enter to continue after the reload command has been issued ...")
         print("{}: REBOOTING".format(switch.ipv4_address))
-
+        os.system("swITch.py -ea auth.txt -c \"reload code_upgrade\" -i \"{},cisco_ios\"".format(switch.ipv4_address))
+        time.sleep(10)
         ###################
         ###### AFTER ######
         ###################
