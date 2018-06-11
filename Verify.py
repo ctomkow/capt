@@ -44,9 +44,6 @@ class Verify:
 
         while len(switch_ipv4_address_list) > 0:
 
-            # don't make threads so quickly, you may just scare off Cisco Prime
-            time.sleep(1)
-
             # check if thread is alive, if not, remove from list
             threads = [t for t in threads if t.is_alive()]
             t_count = len(threads)
@@ -57,8 +54,12 @@ class Verify:
                 #t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list.pop(), Config.username,
                 #                                                         Config.password, Config.cpi_ipv4_address))
 
-                t = threading.Thread(target=self.push_config(switch_ipv4_address_list.pop(), Config.config_user_exec,
-                                                             Config.config_priv_exec, Config.config_global_config))
+                #t = threading.Thread(target=self.push_config(switch_ipv4_address_list.pop(), Config.config_user_exec,
+                #                                             Config.config_priv_exec, Config.config_global_config))
+
+                t = threading.Thread(target=self.test_api_calls, args=(switch_ipv4_address_list.pop(), Config.username,
+                                                                         Config.password, Config.cpi_ipv4_address))
+
                 threads.append(t)
                 t.start()
                 t_count += 1
@@ -292,42 +293,40 @@ class Verify:
 
         switch = Switch()
         switch.ipv4_address = switch_ipv4_address
-
         switch.id = api_call.get_dev_id(switch.ipv4_address)
 
-
-        # force sync device,need NBI_WRITE access
-        api_call.sync(switch_ipv4_address)
-
-        # get reachability status
-        dev_reachability = api_call.get_reachability(switch.id)
-        print(json.dumps(dev_reachability, indent=4))
-
-        # get software version
-        dev_software_version = api_call.get_software_version(switch.id)
-        print(json.dumps(dev_software_version, indent=4))
-
-        # get switch stack info
-        dev_stack_info = api_call.get_stack_members(switch.id)
-        print(json.dumps(dev_stack_info, indent=4))
-
-        # CDP neighbour call
-        dev_cdp_neighbours = api_call.get_cdp_neighbours(switch.id)
-        cdp_neighbours_list = dev_cdp_neighbours
-        sorted_list = sorted(cdp_neighbours_list, key=lambda k: k['interfaceIndex']) # sort the list of dicts
-        sorted_interfaceIndex = [x['interfaceIndex'] for x in sorted_list] # extract interfaceIndex values
-
-        data = next((item for item in dev_cdp_neighbours if item["neighborDeviceName"] == "SEPC0626BD2690F"))
-        print(data)
-
+        # # force sync device,need NBI_WRITE access
+        # api_call.sync(switch_ipv4_address)
+        #
+        # # get reachability status
+        # dev_reachability = api_call.get_reachability(switch.id)
+        # print(json.dumps(dev_reachability, indent=4))
+        #
+        # # get software version
+        # dev_software_version = api_call.get_software_version(switch.id)
+        # print(json.dumps(dev_software_version, indent=4))
+        #
+        # # get switch stack info
+        # dev_stack_info = api_call.get_stack_members(switch.id)
+        # print(json.dumps(dev_stack_info, indent=4))
+        #
+        # # CDP neighbour call
+        # dev_cdp_neighbours = api_call.get_cdp_neighbours(switch.id)
+        # cdp_neighbours_list = dev_cdp_neighbours
+        # sorted_list = sorted(cdp_neighbours_list, key=lambda k: k['interfaceIndex']) # sort the list of dicts
+        # sorted_interfaceIndex = [x['interfaceIndex'] for x in sorted_list] # extract interfaceIndex values
+        #
+        # data = next((item for item in dev_cdp_neighbours if item["neighborDeviceName"] == "SEPC0626BD2690F"))
+        # print(data)
+        #
         # print basic switch information
         api_call.print_info(switch.id)
-
-        #print detailed switch information
-        api_call.print_detailed_info(switch.id)
-
-        # print client summary
-        api_call.print_client_summary(switch.id)
+        #
+        # #print detailed switch information
+        #api_call.print_detailed_info(switch.id)
+        #
+        # # print client summary
+        # api_call.print_client_summary(switch.id)
 
 if __name__ == '__main__':
 
