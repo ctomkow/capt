@@ -12,18 +12,17 @@ concurrent=1
 ipv4_address:
     20.20.20.20
 
-# true/false; order of execution {1 .. 9}, 0 for false
+# true/false; only one true at a time
 [PROCEDURE]
-code_upgrade:true,2
-push_config:true,1
+code_upgrade:true
+push_config:false
+test_api_calls:false
 
+# if no config, use 'false' as placeholder
 [CONFIG]
 user_exec:
     show int status
-    show version
 priv_exec:
     show runn
-    wr mem
 global_config:
-    int gi1/0/1
-    description TEST
+    false
