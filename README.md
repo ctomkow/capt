@@ -18,7 +18,7 @@ Note: at this moment the program does not push new code to the device. The code 
 ### DEPENDENCIES
 
 * Cisco Prime Infrastructure 3.3+
-* Python 3.4
+* Python 3.4+
 * swITch.py 0.1.2 (https://github.com/ctomkow/swITch)
 * netmiko 1.4.3
 
