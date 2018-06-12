@@ -103,15 +103,15 @@ class Verify:
 
         ###### 1. check for reachability
 
-        switch.pre_reachability = None
-        while switch.pre_reachability != "REACHABLE":
+        print("{}: TESTING REACHABILITY".format(switch.ipv4_address))
+
+        while not self.reachable(switch, api_call):
+            print('.', end='', flush=True)
             time.sleep(5)
-            switch.pre_reachability = api_call.get_reachability(switch.id)
-            if self.ping(switch.ipv4_address) is False:
-                switch.pre_reachability = "UNREACHABLE"
-                print('.', end='', flush=True)
-        print("")
-        print("{}: {}".format(switch.ipv4_address, switch.pre_reachability))
+
+        print("\n")
+        print("{}: {}".format(switch.ipv4_address, switch.reachability))
+
 
         ##### 2. force sync of switch state
 
@@ -171,21 +171,21 @@ class Verify:
         print("{}: REBOOTING".format(switch.ipv4_address))
         os.system("swITch.py -ea auth.txt -c \"reload code_upgrade\" -i \"{},cisco_ios\"".format(switch.ipv4_address))
         time.sleep(10)
+
         ###################
         ###### AFTER ######
         ###################
 
         ###### 1. check for reachability
 
-        switch.post_reachability = None
-        while switch.post_reachability != "REACHABLE":
-            time.sleep(10)
-            switch.post_reachability = api_call.get_reachability(switch.id)
-            if self.ping(switch.ipv4_address) is False:
-                switch.post_reachability = "UNREACHABLE"
-                print('.', end='', flush=True)
-        print("")
-        print("{}: {}".format(switch.ipv4_address, switch.post_reachability))
+        print("{}: TESTING REACHABILITY".format(switch.ipv4_address))
+
+        while not self.reachable(switch, api_call):
+            print('.', end='', flush=True)
+            time.sleep(5)
+
+        print("\n")
+        print("{}: {}".format(switch.ipv4_address, switch.reachability))
 
         ##### 2. force sync of switch state
 
@@ -298,6 +298,18 @@ class Verify:
         else:
             return False
 
+    def reachable(self, switch, api_call):
+
+        if self.ping(switch.ipv4_address) is False:
+            switch.reachability = "UNREACHABLE"
+            return False
+        elif self.ping(switch.ipv4_address) is True and api_call.get_reachability(switch.id) == "REACHABLE":
+            switch.reachability = "REACHABLE"
+            return True
+        else:
+            switch.reachability = "UNREACHABLE"
+            return False
+
     def test_api_calls(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
 
         ### TESTING METHOD CALLS ###
@@ -320,12 +332,13 @@ class Verify:
         # print(json.dumps(dev_software_version, indent=4))
         #
         # # get switch stack info
-        # dev_stack_info = api_call.get_stack_members(switch.id)
-        # print(json.dumps(dev_stack_info, indent=4))
+        dev_stack_info = api_call.get_stack_members(switch.id)
+        print(json.dumps(dev_stack_info, indent=4))
         #
         # # CDP neighbour call
-        # dev_cdp_neighbours = api_call.get_cdp_neighbours(switch.id)
-        # cdp_neighbours_list = dev_cdp_neighbours
+        dev_cdp_neighbours = api_call.get_cdp_neighbours(switch.id)
+        cdp_neighbours_list = dev_cdp_neighbours
+        print(json.dumps(dev_cdp_neighbours, indent=4))
         # sorted_list = sorted(cdp_neighbours_list, key=lambda k: k['interfaceIndex']) # sort the list of dicts
         # sorted_interfaceIndex = [x['interfaceIndex'] for x in sorted_list] # extract interfaceIndex values
         #
@@ -333,7 +346,7 @@ class Verify:
         # print(data)
         #
         # print basic switch information
-        api_call.print_info(switch.id)
+        #api_call.print_info(switch.id)
         #
         # #print detailed switch information
         # api_call.print_detailed_info(switch.id)
