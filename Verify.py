@@ -310,10 +310,10 @@ class Verify:
 
     def reachable(self, switch, api_call):
 
-        if self.ping(switch.ipv4_address) is False:
+        if not self.ping(switch.ipv4_address):
             switch.reachability = "UNREACHABLE"
             return False
-        elif self.ping(switch.ipv4_address) is True and api_call.get_reachability(switch.id) == "REACHABLE":
+        elif self.ping(switch.ipv4_address) and api_call.get_reachability(switch.id) == "REACHABLE":
             switch.reachability = "REACHABLE"
             return True
         else:
