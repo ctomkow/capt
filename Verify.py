@@ -106,9 +106,13 @@ class Verify:
 
         print("{}: TESTING REACHABILITY".format(switch.ipv4_address))
 
+        timeout = time.time() + 60*45 # 45 minute timeout starting now
         while not self.reachable(switch, api_call):
             print('.', end='', flush=True)
             time.sleep(5)
+            if time.time() > timeout:
+                print("{}: CRITICAL - 45 minutes and switch hasn't responded. Exiting script.".format(switch.ipv4_address))
+                sys.exit(1)
 
         print("\n")
         print("{}: {}".format(switch.ipv4_address, switch.reachability))
@@ -181,9 +185,13 @@ class Verify:
 
         print("{}: TESTING REACHABILITY".format(switch.ipv4_address))
 
+        timeout = time.time() + 60*45 # 45 minute timeout starting now
         while not self.reachable(switch, api_call):
             print('.', end='', flush=True)
             time.sleep(5)
+            if time.time() > timeout:
+                print("{}: CRITICAL - 45 minutes and switch hasn't responded. Exiting script.".format(switch.ipv4_address))
+                sys.exit(1)
 
         print("\n")
         print("{}: {}".format(switch.ipv4_address, switch.reachability))
