@@ -13,6 +13,7 @@ import json
 import time
 import os
 import sys
+import platform
 
 # local imports
 import Config
@@ -290,13 +291,22 @@ class Verify:
     # needed because Prime is slow to detect connectivity or not
     def ping(self, switch_ipv4_address):
 
-        # use "ping -c 1 -W 1" for linux; "ping -n 1 -w 1000" for Windows
-        response = os.system("ping -c 1 -W 1 {}>nul".format(switch_ipv4_address))
+        if platform.system() == "Linux":
+            response = os.system("ping -c 1 -W 1 {}>nul".format(switch_ipv4_address))
+        elif platform.system() == "Windows":
+            response = os.system("ping -n 1 -w 1000 {}>nul".format(switch_ipv4_address))
+        else:
+            print("Ping failed, could not detect system")
+            sys.exit(1)
 
+        # ping program returns 0 on successful ICMP request, 1 on failed ICMP request
         if response == 0:
             return True
-        else:
+        elif response == 1:
             return False
+        else:
+            print("Ping failed to return 0 or 1. Exiting...")
+            sys.exit(1)
 
     def reachable(self, switch, api_call):
 
