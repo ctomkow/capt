@@ -111,15 +111,17 @@ class Verify:
             print('.', end='', flush=True)
             time.sleep(5)
             if time.time() > timeout:
+                print("")
                 print("{}: ERROR - 5 minutes and switch hasn't responded. Exiting script.".format(switch.ipv4_address))
                 sys.exit(1)
 
-        print("\n")
+        print("")
         print("{}: {}".format(switch.ipv4_address, switch.reachability))
 
 
         ##### 2. force sync of switch state
 
+        print("{}: SYNCHRONIZE DEVICE".format(switch.ipv4_address))
         old_sync_time = api_call.get_sync_time(switch.id)
         api_call.sync(switch.ipv4_address) # force a sync!
         time.sleep(5) # don't test for sync status too soon (CPI delay and all that)
@@ -129,6 +131,7 @@ class Verify:
             print('.', end='', flush=True)
             time.sleep(5)
             if time.time() > timeout:
+                print("")
                 print("{}: ERROR - 10 minutes and switch hasn't synced. Exiting script.".format(switch.ipv4_address))
                 sys.exit(1)
 
@@ -136,9 +139,12 @@ class Verify:
         print("{}: {}".format(switch.ipv4_address, switch.sync_state))
 
         new_sync_time = api_call.get_sync_time(switch.id)
-        if old_sync_time == new_sync_time: # needed for corner case issue where force sync fails (e.g. code 03.03.03)
-            print("{}: *** ERROR - sync failed. Cancelling script. Proceed with upgrade manually ***".format(switch.ipv4_address))
+        if old_sync_time == new_sync_time: # KEEP CODE! needed for corner case issue where force sync fails (e.g. code 03.03.03)
+            print("{}: ERROR - sync failed. Cancelling script. Proceed with upgrade manually ***".format(switch.ipv4_address))
             sys.exit(1)
+
+        print('DONE TESTING')
+        sys.exit(1)
 
         ###### 3. get current software version
 
@@ -190,6 +196,7 @@ class Verify:
             print('.', end='', flush=True)
             time.sleep(5)
             if time.time() > timeout:
+                print("")
                 print("{}: CRITICAL - 45 minutes and switch hasn't responded. Exiting script.".format(switch.ipv4_address))
                 sys.exit(1)
 
@@ -198,15 +205,17 @@ class Verify:
 
         ##### 2. force sync of switch state
 
+        print("{}: SYNCHRONIZE DEVICE".format(switch.ipv4_address))
         old_sync_time = api_call.get_sync_time(switch.id)
-        api_call.sync(switch.ipv4_address) # force a sync!
-        time.sleep(5) # don't test for sync status too soon (CPI delay and all that)
+        api_call.sync(switch.ipv4_address)  # force a sync!
+        time.sleep(5)  # don't test for sync status too soon (CPI delay and all that)
 
         timeout = time.time() + 60 * 10  # 10 minute timeout starting now
         while not self.synchronized(switch, api_call):
             print('.', end='', flush=True)
             time.sleep(5)
             if time.time() > timeout:
+                print("")
                 print("{}: ERROR - 10 minutes and switch hasn't synced. Exiting script.".format(switch.ipv4_address))
                 sys.exit(1)
 
@@ -214,8 +223,9 @@ class Verify:
         print("{}: {}".format(switch.ipv4_address, switch.sync_state))
 
         new_sync_time = api_call.get_sync_time(switch.id)
-        if old_sync_time == new_sync_time: # needed for corner case issue where force sync fails (e.g. code 03.03.03)
-            print("{}: *** ERROR - sync failed. Cancelling script. Proceed with upgrade manually ***".format(switch.ipv4_address))
+        if old_sync_time == new_sync_time:  # needed for corner case issue where force sync fails (e.g. code 03.03.03)
+            print("{}: *** ERROR - sync failed. Cancelling script. Proceed with upgrade manually ***".format(
+                switch.ipv4_address))
             sys.exit(1)
 
         ###### 3. get software version
@@ -331,7 +341,7 @@ class Verify:
     def synchronized(self, switch, api_call):
 
         if api_call.get_sync_status(switch.id) == "COMPLETED":
-            switch.sync_status = "COMPLETED"
+            switch.sync_state = "COMPLETED"
             return True
         elif api_call.get_sync_status(switch.id) == "SYNCHRONIZING":
             switch.sync_state = "SYNCHRONIZING"
