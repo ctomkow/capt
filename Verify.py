@@ -143,13 +143,11 @@ class Verify:
             print("{}: ERROR - sync failed. Cancelling script. Proceed with upgrade manually ***".format(switch.ipv4_address))
             sys.exit(1)
 
-        print('DONE TESTING')
-        sys.exit(1)
-
         ###### 3. get current software version
 
         switch.pre_software_version = api_call.get_software_version(switch.id)
-        print("{}: VERSION - {}".format(switch.ipv4_address, switch.pre_software_version))
+        print("{}: INFO - current version is {}".format(switch.ipv4_address, switch.pre_software_version))
+
 
         ###### 4. get stack members
         ###### (using 'description' key. It appends the word 'Provisioned' if OS-mismatch or V-mismatch
@@ -158,6 +156,9 @@ class Verify:
         sorted_list = sorted(switch.pre_stack_member, key=lambda k: k['name']) # sort the list of dicts
         switch.pre_stack_member_key = [x['description'] for x in sorted_list] # extract description values
         print("{}: STACK MEMBERS - {}".format(switch.ipv4_address, switch.pre_stack_member_key))
+
+        print('DONE TESTING')
+        sys.exit(1)
 
         ###### 5. get VLANs
         ### TO-DO
@@ -231,12 +232,13 @@ class Verify:
         ###### 3. get software version
 
         switch.post_software_version = api_call.get_software_version(switch.id)
+        print("{}: INFO - new version is {}".format(switch.ipv4_address, switch.pre_software_version))
 
         # compare
         if switch.pre_software_version == switch.post_software_version:
             print("{}: ERROR - software version before and after is the same, {}".format(switch.ipv4_address, switch.post_software_version))
         else:
-            print("{}: VERSION - {}".format(switch.ipv4_address, switch.post_software_version))
+            print("{}: INFO - old:{} new:{}".format(switch.ipv4_address, switch.pre_software_version, switch.post_software_version))
 
         ###### 4. get stack members
 
