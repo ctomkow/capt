@@ -169,12 +169,14 @@ class Verify:
         #
 
         ###### 6. get CDP neighbour state
-        ###### Using 'nearEndInterface' key. The phyInterface number changes between code upgrade versions
 
         switch.pre_cdp_neighbour = api_call.get_cdp_neighbours(switch.id)
-        sorted_list = sorted(switch.pre_cdp_neighbour, key=lambda k: k['nearEndInterface']) # sort the list of dicts
-        switch.pre_cdp_neighbour_key = [x['nearEndInterface'] for x in sorted_list] # extract interfaceIndex values
-        print("{}: CDP NEIGHOURS - {}".format(switch.ipv4_address, switch.pre_cdp_neighbour_key))
+        switch.pre_cdp_neighbour = sorted(switch.pre_cdp_neighbour, key=lambda k: k['nearEndInterface']) # sort the list of dicts
+
+        # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
+
+        switch.pre_cdp_neighbour_nearend = [x['nearEndInterface'] for x in switch.pre_cdp_neighbour] # extract nearEnd values
+        print("{}: CDP NEIGHOURS - {}".format(switch.ipv4_address, switch.pre_cdp_neighbour_nearend))
 
         print("")
         print("{}: PRE-PROCESSING COMPLETE".format(switch.ipv4_address))
@@ -284,29 +286,28 @@ class Verify:
         ###### 6. get CDP neighbour state
 
         switch.post_cdp_neighbour = api_call.get_cdp_neighbours(switch.id)
-        sorted_list = sorted(switch.post_cdp_neighbour, key=lambda k: k['nearEndInterface'])  # sort the list of dicts
-        switch.post_cdp_neighbour_key = [x['nearEndInterface'] for x in sorted_list]  # extract interfaceIndex values
-        print("{}: CDP NEIGHBOURS - {}".format(switch.ipv4_address, switch.post_cdp_neighbour_key))
+        switch.post_cdp_neighbour = sorted(switch.post_cdp_neighbour, key=lambda k: k['nearEndInterface'])  # sort the list of dicts
 
-        # test for CDP neighbour equality
-        if switch.pre_cdp_neighbour_key != switch.post_cdp_neighbour_key:
-            diff_keys = set(switch.pre_cdp_neighbour_key).symmetric_difference(set(switch.post_cdp_neighbour_key))
-            for key in diff_keys:
-                # check which list it exists in pre list of dicts, otherwise search post list of dicts
-                if (any(d["nearEndInterface"] == key for d in switch.pre_cdp_neighbour)) is True:
-                    print("{}: MISSING CDP NEIGHBOUR".format(switch.ipv4_address))
-                    cdp_neighbour = next((item for item in switch.pre_cdp_neighbour if item["nearEndInterface"] == key))
-                    print(json.dumps(cdp_neighbour, indent=4))
-                elif (any(d["nearEndInterface"] == key for d in switch.post_cdp_neighbour)) is True:
-                    print("{}: NEW CDP NEIGHBOUR FOUND".format(switch.ipv4_address))
-                    cdp_neighbour = next((item for item in switch.post_cdp_neighbour if item["nearEndInterface"] == key))
-                    print(json.dumps(cdp_neighbour, indent=4))
-                else:
-                    print("{}: ERROR - {} key not found in either list!".format(switch.ipv4_address, key))
+        # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
+
+        switch.post_cdp_neighbour_nearend = [x['nearEndInterface'] for x in switch.post_cdp_neighbour]  # extract nearEnd values
+        print("{}: CDP NEIGHOURS - {}".format(switch.ipv4_address, switch.post_cdp_neighbour_nearend))
+
+        # compare states
+        pre_cdp_diff, post_cdp_diff = self.compare_list(switch.pre_cdp_neighbour_nearend, switch.post_cdp_neighbour_nearend)
+
+        if not pre_cdp_diff and not post_cdp_diff:
+            print("INFO: {} CDP neighbours are the same before as after".format(switch.ipv4_address))
         else:
-            print("{}: ALL CDP NEIGHBOURS MATCH".format(switch.ipv4_address))
+            # if the name difference exists before but not after ... switch is missing!
+            if pre_cdp_diff:
+                print("Neighbour(s) no longer exist! {}".format(pre_cdp_diff))
+            # if the name difference exists after but not before ... switch was found???
+            if post_cdp_diff:
+                print("Neighbour(s) detected AFTER code upgrade! {}".format(post_cdp_diff))
 
-
+        print("")
+        print("{}: POST-PROCESSING COMPLETE".format(switch.ipv4_address))
         return True
 
     def push_config(self, switch_ipv4_address, config_user_exec, config_priv_exec, config_global_config):
