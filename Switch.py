@@ -28,7 +28,7 @@ class Switch:
         global pre_cdp_neighbour_key   # a list of sorted interfaceIndex values
 
         global post_software_version
-        global post_stack_member        # a list of dictionaries
+        global post_stack_member        # a list of sorted dictionaries based on 'name'
         global post_stack_member_desc   # a list of sorted description values
         global post_stack_member_name   # a list of sorted name values
         global post_vlan
