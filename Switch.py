@@ -20,15 +20,17 @@ class Switch:
         global sync_state
 
         global pre_software_version
-        global pre_stack_member        # a list of dictionaries
-        global pre_stack_member_key    # a list of sorted entPhysicalIndex values
+        global pre_stack_member        # a list of sorted dictionaries based on 'name'
+        global pre_stack_member_desc   # a list of sorted description values
+        global pre_stack_member_name   # a list of sorted name values
         global pre_vlan
         global pre_cdp_neighbour       # a list of dictionaries
         global pre_cdp_neighbour_key   # a list of sorted interfaceIndex values
 
         global post_software_version
         global post_stack_member        # a list of dictionaries
-        global post_stack_member_key    # a list of sorted entPhysicalIndex values
+        global post_stack_member_desc   # a list of sorted description values
+        global post_stack_member_name   # a list of sorted name values
         global post_vlan
         global post_cdp_neighbour       # a list of dictionaries
         global post_cdp_neighbour_key   # a list of sorted interfaceIndex values
