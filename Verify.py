@@ -14,6 +14,8 @@ import time
 import os
 import sys
 import platform
+import logging
+import datetime
 
 # local imports
 import Config
@@ -37,6 +39,7 @@ class Verify:
 
     def main(self):
 
+
         switch_ipv4_address_list = Config.dev_ipv4_address
         max_threads = int(Config.dev_concurrent_threads)
 
@@ -54,21 +57,22 @@ class Verify:
             threads = [t for t in threads if t.is_alive()]
             t_count = len(threads)
 
-
-
             # spawn thread if max concurrent number is not reached
             if t_count < max_threads:
 
                 try:
                     if proc_dict['true'] == 'code_upgrade':
+                        logger = self.set_logger(switch_ipv4_address_list[0], logging.INFO)
                         t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list[0], Config.username,
-                                                                                Config.password, Config.cpi_ipv4_address))
+                                                                Config.password, Config.cpi_ipv4_address, logger))
                     elif proc_dict['true'] == 'push_config':
+                        logger = self.set_logger(switch_ipv4_address_list[0], logging.INFO)
                         t = threading.Thread(target=self.push_config(switch_ipv4_address_list[0], Config.config_user_exec,
-                                                                                Config.config_priv_exec, Config.config_global_config))
+                                                                Config.config_priv_exec, Config.config_global_config, logger))
                     elif proc_dict['true'] == 'test_api_calls':
+                        logger = self.set_logger(switch_ipv4_address_list[0], logging.DEBUG)
                         t = threading.Thread(target=self.test_api_calls, args=(switch_ipv4_address_list[0], Config.username,
-                                                                                Config.password, Config.cpi_ipv4_address))
+                                                                Config.password, Config.cpi_ipv4_address, logger))
                 except KeyError:
                     print("No procedure selected as 'true' in config.text")
                     sys.exit(1)
@@ -84,7 +88,7 @@ class Verify:
                     for t in threads:
                         t.join()
 
-    def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
+    def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         print("{}: UPGRADE_CODE".format(switch_ipv4_address))
 
@@ -310,7 +314,7 @@ class Verify:
         print("{}: POST-PROCESSING COMPLETE".format(switch.ipv4_address))
         return True
 
-    def push_config(self, switch_ipv4_address, config_user_exec, config_priv_exec, config_global_config):
+    def push_config(self, switch_ipv4_address, config_user_exec, config_priv_exec, config_global_config, logger):
 
         if config_user_exec[0] != "false":
             os.system("swITch.py -a auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(config_user_exec[0], switch_ipv4_address))
@@ -383,8 +387,26 @@ class Verify:
 
         return diff_list1, diff_list2
 
+    def set_logger(self, name, level):
 
-    def test_api_calls(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address):
+        formatter = logging.Formatter(
+            fmt='%(asctime)s : {} : %(levelname)-8s : %(message)s'.format(name),
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        handler = logging.FileHandler(
+            "{}-{}".format(datetime.datetime.now().strftime("%Y%m%d"), name),
+            mode='a'
+        )
+        handler.setFormatter(formatter)
+        screen_handler = logging.StreamHandler(stream=sys.stdout)
+        screen_handler.setFormatter(formatter)
+        logger = logging.getLogger(name)
+        logger.setLevel(level)
+        logger.addHandler(handler)
+        logger.addHandler(screen_handler)
+        return logger
+
+    def test_api_calls(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         ### TESTING METHOD CALLS ###
 
@@ -413,14 +435,16 @@ class Verify:
 
         switch.pre_stack_member_name = [x['name'] for x in switch.pre_stack_member]  # extract name values
         switch.pre_stack_member_desc = [x['description'] for x in switch.pre_stack_member]  # extract description values
-        print("{}: STACK MEMBERS - {}".format(switch.ipv4_address, switch.pre_stack_member_name))
-        print("{}: STACK MEMBERS - {}".format(switch.ipv4_address, switch.pre_stack_member_desc))
+        logger.info("stack member(s): {}".format(switch.pre_stack_member_name))
+        logger.info("stack member(s): {}".format(switch.pre_stack_member_desc))
+        logger.debug("ALJSFL:KSJDL:KSJDFL:")
 
+        sys.exit(1)
 
         input("Press enter to sync ...")
 
-        api_call.sync(switch.ipv4_address)
-        time.sleep(5)
+        #api_call.sync(switch.ipv4_address)
+        #time.sleep(5)
         timeout = time.time() + 60 * 10  # 10 minute timeout starting now
         while not self.synchronized(switch, api_call):
             print('.', end='', flush=True)
