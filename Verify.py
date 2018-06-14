@@ -70,7 +70,7 @@ class Verify:
                         t = threading.Thread(target=self.push_config(switch_ipv4_address_list[0], Config.config_user_exec,
                                                                 Config.config_priv_exec, Config.config_global_config, logger))
                     elif proc_dict['true'] == 'test_api_calls':
-                        logger = self.set_logger(switch_ipv4_address_list[0], logging.DEBUG)
+                        logger = self.set_logger(switch_ipv4_address_list[0], logging.INFO)
                         t = threading.Thread(target=self.test_api_calls, args=(switch_ipv4_address_list[0], Config.username,
                                                                 Config.password, Config.cpi_ipv4_address, logger))
                 except KeyError:
