@@ -430,59 +430,59 @@ class Verify:
         # # get switch stack info
         #dev_stack_info = api_call.get_stack_members(switch.id)
         #print(json.dumps(dev_stack_info, indent=4))
-        switch.pre_stack_member = api_call.get_stack_members(switch.id)
-        switch.pre_stack_member = sorted(switch.pre_stack_member, key=lambda k: k['name'])  # sort the list of dicts
+        # switch.pre_stack_member = api_call.get_stack_members(switch.id)
+        # switch.pre_stack_member = sorted(switch.pre_stack_member, key=lambda k: k['name'])  # sort the list of dicts
+        #
+        # switch.pre_stack_member_name = [x['name'] for x in switch.pre_stack_member]  # extract name values
+        # switch.pre_stack_member_desc = [x['description'] for x in switch.pre_stack_member]  # extract description values
+        # logger.info("stack member(s): {}".format(switch.pre_stack_member_name))
+        # logger.info("stack member(s): {}".format(switch.pre_stack_member_desc))
+        # logger.debug("ALJSFL:KSJDL:KSJDFL:")
 
-        switch.pre_stack_member_name = [x['name'] for x in switch.pre_stack_member]  # extract name values
-        switch.pre_stack_member_desc = [x['description'] for x in switch.pre_stack_member]  # extract description values
-        logger.info("stack member(s): {}".format(switch.pre_stack_member_name))
-        logger.info("stack member(s): {}".format(switch.pre_stack_member_desc))
-        logger.debug("ALJSFL:KSJDL:KSJDFL:")
-
-        sys.exit(1)
-
-        input("Press enter to sync ...")
-
-        #api_call.sync(switch.ipv4_address)
-        #time.sleep(5)
-        timeout = time.time() + 60 * 10  # 10 minute timeout starting now
-        while not self.synchronized(switch, api_call):
-            print('.', end='', flush=True)
-            time.sleep(5)
-            if time.time() > timeout:
-                print("")
-                print("{}: ERROR - 10 minutes and switch hasn't synced. Exiting script.".format(switch.ipv4_address))
-                sys.exit(1)
-        print("")
-
-        switch.post_stack_member = api_call.get_stack_members(switch.id)
-        switch.post_stack_member = sorted(switch.post_stack_member, key=lambda k: k['name'])  # sort the list of dicts
-
-        switch.post_stack_member_name = [x['name'] for x in switch.post_stack_member]  # extract name values
-        switch.post_stack_member_desc = [x['description'] for x in switch.post_stack_member]  # extract description values
-        print("{}: STACK MEMBERS - {}".format(switch.ipv4_address, switch.post_stack_member_name))
-        print("{}: STACK MEMBERS - {}".format(switch.ipv4_address, switch.post_stack_member_desc))
-
-        ##### compare states
-        # the switch 'name' (e.g. 'Switch 1') is used to test switch
-
-        pre_name_diff, post_name_diff = self.compare_list(switch.pre_stack_member_name, switch.post_stack_member_name)
-        pre_desc_diff, post_desc_diff = self.compare_list(switch.pre_stack_member_desc, switch.post_stack_member_desc)
-
-        # if the name difference exists before but not after ... switch is missing!
-        if pre_name_diff:
-            print("Switch(es) no longer exists in stack! {}".format(pre_name_diff))
-        # if the name difference exists after but not before ... switch was found???
-        if post_name_diff:
-            print("New switch(es) detected AFTER code upgrade! {}".format(post_name_diff))
-        # if the description diff exists before and after, then "Provisioned" was tacked on or removed
-        if pre_desc_diff and post_desc_diff:
-            for d in post_desc_diff:
-                if "Provisioned" in d:
-                    print("CRITICAL {} - OS-mismatch or V-mismatch".format(switch.ipv4_address))
-
-        if not pre_name_diff and not post_name_diff and not pre_desc_diff and not post_desc_diff:
-            print("INFO: {} stack members are the same before as after".format(switch.ipv4_address))
+        # sys.exit(1)
+        #
+        # input("Press enter to sync ...")
+        #
+        # #api_call.sync(switch.ipv4_address)
+        # #time.sleep(5)
+        # timeout = time.time() + 60 * 10  # 10 minute timeout starting now
+        # while not self.synchronized(switch, api_call):
+        #     print('.', end='', flush=True)
+        #     time.sleep(5)
+        #     if time.time() > timeout:
+        #         print("")
+        #         print("{}: ERROR - 10 minutes and switch hasn't synced. Exiting script.".format(switch.ipv4_address))
+        #         sys.exit(1)
+        # print("")
+        #
+        # switch.post_stack_member = api_call.get_stack_members(switch.id)
+        # switch.post_stack_member = sorted(switch.post_stack_member, key=lambda k: k['name'])  # sort the list of dicts
+        #
+        # switch.post_stack_member_name = [x['name'] for x in switch.post_stack_member]  # extract name values
+        # switch.post_stack_member_desc = [x['description'] for x in switch.post_stack_member]  # extract description values
+        # print("{}: STACK MEMBERS - {}".format(switch.ipv4_address, switch.post_stack_member_name))
+        # print("{}: STACK MEMBERS - {}".format(switch.ipv4_address, switch.post_stack_member_desc))
+        #
+        # ##### compare states
+        # # the switch 'name' (e.g. 'Switch 1') is used to test switch
+        #
+        # pre_name_diff, post_name_diff = self.compare_list(switch.pre_stack_member_name, switch.post_stack_member_name)
+        # pre_desc_diff, post_desc_diff = self.compare_list(switch.pre_stack_member_desc, switch.post_stack_member_desc)
+        #
+        # # if the name difference exists before but not after ... switch is missing!
+        # if pre_name_diff:
+        #     print("Switch(es) no longer exists in stack! {}".format(pre_name_diff))
+        # # if the name difference exists after but not before ... switch was found???
+        # if post_name_diff:
+        #     print("New switch(es) detected AFTER code upgrade! {}".format(post_name_diff))
+        # # if the description diff exists before and after, then "Provisioned" was tacked on or removed
+        # if pre_desc_diff and post_desc_diff:
+        #     for d in post_desc_diff:
+        #         if "Provisioned" in d:
+        #             print("CRITICAL {} - OS-mismatch or V-mismatch".format(switch.ipv4_address))
+        #
+        # if not pre_name_diff and not post_name_diff and not pre_desc_diff and not post_desc_diff:
+        #     print("INFO: {} stack members are the same before as after".format(switch.ipv4_address))
         #
         # # CDP neighbour call
         #dev_cdp_neighbours = api_call.get_cdp_neighbours(switch.id)
@@ -498,10 +498,16 @@ class Verify:
         #api_call.print_info(switch.id)
         #
         # #print detailed switch information
-        # api_call.print_detailed_info(switch.id)
+        #api_call.print_detailed_info(switch.id)
         #
         # # print client summary
         # api_call.print_client_summary(switch.id)
+
+        # get switch ports
+        tmp = api_call.get_switch_ports(switch.id)
+        sorted_list = sorted(tmp, key=lambda k: k['accessVlan'])  # sort the list of dicts
+        #key = [x['accessVlan'] for x in sorted_list]  # extract interfaceIndex values
+        print(json.dumps(sorted_list, indent=4))
 
 if __name__ == '__main__':
 

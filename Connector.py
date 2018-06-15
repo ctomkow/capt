@@ -101,6 +101,12 @@ class Connector:
         result = self.error_handling(requests.get, url, False, username, password)
         return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['cdpNeighbors']['cdpNeighbor']
 
+    def get_switch_ports(self, dev_id):
+
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, url, False, username, password)
+        return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces']['ethernetInterface']
+
     # a decorator-like method for error handling
     def error_handling(self, api_call_method, *args):
 
