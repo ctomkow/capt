@@ -16,7 +16,7 @@ import requests
 import json
 
 
-class Connector:
+class connector:
 
 
     def __init__(self, uname, passwd, cpi_ipv4_addr):

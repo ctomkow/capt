@@ -9,7 +9,7 @@
 # .. Ok, so I succumb and turned it into a instantiable class with global variables, now I can multi-thread
 
 
-class Switch:
+class switch:
 
 
     def __init__(self):
