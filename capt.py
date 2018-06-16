@@ -8,6 +8,8 @@
 
 # system imports
 import argparse
+from argparse import ArgumentParser
+from argparse import RawDescriptionHelpFormatter
 import threading
 import json
 import time
@@ -30,11 +32,54 @@ class capt:
 
     def __init__(self):
 
-        # argument parsing will go here
+        # arg parsing
+        parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, add_help=True,
+                                description="""Cisco APi Tool: a nettool built on Cisco Prime's API""")
+        subparsers = parser.add_subparsers()
 
-        config.load_configuration()
+        #
+        test = subparsers.add_parser('test_api', help="API testing")
 
-        self.main()
+        # upgrade.add_argument('ip_address', help="specify the IPv4 address of switch")
+        # upgrade.set_defaults(func=self.test)
+
+        #  -----
+        # capt push
+        push = subparsers.add_parser('push', help="send configuration to switch")
+        # capt push "show int status"
+        push.add_argument('cisco_config', help="specify the cisco IOS command to push")
+        push_subparsers = push.add_subparsers()
+        # capt push "show int status" to
+        push_to = push_subparsers.add_parser('to', help="specify the IPv4 address of switch")
+        # capt push "show int status" to 10.10.10.10
+        push_to.add_argument('ip_address', help="specify the IPv4 address of switch")
+        push_to.set_defaults(func=self.push_config)
+        #  -----
+        # # capt push "no logging" config
+        # push_config = push_subparsers.add_parser('config', help="config_t configuration given")
+        # push_config_subparsers = push_config.add_subparsers()
+        # # capt push "no logging" config to
+        # push_config_to = push_config_subparsers.add_parser('to', help="specify the IPv4 address of switch")
+        # # capt push "no logging" config to 10.10.10.10
+        # push_config_to.add_argument('ip_address', help="specify the IPv4 address of switch")
+        # push_config_to.set_defaults(func=self.push_config)
+        # #  -----
+
+
+        # capt upgrade
+        upgrade = subparsers.add_parser('upgrade', help="initiate code upgrade and verify")
+        # capt upgrade 10.10.10.10
+
+
+
+        args = parser.parse_args()
+
+
+        args.func(args)
+
+        #config.load_configuration()
+
+        #self.main()
 
 
     def main(self):
@@ -314,14 +359,14 @@ class capt:
         print("{}: POST-PROCESSING COMPLETE".format(sw.ipv4_address))
         return True
 
-    def push_config(self, switch_ipv4_address, config_user_exec, config_priv_exec, config_global_config, logger):
+    def push_config(self, args):
 
-        if config_user_exec[0] != "false":
-            os.system("swITch.py -a auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(config_user_exec[0], switch_ipv4_address))
-        if config_priv_exec[0] != "false":
-            os.system("swITch.py -ea auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(config_priv_exec[0], switch_ipv4_address))
-        if config_global_config[0] != "false":
-            print("Need to update sw.py to work with new netmiko config parameter")
+        # if config_user_exec[0] != "false":
+        #     os.system("swITch.py -a auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(args.cisco_config, args.ip_address))
+        # if config_priv_exec[0] != "false":
+        os.system("swITch.py -ea auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(args.cisco_config, args.ip_address))
+        # if config_global_config[0] != "false":
+        #     print("Need to update sw.py to work with new netmiko config parameter")
 
     # needed because Prime is slow to detect connectivity or not
     def ping(self, switch_ipv4_address):
@@ -508,6 +553,10 @@ class capt:
         #sorted_list = sorted(tmp, key=lambda k: k['ethernetInterface'])  # sort the list of dicts
         #key = [x['accessVlan'] for x in sorted_list]  # extract interfaceIndex values
         print(json.dumps(tmp, indent=4))
+
+    def test(self, input):
+        print('huzzah')
+        print(input)
 
 if __name__ == '__main__':
 
