@@ -505,9 +505,9 @@ class Verify:
 
         # get switch ports
         tmp = api_call.get_switch_ports(switch.id)
-        sorted_list = sorted(tmp, key=lambda k: k['accessVlan'])  # sort the list of dicts
+        #sorted_list = sorted(tmp, key=lambda k: k['ethernetInterface'])  # sort the list of dicts
         #key = [x['accessVlan'] for x in sorted_list]  # extract interfaceIndex values
-        print(json.dumps(sorted_list, indent=4))
+        print(json.dumps(tmp, indent=4))
 
 if __name__ == '__main__':
 
