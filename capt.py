@@ -35,7 +35,7 @@ class capt:
         # arg parsing
         parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, add_help=True,
                                 description="""Cisco APi Tool: a nettool built on Cisco Prime's API""")
-        subparsers = parser.add_subparsers()
+        subparsers = parser.add_subparsers(dest="sub_command")
 
         #
         test = subparsers.add_parser('test_api', help="API testing")
@@ -53,33 +53,30 @@ class capt:
         push_to = push_subparsers.add_parser('to', help="specify the IPv4 address of switch")
         # capt push "show int status" to 10.10.10.10
         push_to.add_argument('ip_address', help="specify the IPv4 address of switch")
-        push_to.set_defaults(func=self.push_config)
+        push_to.set_defaults(func=self.push_command)
         #  -----
-        # # capt push "no logging" config
-        # push_config = push_subparsers.add_parser('config', help="config_t configuration given")
-        # push_config_subparsers = push_config.add_subparsers()
-        # # capt push "no logging" config to
-        # push_config_to = push_config_subparsers.add_parser('to', help="specify the IPv4 address of switch")
-        # # capt push "no logging" config to 10.10.10.10
-        # push_config_to.add_argument('ip_address', help="specify the IPv4 address of switch")
-        # push_config_to.set_defaults(func=self.push_config)
-        # #  -----
+        # capt push "no logging" config
+        push_config = push_subparsers.add_parser('config', help="config_t configuration given")
+        push_config_subparsers = push_config.add_subparsers()
+        # capt push "no logging" config to
+        push_config_to = push_config_subparsers.add_parser('to', help="specify the IPv4 address of switch")
+        # capt push "no logging" config to 10.10.10.10
+        push_config_to.add_argument('ip_address', help="specify the IPv4 address of switch")
+        push_config_to.set_defaults(func=self.push_configuration)
+        #  -----
 
 
         # capt upgrade
         upgrade = subparsers.add_parser('upgrade', help="initiate code upgrade and verify")
         # capt upgrade 10.10.10.10
 
-
-
         args = parser.parse_args()
 
-
-        args.func(args)
-
-        #config.load_configuration()
-
-        #self.main()
+        if args.sub_command:
+            args.func(vars(args))
+        else:
+            config.load_configuration()
+            self.main()
 
 
     def main(self):
@@ -359,14 +356,14 @@ class capt:
         print("{}: POST-PROCESSING COMPLETE".format(sw.ipv4_address))
         return True
 
-    def push_config(self, args):
+    def push_command(self, *args):
 
-        # if config_user_exec[0] != "false":
-        #     os.system("swITch.py -a auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(args.cisco_config, args.ip_address))
-        # if config_priv_exec[0] != "false":
-        os.system("swITch.py -ea auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(args.cisco_config, args.ip_address))
-        # if config_global_config[0] != "false":
-        #     print("Need to update sw.py to work with new netmiko config parameter")
+        os.system("swITch.py -ea auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(args[0]['cisco_config'], args[0]['ip_address']))
+
+
+    def push_configuration(self, *args):
+
+        print("Need to update swITch.py to work with new netmiko config parameter to push configuration code")
 
     # needed because Prime is slow to detect connectivity or not
     def ping(self, switch_ipv4_address):
