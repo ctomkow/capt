@@ -1,10 +1,16 @@
 # Installation and Usage 
 
-## Cisco APi Tool: a nettool built on Cisco Prime's API
+## Cisco APi Tool (capt): a nettool built on Cisco Prime's API
 
-The main goal of this tool is to verify that a code upgrade to Cisco switches was successful. This is mainly done through Cisco Prime Infrastructure's REST API. The code_upgrade method pulls the 'before' state of a switch, reloads the switch to initiate the code upgrade, then pulls the 'after' state of the switch. Comparison of the two states is done to ensure nothing is broken. This upgrade procedure can be scaled up by having concurrent processes.
+Aye Aye Capt.
 
-Note: at this moment the program does not push new code to the device. The code needs to be uploaded ahead of time so that a reboot is all that is necessary.
+I can't hear yoooouu!
+
+The tool supports various functions for network management. The original purpose was to verify code upgrades on Cisco switches were successful. This is mainly done through Cisco Prime Infrastructure's REST API. The code_upgrade method pulls the 'before' state of a switch, reloads the switch to initiate the code upgrade, then pulls the 'after' state of the switch. Comparison of the two states is done to ensure nothing is broken. This upgrade procedure can be scaled up by having concurrent processes.
+
+Other functions are a work in progress, such as pushing configuration to switches.
+
+Note: the program does not push new code to the device. The code needs to be uploaded ahead of time so that a reboot is all that is necessary.
 
 
 ### DEVICE SUPPORT
@@ -24,7 +30,15 @@ Note: at this moment the program does not push new code to the device. The code 
 
 ### USAGE
 
-Most of the configuration is done through a configuration file; `config.text`
+For simple usage (e.g. one command, one switch). Use cli subcommands (think, `ip addr show`)
+
+`capt.py upgrade 10.10.10.10`
+
+`capt.py push "show int status" to 10.10.10.10`
+
+`capt.py push "no logging" config to 10.10.10.10`
+
+If cli commands are not give, the configuration is done through a configuration file; `config.text`
 
 ```
 [DEFAULT]
