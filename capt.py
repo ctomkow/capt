@@ -358,7 +358,7 @@ class capt:
 
     def push_command(self, *args):
 
-        os.system("swITch.py -ea auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(args[0]['cisco_config'], args[0]['ip_address']))
+        os.system("swITch -ea auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(args[0]['cisco_config'], args[0]['ip_address']))
 
 
     def push_configuration(self, *args):
