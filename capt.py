@@ -243,6 +243,8 @@ class capt:
                 print("{}: CRITICAL - 5 minutes and CPI hasn't finished job. Exiting script.".format(sw.ipv4_address))
                 sys.exit(1)
 
+        print("\n")
+
         # DON'T CHECK IF JOB WAS SUCCESSFUL, IT FAILS CAUSE SWITCH DROPS CONNECTIVITY WHEN REBOOTING
         # if api_call.job_successful(job_id):
         #     print("reload job successful")
