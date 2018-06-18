@@ -232,7 +232,7 @@ class capt:
         ####################
 
         print("{}: REBOOTING".format(sw.ipv4_address))
-        os.system("swITch.py -ea auth.txt -c \"reload code_upgrade\" -i \"{},cisco_ios\"".format(sw.ipv4_address))
+        api_call.reload_switch(sw.id, "1")
         time.sleep(10)
 
         ###################
@@ -546,10 +546,13 @@ class capt:
         # api_call.print_client_summary(sw.id)
 
         # get switch ports
-        tmp = api_call.get_switch_ports(sw.id)
-        #sorted_list = sorted(tmp, key=lambda k: k['ethernetInterface'])  # sort the list of dicts
-        #key = [x['accessVlan'] for x in sorted_list]  # extract interfaceIndex values
-        print(json.dumps(tmp, indent=4))
+        # tmp = api_call.get_switch_ports(sw.id)
+        # #sorted_list = sorted(tmp, key=lambda k: k['ethernetInterface'])  # sort the list of dicts
+        # #key = [x['accessVlan'] for x in sorted_list]  # extract interfaceIndex values
+        # print(json.dumps(tmp, indent=4))
+        #
+        # reboot switch
+        api_call.reload_switch(sw.id, "1")
 
     def test(self, input):
         print('huzzah')

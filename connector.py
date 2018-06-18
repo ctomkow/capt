@@ -56,6 +56,28 @@ class connector:
         payload = { "syncDevicesDTO" : { "devices" : { "device" : [ { "address" : "{}".format(dev_ipv4_address) } ] } } }
         result = self.error_handling(requests.post, url, False, username, password, payload)
 
+    def reload_switch(self, dev_id, timeout):
+
+        url = "https://{}/webacs/api/v3/op/cliTemplateConfiguration/deployTemplateThroughJob.json".format(cpi_ipv4_address)
+        payload = \
+            {
+                "cliTemplateCommand": {
+                    "targetDevices": {
+                        "targetDevice": [{
+                            "targetDeviceID": "{}".format(dev_id),
+                            "variableValues": {
+                                "variableValue": [{
+                                    "name": "waittimeout",
+                                    "value": "{}".format(timeout)
+                                }]
+                            }
+                        }]
+                    },
+                "templateName": "API_CALL_reload_switch"
+                }
+            }
+        result = self.error_handling(requests.put, url, False, username, password, payload)
+
     def get_sync_status(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(cpi_ipv4_address, dev_id)
@@ -111,9 +133,11 @@ class connector:
     def error_handling(self, api_call_method, *args):
 
         try:
-            if len(args) == 4: # a GET api call
+            if api_call_method == requests.get: # a GET api call
                 req = api_call_method(args[0], verify=args[1], auth=(args[2], args[3]))
-            elif len(args) == 5: # a POST api call
+            elif api_call_method == requests.post: # a POST api call
+                req = api_call_method(args[0], verify=args[1], auth=(args[2], args[3]), json=args[4])
+            elif api_call_method == requests.put: # a PUT api call
                 req = api_call_method(args[0], verify=args[1], auth=(args[2], args[3]), json=args[4])
             else:
                 pass
