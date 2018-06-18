@@ -232,8 +232,23 @@ class capt:
         ####################
 
         print("{}: REBOOTING".format(sw.ipv4_address))
-        api_call.reload_switch(sw.id, "1")
-        time.sleep(10)
+        job_id = api_call.reload_switch(sw.id, "1")
+
+        timeout = time.time() + 60 * 5  # 5 minute timeout starting now
+        while not api_call.job_complete(job_id): # while not completed ... wait...
+            print('.', end='', flush=True)
+            time.sleep(5)
+            if time.time() > timeout:
+                print("")
+                print("{}: CRITICAL - 5 minutes and CPI hasn't finished job. Exiting script.".format(sw.ipv4_address))
+                sys.exit(1)
+
+        # DON'T CHECK IF JOB WAS SUCCESSFUL, IT FAILS CAUSE SWITCH DROPS CONNECTIVITY WHEN REBOOTING
+        # if api_call.job_successful(job_id):
+        #     print("reload job successful")
+        # else:
+        #     print("reload job failed! exiting!")
+        #     sys.exit(1)
 
         ###################
         ###### AFTER ######
@@ -552,7 +567,13 @@ class capt:
         # print(json.dumps(tmp, indent=4))
         #
         # reboot switch
-        api_call.reload_switch(sw.id, "1")
+        #api_call.reload_switch(sw.id, "1")
+        #
+        # get job status
+        #result = api_call.job_successful("FMNET-Agg-routing-4-edge-network_8")
+        #print(result)
+        #
+
 
     def test(self, input):
         print('huzzah')

@@ -77,6 +77,29 @@ class connector:
                 }
             }
         result = self.error_handling(requests.put, url, False, username, password, payload)
+        job_id = result.json()['mgmtResponse']['cliTemplateCommandJobResult'][0]['jobName']
+        return job_id
+
+    def job_complete(self, job_id):
+
+        url = "https://{}/webacs/api/v3/data/JobSummary.json?jobName=\"{}\"".format(cpi_ipv4_address, job_id)
+        result = self.error_handling(requests.get, url, False, username, password)
+        result_list = result.json()['queryResponse']['entityId'][0]['@displayName']
+        status = [x.strip() for x in result_list.split(',')]
+        if status[-1] == "COMPLETED": # if last element in list = COMPLETED
+            return True
+        else:
+            return False
+
+    def job_successful(self, job_id):
+
+        url = "https://{}/webacs/api/v3/op/jobService/runhistory.json?jobName=\"{}\"".format(cpi_ipv4_address, job_id)
+        result = self.error_handling(requests.get, url, False, username, password)
+        status = result.json()['mgmtResponse']['job'][0]['runInstances']['runInstance'][0]['resultStatus']
+        if status == "SUCCESS":
+            return True
+        elif status == "FAILURE":
+            return False
 
     def get_sync_status(self, dev_id):
 
