@@ -239,7 +239,7 @@ class capt:
         # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
         sw.pre_cdp_neighbour_nearend = [x['nearEndInterface'] for x in sw.pre_cdp_neighbour] # extract nearEnd values
 
-        logger.debug("CDP neighbours: {}".format(sw.pre_cdp_neighbour))
+        #logger.debug("CDP neighbours: {}".format(sw.pre_cdp_neighbour))
         logger.debug("CDP neighbours near-end: {}".format(sw.pre_cdp_neighbour_nearend))
         logger.info("CDP neighbours stored!")
 
@@ -392,7 +392,7 @@ class capt:
         # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
         sw.post_cdp_neighbour_nearend = [x['nearEndInterface'] for x in sw.post_cdp_neighbour]  # extract nearEnd values
 
-        logger.debug("CDP neighbours: {}".format(sw.post_cdp_neighbour))
+        #logger.debug("CDP neighbours: {}".format(sw.post_cdp_neighbour))
         logger.debug("CDP neighbours near-end: {}".format(sw.post_cdp_neighbour_nearend))
         logger.info("CDP neighbours stored!")
 
