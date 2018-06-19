@@ -25,39 +25,38 @@ def load_configuration():
     global dev_ipv4_address
 
     global proc_code_upgrade
-    global proc_push_config
+    global proc_push_command
+    global proc_push_configuration
     global proc_test_api_calls
 
-    global config_user_exec
-    global config_priv_exec
-    global config_global_config
+    global config_command
+    global config_configuration
 
-    username               = config['DEFAULT']['username']
-    password               = config['DEFAULT']['password']
+    username                = config['DEFAULT']['username']
+    password                = config['DEFAULT']['password']
 
-    cpi_version            = config['CPI']['version']
-    cpi_ipv4_address       = config['CPI']['ipv4_address']
+    cpi_version             = config['CPI']['version']
+    cpi_ipv4_address        = config['CPI']['ipv4_address']
 
-    dev_type               = config['DEVICE']['type']
-    dev_concurrent_threads = config['DEVICE']['concurrent']
-    dev_ipv4_address       = config['DEVICE']['ipv4_address']
+    dev_type                = config['DEVICE']['type']
+    dev_concurrent_threads  = config['DEVICE']['concurrent']
+    dev_ipv4_address        = config['DEVICE']['ipv4_address']
 
-    proc_code_upgrade      = config['PROCEDURE']['code_upgrade']
-    proc_push_config       = config['PROCEDURE']['push_config']
-    proc_test_api_calls    = config['PROCEDURE']['test_api_calls']
+    proc_code_upgrade       = config['PROCEDURE']['code_upgrade']
+    proc_push_command       = config['PROCEDURE']['push_command']
+    proc_push_configuration = config['PROCEDURE']['push_configuration']
+    proc_test_api_calls     = config['PROCEDURE']['test_api_calls']
 
-    config_user_exec       = config['CONFIG']['user_exec']
-    config_priv_exec       = config['CONFIG']['priv_exec']
-    config_global_config   = config['CONFIG']['global_config']
+    config_command          = config['CONF']['command']
+    config_configuration    = config['CONF']['configuration']
 
     # strip out newlines
-    dev_ipv4_address = dev_ipv4_address.split('\n')
-    config_user_exec = config_user_exec.split('\n')
-    config_priv_exec = config_priv_exec.split('\n')
-    config_global_config = config_global_config.split('\n')
+    dev_ipv4_address     = dev_ipv4_address.split('\n')
+    config_command       = config_command.split('\n')
+    config_configuration = config_configuration.split('\n')
 
     # remove the empty string at beginning
     dev_ipv4_address.pop(0)
-    config_user_exec.pop(0)
-    config_priv_exec.pop(0)
-    config_global_config.pop(0)
+    config_command.pop(0)
+    config_configuration.pop(0)
+

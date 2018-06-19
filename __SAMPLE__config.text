@@ -12,17 +12,15 @@ concurrent=1
 ipv4_address:
     20.20.20.20
 
-# true/false; only one true at a time
+# specify one procedure (true/false)
 [PROCEDURE]
-code_upgrade:true
-push_config:false
+code_upgrade:false
+push_command:false
+push_configuration:true
 test_api_calls:false
 
-# if no config, use 'false' as placeholder
-[CONFIG]
-user_exec:
-    show int status
-priv_exec:
-    show runn
-global_config:
-    false
+[CONF]
+command:
+    show ver
+configuration:
+    no logging

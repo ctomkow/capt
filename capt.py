@@ -35,13 +35,10 @@ class capt:
         # arg parsing
         parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, add_help=True,
                                 description="""Cisco APi Tool: a nettool built on Cisco Prime's API""")
+
+        parser.add_argument('-v', '--verbose', action='store_true', required=False, help="debug output")
+
         subparsers = parser.add_subparsers(dest="sub_command")
-
-        #
-        test = subparsers.add_parser('test_api', help="API testing")
-
-        # upgrade.add_argument('ip_address', help="specify the IPv4 address of switch")
-        # upgrade.set_defaults(func=self.test)
 
         #  -----
         # capt push
@@ -65,29 +62,38 @@ class capt:
         push_config_to.set_defaults(func=self.push_configuration)
         #  -----
 
-
         # capt upgrade
         upgrade = subparsers.add_parser('upgrade', help="initiate code upgrade and verify")
         # capt upgrade 10.10.10.10
 
+        # test api calls
+        test = subparsers.add_parser('test_api', help="API testing")
+
         args = parser.parse_args()
 
         if args.sub_command:
-            args.func(vars(args))
+            logger = self.set_logger(args.ip_address, logging.INFO)
+            args.func(args, logger)
         else:
             config.load_configuration()
-            self.main()
+            self.main(args.verbose)
 
 
-    def main(self):
+    def main(self, verbose):
 
+        # instantiate system logger (separate from device loggers)
+        if verbose:
+            sys_logger = self.set_logger("system_log", logging.DEBUG)
+        else:
+            sys_logger = self.set_logger("system_log", logging.INFO)
 
         switch_ipv4_address_list = config.dev_ipv4_address
         max_threads = int(config.dev_concurrent_threads)
 
         proc_dict = {}
         proc_dict[config.proc_code_upgrade]   = 'code_upgrade'
-        proc_dict[config.proc_push_config]    = 'push_config'
+        proc_dict[config.proc_push_command]    = 'push_command'
+        proc_dict[config.proc_push_configuration] = 'push_configuration'
         proc_dict[config.proc_test_api_calls] = 'test_api_calls'
         del proc_dict['false']  # remove procedures that should not be executed (there is only one 'true' key anyway cause its a dictionary)
 
@@ -98,25 +104,30 @@ class capt:
             # check if thread is alive, if not, remove from list
             threads = [t for t in threads if t.is_alive()]
             t_count = len(threads)
+            sys_logger.debug("Thread count: {}".format(t_count))
 
             # spawn thread if max concurrent number is not reached
             if t_count < max_threads:
 
+                # instantiate per-thread/device logger (separate from system logger)
+                if verbose:
+                    logger = self.set_logger(switch_ipv4_address_list[0], logging.DEBUG)
+                else:
+                    logger = self.set_logger(switch_ipv4_address_list[0], logging.INFO)
+
                 try:
                     if proc_dict['true'] == 'code_upgrade':
-                        logger = self.set_logger(switch_ipv4_address_list[0], logging.INFO)
                         t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list[0], config.username,
                                                                 config.password, config.cpi_ipv4_address, logger))
-                    elif proc_dict['true'] == 'push_config':
-                        logger = self.set_logger(switch_ipv4_address_list[0], logging.INFO)
-                        t = threading.Thread(target=self.push_config(switch_ipv4_address_list[0], config.config_user_exec,
-                                                                config.config_priv_exec, config.config_global_config, logger))
+                    elif proc_dict['true'] == 'push_command':
+                        t = threading.Thread(target=self.push_command(switch_ipv4_address_list[0], config.config_command, logger))
+                    elif proc_dict['true'] == 'push_configuration':
+                        t = threading.Thread(target=self.push_configuration(switch_ipv4_address_list[0], config.config_configuration, logger))
                     elif proc_dict['true'] == 'test_api_calls':
-                        logger = self.set_logger(switch_ipv4_address_list[0], logging.INFO)
                         t = threading.Thread(target=self.test_api_calls, args=(switch_ipv4_address_list[0], config.username,
                                                                 config.password, config.cpi_ipv4_address, logger))
                 except KeyError:
-                    print("No procedure selected as 'true' in config.text")
+                    sys_logger.critical("Thread failed to execute function. Likely no procedure selected as 'true' in configuration.")
                     sys.exit(1)
 
                 threads.append(t)
@@ -375,11 +386,12 @@ class capt:
 
     def push_command(self, *args):
 
-        os.system("swITch -ea auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(args[0]['cisco_config'], args[0]['ip_address']))
-
+        args[2].info("push command: {}".format(args[1][0]))
+        os.system("swITch -ea auth.txt -c \"{}\" -i \"{},cisco_ios\"".format(args[1][0], args[0]))
 
     def push_configuration(self, *args):
 
+        args[2].info("push configuration: {}".format(args[1][0]))
         print("Need to update swITch.py to work with new netmiko config parameter to push configuration code")
 
     # needed because Prime is slow to detect connectivity or not
@@ -475,6 +487,7 @@ class capt:
         sw.ipv4_address = switch_ipv4_address
         sw.id = api_call.get_dev_id(sw.ipv4_address)
 
+        #logger.info(sw.id)
         # # force sync device,need NBI_WRITE access
         # api_call.sync(switch_ipv4_address)
         #
@@ -494,7 +507,7 @@ class capt:
         #
         # sw.pre_stack_member_name = [x['name'] for x in sw.pre_stack_member]  # extract name values
         # sw.pre_stack_member_desc = [x['description'] for x in sw.pre_stack_member]  # extract description values
-        # logger.info("stack member(s): {}".format(sw.pre_stack_member_name))
+        #logger.info("stack member(s): {}".format(sw.pre_stack_member_name))
         # logger.info("stack member(s): {}".format(sw.pre_stack_member_desc))
         # logger.debug("ALJSFL:KSJDL:KSJDFL:")
 
