@@ -15,11 +15,12 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 ### DEVICE SUPPORT
 
-* Cisco switches.
+* Cisco 3650 switch
 
 ### FUTURE DEVELOPMENT
 
-* TBD
+* Verify functionality on other Cisco switches
+* (see bug tracking for other enhancements)
 
 ### DEPENDENCIES
 
@@ -32,13 +33,11 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 For simple usage (e.g. one command, one switch). Use cli subcommands (think, `ip addr show`)
 
-`capt.py upgrade 10.10.10.10`
+`capt push "show int status" to 10.10.10.10`
 
-`capt.py push "show int status" to 10.10.10.10`
+`capt push "no logging" config to 10.10.10.10`
 
-`capt.py push "no logging" config to 10.10.10.10`
-
-If cli commands are not give, the configuration is done through a configuration file; `config.text`
+If cli commands are not given, the configuration is done through a configuration file; `config.text`
 
 ```
 [DEFAULT]
@@ -55,20 +54,17 @@ concurrent=1
 ipv4_address:
     20.20.20.20
 
-# true/false; only one true at a time
+# specify one procedure (yes)
 [PROCEDURE]
-code_upgrade:true
-push_config:false
-test_api_calls:false
+code_upgrade:
+push_command:
+push_configuration:yes
+test_api_calls:
 
-# if no config, use 'false' as placeholder
-[CONFIG]
-user_exec:
-    show int status
-priv_exec:
-    show runn
-global_config:
-    false
+[CONF]
+command:
+    show ver
+configuration:
 ```
 
 
