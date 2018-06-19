@@ -12,12 +12,12 @@ concurrent=1
 ipv4_address:
     20.20.20.20
 
-# specify one procedure (true/false)
+# specify one procedure (yes)
 [PROCEDURE]
-code_upgrade:false
-push_command:false
-push_configuration:true
-test_api_calls:false
+code_upgrade:
+push_command:
+push_configuration:yes
+test_api_calls:
 
 [CONF]
 command:

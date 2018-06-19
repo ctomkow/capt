@@ -91,11 +91,20 @@ class capt:
         max_threads = int(config.dev_concurrent_threads)
 
         proc_dict = {}
-        proc_dict[config.proc_code_upgrade]   = 'code_upgrade'
-        proc_dict[config.proc_push_command]    = 'push_command'
-        proc_dict[config.proc_push_configuration] = 'push_configuration'
-        proc_dict[config.proc_test_api_calls] = 'test_api_calls'
-        del proc_dict['false']  # remove procedures that should not be executed (there is only one 'true' key anyway cause its a dictionary)
+
+        # only add procedures that are selected
+        if config.proc_code_upgrade:
+            proc_dict['code_upgrade'] = config.proc_code_upgrade
+        if config.proc_push_command:
+            proc_dict['push_command'] = config.proc_push_command
+        if config.proc_push_configuration:
+            proc_dict['push_configuration'] = config.proc_push_configuration
+        if config.proc_test_api_calls:
+            proc_dict['test_api_calls'] = config.proc_test_api_calls
+
+        if len(proc_dict) > 1 or len(proc_dict) < 1:
+            sys_logger.error("Too many or too few procedures selected.")
+            sys.exit(1)
 
         threads = []
 
@@ -116,18 +125,18 @@ class capt:
                     logger = self.set_logger(switch_ipv4_address_list[0], logging.INFO)
 
                 try:
-                    if proc_dict['true'] == 'code_upgrade':
+                    if 'code_upgrade' in proc_dict:
                         t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list[0], config.username,
                                                                 config.password, config.cpi_ipv4_address, logger))
-                    elif proc_dict['true'] == 'push_command':
+                    elif 'push_command' in proc_dict:
                         t = threading.Thread(target=self.push_command(switch_ipv4_address_list[0], config.config_command, logger))
-                    elif proc_dict['true'] == 'push_configuration':
+                    elif 'push_configuration' in proc_dict:
                         t = threading.Thread(target=self.push_configuration(switch_ipv4_address_list[0], config.config_configuration, logger))
-                    elif proc_dict['true'] == 'test_api_calls':
+                    elif 'test_api_calls' in proc_dict:
                         t = threading.Thread(target=self.test_api_calls, args=(switch_ipv4_address_list[0], config.username,
                                                                 config.password, config.cpi_ipv4_address, logger))
                 except KeyError:
-                    sys_logger.critical("Thread failed to execute function. Likely no procedure selected as 'true' in configuration.")
+                    sys_logger.critical("Thread failed to execute function. Likely no procedure selected as 'yes' in configuration.")
                     sys.exit(1)
 
                 threads.append(t)
