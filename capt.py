@@ -173,12 +173,12 @@ class capt:
         timeout = time.time() + 60*5 # 5 minute timeout starting now (this is before the code upgrade, so short timeout)
         logger.info("Timeout set to {} minutes.".format(timeout))
 
-        while not self.reachable(sw, api_call):
+        while not self.reachable(sw, api_call, logger):
             time.sleep(5)
             logger.debug("Timeout counter: {}".format(timeout))
             logger.debug("Switch reachability state: {}".format(sw.reachability))
             if time.time() > timeout:
-                logger.error("Timed out. Not reachable.")
+                logger.critical("Timed out. Not reachable.")
                 sys.exit(1)
 
         logger.debug("Switch reachability state: {}".format(sw.reachability))
@@ -192,17 +192,17 @@ class capt:
         timeout = time.time() + 60 * 10  # 10 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(timeout))
 
-        while not self.synchronized(sw, api_call):
+        while not self.synchronized(sw, api_call, logger):
             time.sleep(5)
             logger.debug("Timeout counter: {}".format(timeout))
             logger.debug("Switch sync state: {}".format(sw.sync_state))
             if time.time() > timeout:
-                logger.error("Timed out. Sync failed.")
+                logger.critical("Timed out. Sync failed.")
                 sys.exit(1)
 
         new_sync_time = api_call.get_sync_time(sw.id)
         if old_sync_time == new_sync_time: # KEEP CODE! needed for corner case issue where force sync fails (e.g. code 03.03.03)
-            logger.error("Before and after sync time is the same. Sync failed.")
+            logger.critical("Before and after sync time is the same. Sync failed.")
             sys.exit(1)
 
         logger.debug("switch sync state: {}".format(sw.sync_state))
@@ -239,7 +239,6 @@ class capt:
         sw.pre_cdp_neighbour = sorted(sw.pre_cdp_neighbour, key=lambda k: k['nearEndInterface']) # sort the list of dicts
 
         # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
-
         sw.pre_cdp_neighbour_nearend = [x['nearEndInterface'] for x in sw.pre_cdp_neighbour] # extract nearEnd values
 
         logger.debug("CDP neighbours: {}".format(sw.pre_cdp_neighbour))
@@ -262,7 +261,7 @@ class capt:
             time.sleep(5)
             logger.debug("Timeout counter: {}".format(timeout))
             if time.time() > timeout:
-                logger.error("Timed out. Sync failed.")
+                logger.critical("Timed out. Sync failed.")
                 sys.exit(1)
 
         logger.debug("Reload job {} finished.".format(job_id))
@@ -282,13 +281,13 @@ class capt:
         logger.info("Testing reachability ...")
         timeout = time.time() + 60*45 # 45 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(timeout))
-        while not self.reachable(sw, api_call):
+        while not self.reachable(sw, api_call, logger):
             time.sleep(5)
             logger.debug("Timeout counter: {}".format(timeout))
             logger.debug("Switch reachability state: {}".format(sw.reachability))
             if time.time() > timeout:
-            logger.error("Timed out. Not reachable.")
-            sys.exit(1)
+                logger.critical("Timed out. Not reachable.")
+                sys.exit(1)
 
         logger.debug("Switch reachability state: {}".format(sw.reachability))
         logger.info("Reachable!")
@@ -301,17 +300,17 @@ class capt:
         timeout = time.time() + 60 * 10  # 10 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(timeout))
 
-        while not self.synchronized(sw, api_call):
+        while not self.synchronized(sw, api_call, logger):
             time.sleep(5)
             logger.debug("Timeout counter: {}".format(timeout))
             logger.debug("Switch sync state: {}".format(sw.sync_state))
             if time.time() > timeout:
-                logger.error("Timed out. Sync failed.")
+                logger.critical("Timed out. Sync failed.")
                 sys.exit(1)
 
         new_sync_time = api_call.get_sync_time(sw.id)
         if old_sync_time == new_sync_time:  # KEEP CODE! needed for corner case issue where force sync fails (e.g. code 03.03.03)
-            logger.error("Before and after sync time is the same. Sync failed.")
+            logger.critical("Before and after sync time is the same. Sync failed.")
             sys.exit(1)
 
         logger.debug("switch sync state: {}".format(sw.sync_state))
@@ -326,7 +325,7 @@ class capt:
         if sw.pre_software_version == sw.post_software_version:
             logger.debug("Pre-software: {}".format(sw.pre_software_version))
             logger.debug("Post-software: {}".format(sw.post_software_version))
-            logger.warning("Upgrade failed. Software is same as before.")
+            logger.error("Upgrade failed. Software is same as before.")
         else:
             logger.info("Software is different (whew).")
 
@@ -348,8 +347,8 @@ class capt:
 
         # compare states
         logger.info("Comparing stack member states ...")
-        pre_name_diff, post_name_diff = self.compare_list(sw.pre_stack_member_name, sw.post_stack_member_name)
-        pre_desc_diff, post_desc_diff = self.compare_list(sw.pre_stack_member_desc, sw.post_stack_member_desc)
+        pre_name_diff, post_name_diff = self.compare_list(sw.pre_stack_member_name, sw.post_stack_member_name, logger)
+        pre_desc_diff, post_desc_diff = self.compare_list(sw.pre_stack_member_desc, sw.post_stack_member_desc, logger)
 
         if not pre_name_diff and not post_name_diff and not pre_desc_diff and not post_desc_diff:
             logger.info("Stack members are the same pre/post (noice).")
@@ -379,7 +378,6 @@ class capt:
         sw.post_cdp_neighbour = sorted(sw.post_cdp_neighbour, key=lambda k: k['nearEndInterface'])  # sort the list of dicts
 
         # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
-
         sw.post_cdp_neighbour_nearend = [x['nearEndInterface'] for x in sw.post_cdp_neighbour]  # extract nearEnd values
 
         logger.debug("CDP neighbours: {}".format(sw.post_cdp_neighbour))
@@ -388,7 +386,7 @@ class capt:
 
         # compare states
         logger.info("Comparing CDP neighbour states ...")
-        pre_cdp_diff, post_cdp_diff = self.compare_list(sw.pre_cdp_neighbour_nearend, sw.post_cdp_neighbour_nearend)
+        pre_cdp_diff, post_cdp_diff = self.compare_list(sw.pre_cdp_neighbour_nearend, sw.post_cdp_neighbour_nearend, logger)
 
         if not pre_cdp_diff and not post_cdp_diff:
             logger.info("CDP neighour(s) are the same pre/post (noice).")
@@ -416,14 +414,16 @@ class capt:
         print("Need to update swITch.py to work with new netmiko config parameter to push configuration code")
 
     # needed because Prime is slow to detect connectivity or not
-    def ping(self, switch_ipv4_address):
+    def ping(self, switch_ipv4_address, logger):
 
         if platform.system() == "Linux":
+            logger.debug("Linux ping.")
             response = os.system("ping -c 1 -W 1 {}>nul".format(switch_ipv4_address))
         elif platform.system() == "Windows":
+            logger.debug("Windows ping.")
             response = os.system("ping -n 1 -w 1000 {}>nul".format(switch_ipv4_address))
         else:
-            print("Ping failed, could not detect system")
+            logger.critical("Could not detect system for ping.")
             sys.exit(1)
 
         # ping program returns 0 on successful ICMP request, 1 on failed ICMP request
@@ -432,22 +432,22 @@ class capt:
         elif response == 1:
             return False
         else:
-            print("Ping failed to return 0 or 1. Exiting...")
+            logger.critical("Ping failed to return 0 or 1.")
             sys.exit(1)
 
-    def reachable(self, sw, api_call):
+    def reachable(self, sw, api_call, logger):
 
-        if not self.ping(sw.ipv4_address):
+        if not self.ping(sw.ipv4_address, logger):
             sw.reachability = "UNREACHABLE"
             return False
-        elif self.ping(sw.ipv4_address) and api_call.get_reachability(sw.id) == "REACHABLE":
+        elif self.ping(sw.ipv4_address, logger) and api_call.get_reachability(sw.id) == "REACHABLE":
             sw.reachability = "REACHABLE"
             return True
         else: # in-between condition where switch is pingable, but CPI device hasn't moved to REACHABLE
             sw.reachability = api_call.get_reachability(sw.id)
             return False
 
-    def synchronized(self, sw, api_call):
+    def synchronized(self, sw, api_call, logger):
 
         if api_call.get_sync_status(sw.id) == "COMPLETED":
             sw.sync_state = "COMPLETED"
@@ -457,10 +457,10 @@ class capt:
             return False
         else:
             sw.sync_state = api_call.get_sync_status(sw.id)
-            print("unexpected sync state: {}".format(sw.sync_state))
+            logger.warning("Unexpected sync state: {}".format(sw.sync_state))
             return False
 
-    def compare_list(self, list1, list2):
+    def compare_list(self, list1, list2, logger):
 
         diff_list1 = []
         diff_list2 = []
@@ -500,7 +500,7 @@ class capt:
 
     def test_api_calls(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
-        ### TESTING METHOD CALLS ###
+        # TESTING METHOD CALLS #
 
         api_call = connector(cpi_username, cpi_password, cpi_ipv4_address)
 
@@ -508,112 +508,8 @@ class capt:
         sw.ipv4_address = switch_ipv4_address
         sw.id = api_call.get_dev_id(sw.ipv4_address)
 
-        #logger.info(sw.id)
-        # # force sync device,need NBI_WRITE access
-        # api_call.sync(switch_ipv4_address)
-        #
-        # # get reachability status
-        # dev_reachability = api_call.get_reachability(sw.id)
-        # print(json.dumps(dev_reachability, indent=4))
-        #
-        # # get software version
-        # dev_software_version = api_call.get_software_version(sw.id)
-        # print(json.dumps(dev_software_version, indent=4))
-        #
-        # # get switch stack info
-        #dev_stack_info = api_call.get_stack_members(sw.id)
-        #print(json.dumps(dev_stack_info, indent=4))
-        # sw.pre_stack_member = api_call.get_stack_members(sw.id)
-        # sw.pre_stack_member = sorted(sw.pre_stack_member, key=lambda k: k['name'])  # sort the list of dicts
-        #
-        # sw.pre_stack_member_name = [x['name'] for x in sw.pre_stack_member]  # extract name values
-        # sw.pre_stack_member_desc = [x['description'] for x in sw.pre_stack_member]  # extract description values
-        #logger.info("stack member(s): {}".format(sw.pre_stack_member_name))
-        # logger.info("stack member(s): {}".format(sw.pre_stack_member_desc))
-        # logger.debug("ALJSFL:KSJDL:KSJDFL:")
-
-        # sys.exit(1)
-        #
-        # input("Press enter to sync ...")
-        #
-        # #api_call.sync(sw.ipv4_address)
-        # #time.sleep(5)
-        # timeout = time.time() + 60 * 10  # 10 minute timeout starting now
-        # while not self.synchronized(sw, api_call):
-        #     print('.', end='', flush=True)
-        #     time.sleep(5)
-        #     if time.time() > timeout:
-        #         print("")
-        #         print("{}: ERROR - 10 minutes and switch hasn't synced. Exiting script.".format(sw.ipv4_address))
-        #         sys.exit(1)
-        # print("")
-        #
-        # sw.post_stack_member = api_call.get_stack_members(sw.id)
-        # sw.post_stack_member = sorted(sw.post_stack_member, key=lambda k: k['name'])  # sort the list of dicts
-        #
-        # sw.post_stack_member_name = [x['name'] for x in sw.post_stack_member]  # extract name values
-        # sw.post_stack_member_desc = [x['description'] for x in sw.post_stack_member]  # extract description values
-        # print("{}: STACK MEMBERS - {}".format(sw.ipv4_address, sw.post_stack_member_name))
-        # print("{}: STACK MEMBERS - {}".format(sw.ipv4_address, sw.post_stack_member_desc))
-        #
-        # ##### compare states
-        # # the switch 'name' (e.g. 'Switch 1') is used to test switch
-        #
-        # pre_name_diff, post_name_diff = self.compare_list(sw.pre_stack_member_name, sw.post_stack_member_name)
-        # pre_desc_diff, post_desc_diff = self.compare_list(sw.pre_stack_member_desc, sw.post_stack_member_desc)
-        #
-        # # if the name difference exists before but not after ... switch is missing!
-        # if pre_name_diff:
-        #     print("Switch(es) no longer exists in stack! {}".format(pre_name_diff))
-        # # if the name difference exists after but not before ... switch was found???
-        # if post_name_diff:
-        #     print("New switch(es) detected AFTER code upgrade! {}".format(post_name_diff))
-        # # if the description diff exists before and after, then "Provisioned" was tacked on or removed
-        # if pre_desc_diff and post_desc_diff:
-        #     for d in post_desc_diff:
-        #         if "Provisioned" in d:
-        #             print("CRITICAL {} - OS-mismatch or V-mismatch".format(sw.ipv4_address))
-        #
-        # if not pre_name_diff and not post_name_diff and not pre_desc_diff and not post_desc_diff:
-        #     print("INFO: {} stack members are the same before as after".format(sw.ipv4_address))
-        #
-        # # CDP neighbour call
-        #dev_cdp_neighbours = api_call.get_cdp_neighbours(sw.id)
-        #cdp_neighbours_list = dev_cdp_neighbours
-        #print(json.dumps(dev_cdp_neighbours, indent=4))
-        # sorted_list = sorted(cdp_neighbours_list, key=lambda k: k['interfaceIndex']) # sort the list of dicts
-        # sorted_interfaceIndex = [x['interfaceIndex'] for x in sorted_list] # extract interfaceIndex values
-        #
-        # data = next((item for item in dev_cdp_neighbours if item["neighborDeviceName"] == "SEPC0626BD2690F"))
-        # print(data)
-        #
         # print basic switch information
-        #api_call.print_info(sw.id)
-        #
-        # #print detailed switch information
-        #api_call.print_detailed_info(sw.id)
-        #
-        # # print client summary
-        # api_call.print_client_summary(sw.id)
-
-        # get switch ports
-        # tmp = api_call.get_switch_ports(sw.id)
-        # #sorted_list = sorted(tmp, key=lambda k: k['ethernetInterface'])  # sort the list of dicts
-        # #key = [x['accessVlan'] for x in sorted_list]  # extract interfaceIndex values
-        # print(json.dumps(tmp, indent=4))
-        #
-        # reboot switch
-        #api_call.reload_switch(sw.id, "1")
-        #
-        # get job status
-        #result = api_call.job_successful("FMNET-Agg-routing-4-edge-network_8")
-        #print(result)
-        #
-
-
-    def test(self, input):
-        print('huzzah')
-        print(input)
+        api_call.print_info(sw.id)
 
 if __name__ == '__main__':
 
