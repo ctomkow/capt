@@ -278,7 +278,7 @@ class capt:
                 logger.critical("Timed out. CPI job failed.")
                 sys.exit(1)
 
-        logger.debug("Reload job {} finished.".format(job_id))
+        logger.debug("Finished job_id: {}".format(job_id))
 
         # DON'T CHECK IF JOB WAS SUCCESSFUL, IT FAILS CAUSE SWITCH DROPS CONNECTIVITY WHEN REBOOTING
         # if api_call.job_successful(job_id):
