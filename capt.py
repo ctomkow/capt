@@ -270,7 +270,6 @@ class capt:
         job_id = api_call.reload_switch(sw.id, "1")
         logger.debug("Reload job_id: {}".format(job_id))
         timeout = time.time() + 60 * 5  # 5 minute timeout starting now
-        logger.info("Timeout set to {} minutes.".format(5))
         time.sleep(90)  # Prime template needs a 1 minute delay before rebooting, so wait 90 seconds so reachability test doesn't false-positive
         while not api_call.job_complete(job_id): # while not completed ... wait...
             time.sleep(5)
