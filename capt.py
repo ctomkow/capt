@@ -78,7 +78,6 @@ class capt:
             config.load_configuration()
             self.main(args.verbose)
 
-
     def main(self, verbose):
 
         # instantiate system logger (separate from device loggers)
@@ -553,9 +552,6 @@ class capt:
         #
         # if self.ping("{}.voip.ualberta.ca".format(phone_list.pop()), logger):
         #     print('phone is alive')
-
-
-
 
 if __name__ == '__main__':
 
