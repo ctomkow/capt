@@ -39,6 +39,8 @@ For simple usage (e.g. one command, one switch). Use cli subcommands (think, `ip
 
 If cli commands are not given, the configuration is done through a configuration file; `config.text`
 
+Then simply run the program, `python capt.py`
+
 ```
 [DEFAULT]
 username=user
@@ -66,6 +68,3 @@ command:
     show ver
 configuration:
 ```
-
-
-`$python ./Verify.py`
