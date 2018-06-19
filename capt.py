@@ -171,7 +171,7 @@ class capt:
         # 1. check for reachability
         logger.info("Testing reachability ...")
         timeout = time.time() + 60*5 # 5 minute timeout starting now (this is before the code upgrade, so short timeout)
-        logger.info("Timeout set to {} minutes.".format(timeout))
+        logger.info("Timeout set to {} minutes.".format(5))
 
         while not self.reachable(sw, api_call, logger):
             time.sleep(5)
@@ -190,7 +190,7 @@ class capt:
         api_call.sync(sw.ipv4_address) # force a sync!
         time.sleep(5) # don't test for sync status too soon (CPI delay and all that)
         timeout = time.time() + 60 * 10  # 10 minute timeout starting now
-        logger.info("Timeout set to {} minutes.".format(timeout))
+        logger.info("Timeout set to {} minutes.".format(10))
 
         while not self.synchronized(sw, api_call, logger):
             time.sleep(5)
@@ -256,7 +256,7 @@ class capt:
         logger.debug("Reload job_id: {}".format(job_id))
         time.sleep(10) # don't rush Cisco Prime ... seriously.
         timeout = time.time() + 60 * 5  # 5 minute timeout starting now
-        logger.info("Timeout set to {} minutes.".format(timeout))
+        logger.info("Timeout set to {} minutes.".format(5))
         while not api_call.job_complete(job_id): # while not completed ... wait...
             time.sleep(5)
             logger.debug("Timeout counter: {}".format(timeout))
@@ -280,7 +280,7 @@ class capt:
         # 1. check for reachability
         logger.info("Testing reachability ...")
         timeout = time.time() + 60*45 # 45 minute timeout starting now
-        logger.info("Timeout set to {} minutes.".format(timeout))
+        logger.info("Timeout set to {} minutes.".format(45))
         while not self.reachable(sw, api_call, logger):
             time.sleep(5)
             logger.debug("Timeout counter: {}".format(timeout))
@@ -298,7 +298,7 @@ class capt:
         api_call.sync(sw.ipv4_address)  # force a sync!
         time.sleep(5)  # don't test for sync status too soon (CPI delay and all that)
         timeout = time.time() + 60 * 10  # 10 minute timeout starting now
-        logger.info("Timeout set to {} minutes.".format(timeout))
+        logger.info("Timeout set to {} minutes.".format(10))
 
         while not self.synchronized(sw, api_call, logger):
             time.sleep(5)
