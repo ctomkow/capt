@@ -271,13 +271,13 @@ class capt:
         logger.info("Reloading ...")
         job_id = api_call.reload_switch(sw.id, "1")
         logger.debug("Reload job_id: {}".format(job_id))
-        time.sleep(10) # don't rush Cisco Prime ... seriously.
         timeout = time.time() + 60 * 5  # 5 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(5))
+        time.sleep(90)  # Prime template needs a 1 minute delay before rebooting, so wait 90 seconds so reachability test doesn't false-positive
         while not api_call.job_complete(job_id): # while not completed ... wait...
             time.sleep(5)
             if time.time() > timeout:
-                logger.critical("Timed out. Sync failed.")
+                logger.critical("Timed out. CPI job failed.")
                 sys.exit(1)
 
         logger.debug("Reload job {} finished.".format(job_id))
@@ -451,14 +451,11 @@ class capt:
             logger.critical("Could not detect system for ping.")
             sys.exit(1)
 
-        # ping program returns 0 on successful ICMP request, 1 on failed ICMP request
+        # ping program returns 0 on successful ICMP request, >0 on other values (inconsistent other values, can't rely on them)
         if response == 0:
             return True
-        elif response == 1:
-            return False
         else:
-            logger.critical("Ping failed to return 0 or 1.")
-            sys.exit(1)
+            return False
 
     def reachable(self, sw, api_call, logger):
 
