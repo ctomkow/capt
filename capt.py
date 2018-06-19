@@ -414,13 +414,14 @@ class capt:
 
         # 7. test VoIP reachability
         logger.info("Testing phone reachability ...")
-        logger.debug("CDP neighbour phones: {}".format(sw.phones))
 
         # test phone connectivity
         for p in sw.phones:
+            logger.debug("phone: {}".format(p))
             if not self.ping("{}.voip.ualberta.ca".format(p), logger):
                 logger.error("{}.voip.ualberta.ca is not pingable")
 
+        logger.debug("CDP neighbour phones: {}".format(sw.phones))
         logger.info("Phone reachability testing complete.")
 
         logger.info("State comparision and upgrade complete!")
