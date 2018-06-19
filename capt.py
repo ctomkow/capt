@@ -113,7 +113,6 @@ class capt:
             # check if thread is alive, if not, remove from list
             threads = [t for t in threads if t.is_alive()]
             t_count = len(threads)
-            sys_logger.debug("Thread count: {}".format(t_count))
 
             # spawn thread if max concurrent number is not reached
             if t_count < max_threads:
@@ -143,6 +142,8 @@ class capt:
                 t.start()
                 t_count += 1
 
+                sys_logger.debug("Thread count: {}".format(t_count))
+                
                 switch_ipv4_address_list.pop()  # remove referenced switch
 
                 # when last device is popped off list, wait for ALL threads to finish
@@ -152,7 +153,7 @@ class capt:
 
     def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
-        logger.info("Upgrading code.")
+        logger.info("Initiate code upgrade.")
 
         #--------------------------#
         #      PRE_PROCESSING      #
