@@ -250,10 +250,9 @@ class capt:
             if "IP Phone" in c['neighborDevicePlatformType']:
                 sw.phones.append(c['neighborDeviceName'])
 
-        logger.debug("CDP neighbour phones: {}".format(sw.phones))
-
         # test phone connectivity
         for p in sw.phones:
+            logger.debug("phone: {}".format(p))
             if not self.ping("{}.voip.ualberta.ca".format(p), logger):
                 logger.info("{} phone is not pingable, removing from list")
                 sw.phones.remove(p)
@@ -441,10 +440,8 @@ class capt:
     def ping(self, switch_ipv4_address, logger):
 
         if platform.system() == "Linux":
-            logger.debug("Linux ping.")
             response = os.system("ping -c 1 -W 1 {}>nul".format(switch_ipv4_address))
         elif platform.system() == "Windows":
-            logger.debug("Windows ping.")
             response = os.system("ping -n 1 -w 1000 {}>nul".format(switch_ipv4_address))
         else:
             logger.critical("Could not detect system for ping.")
@@ -452,8 +449,10 @@ class capt:
 
         # ping program returns 0 on successful ICMP request, >0 on other values (inconsistent other values, can't rely on them)
         if response == 0:
+            logger.debug("Ping success")
             return True
         else:
+            logger.debug("Ping failed")
             return False
 
     def reachable(self, sw, api_call, logger):
