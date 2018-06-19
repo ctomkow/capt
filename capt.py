@@ -176,7 +176,6 @@ class capt:
 
         while not self.reachable(sw, api_call, logger):
             time.sleep(5)
-            logger.debug("Timeout counter: {}".format(timeout))
             logger.debug("Switch reachability state: {}".format(sw.reachability))
             if time.time() > timeout:
                 logger.critical("Timed out. Not reachable.")
@@ -195,7 +194,6 @@ class capt:
 
         while not self.synchronized(sw, api_call, logger):
             time.sleep(5)
-            logger.debug("Timeout counter: {}".format(timeout))
             logger.debug("Switch sync state: {}".format(sw.sync_state))
             if time.time() > timeout:
                 logger.critical("Timed out. Sync failed.")
@@ -257,7 +255,7 @@ class capt:
 
         # test phone connectivity
         for p in sw.phones:
-            if not self.ping("{}.voip.ualberta.ca".format(p, logger)):
+            if not self.ping("{}.voip.ualberta.ca".format(p), logger):
                 logger.info("{} phone is not pingable, removing from list")
                 sw.phones.remove(p)
 
@@ -278,7 +276,6 @@ class capt:
         logger.info("Timeout set to {} minutes.".format(5))
         while not api_call.job_complete(job_id): # while not completed ... wait...
             time.sleep(5)
-            logger.debug("Timeout counter: {}".format(timeout))
             if time.time() > timeout:
                 logger.critical("Timed out. Sync failed.")
                 sys.exit(1)
@@ -302,7 +299,6 @@ class capt:
         logger.info("Timeout set to {} minutes.".format(45))
         while not self.reachable(sw, api_call, logger):
             time.sleep(5)
-            logger.debug("Timeout counter: {}".format(timeout))
             logger.debug("Switch reachability state: {}".format(sw.reachability))
             if time.time() > timeout:
                 logger.critical("Timed out. Not reachable.")
@@ -321,7 +317,6 @@ class capt:
 
         while not self.synchronized(sw, api_call, logger):
             time.sleep(5)
-            logger.debug("Timeout counter: {}".format(timeout))
             logger.debug("Switch sync state: {}".format(sw.sync_state))
             if time.time() > timeout:
                 logger.critical("Timed out. Sync failed.")
@@ -425,7 +420,7 @@ class capt:
 
         # test phone connectivity
         for p in sw.phones:
-            if not self.ping("{}.voip.ualberta.ca".format(p, logger)):
+            if not self.ping("{}.voip.ualberta.ca".format(p), logger):
                 logger.error("{}.voip.ualberta.ca is not pingable")
 
         logger.info("Phone reachability testing complete.")
