@@ -18,6 +18,7 @@ class switch:
         global id
         global reachability
         global sync_state
+        global phones          # a list of phone names
 
         global pre_software_version
         global pre_stack_member            # a list of sorted dictionaries based on 'name'
@@ -34,3 +35,4 @@ class switch:
         global post_vlan
         global post_cdp_neighbour           # a list of sorted dictionaries
         global post_cdp_neighbour_nearend   # a list of sorted interfaceIndex values
+

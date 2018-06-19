@@ -143,7 +143,7 @@ class capt:
                 t_count += 1
 
                 sys_logger.debug("Thread count: {}".format(t_count))
-                
+
                 switch_ipv4_address_list.pop()  # remove referenced switch
 
                 # when last device is popped off list, wait for ALL threads to finish
@@ -245,6 +245,24 @@ class capt:
         logger.debug("CDP neighbours: {}".format(sw.pre_cdp_neighbour))
         logger.debug("CDP neighbours near-end: {}".format(sw.pre_cdp_neighbour_nearend))
         logger.info("CDP neighbours stored!")
+
+        # 7. test VoIP reachability
+        logger.info("Testing phone reachability ...")
+        sw.phones = []
+        for c in sw.pre_cdp_neighbour:
+            if "IP Phone" in c['neighborDevicePlatformType']:
+                sw.phones.append(c['neighborDeviceName'])
+
+        logger.debug("CDP neighbour phones: {}".format(sw.phones))
+
+        # test phone connectivity
+        for p in sw.phones:
+            if not self.ping("{}.voip.ualberta.ca".format(p, logger)):
+                logger.info("{} phone is not pingable, removing from list")
+                sw.phones.remove(p)
+
+        logger.debug("CDP neighbour phones: {}".format(sw.phones))
+        logger.info("Phone reachability tested.")
 
         logger.info("State collection complete!")
 
@@ -401,6 +419,17 @@ class capt:
                 logger.warning("CDP neighbour(s) found?! after upgrade.")
                 logger.warning(post_cdp_diff)
 
+        # 7. test VoIP reachability
+        logger.info("Testing phone reachability ...")
+        logger.debug("CDP neighbour phones: {}".format(sw.phones))
+
+        # test phone connectivity
+        for p in sw.phones:
+            if not self.ping("{}.voip.ualberta.ca".format(p, logger)):
+                logger.error("{}.voip.ualberta.ca is not pingable")
+
+        logger.info("Phone reachability testing complete.")
+
         logger.info("State comparision and upgrade complete!")
         return True
 
@@ -509,8 +538,32 @@ class capt:
         sw.ipv4_address = switch_ipv4_address
         sw.id = api_call.get_dev_id(sw.ipv4_address)
 
-        # print basic switch information
-        api_call.print_info(sw.id)
+        # print("sync")
+        # api_call.sync(sw.ipv4_address)  # force a sync!
+        # time.sleep(5)  # don't test for sync status too soon (CPI delay and all that)
+        # timeout = time.time() + 60 * 10  # 10 minute timeout starting now
+        # while not self.synchronized(sw, api_call, logger):
+        #     time.sleep(5)
+        #     if time.time() > timeout:
+        #         logger.critical("Timed out. Sync failed.")
+        #         sys.exit(1)
+
+        # cdp_neighbours = api_call.get_cdp_neighbours(sw.id)
+        # print(cdp_neighbours)
+        phone_list = []
+        # for c in cdp_neighbours:
+        #     if "IP Phone" in c['neighborDevicePlatformType']:
+        #         phone_list.append(c['neighborDeviceName'])
+        #     else:
+        #         pass
+        #
+        # print(phone_list)
+        #
+        # if self.ping("{}.voip.ualberta.ca".format(phone_list.pop()), logger):
+        #     print('phone is alive')
+
+
+
 
 if __name__ == '__main__':
 
