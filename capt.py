@@ -163,7 +163,7 @@ class capt:
         sw = switch()
         sw.ipv4_address = switch_ipv4_address
 
-        sw.id = api_call.get_dev_id(sw.ipv4_address)
+        sw.id = api_call.get_switch_id(sw.ipv4_address)
 
         #--------------------------#
         #   PRE_STATE_COLLECTION   #
@@ -546,9 +546,7 @@ class capt:
 
         sw = switch()
         sw.ipv4_address = switch_ipv4_address
-        sw.id = api_call.get_dev_id(sw.ipv4_address)
-
-
+        sw.id = api_call.get_switch_id(sw.ipv4_address)
 
         # print("sync")
         # api_call.sync(sw.ipv4_address)  # force a sync!
@@ -560,21 +558,15 @@ class capt:
         #         logger.critical("Timed out. Sync failed.")
         #         sys.exit(1)
 
-        #print(api_call.get_access_point_ip(api_call.get_access_point_id("PLH_4_470_468c")))
-
         cdp_neighbours = api_call.get_cdp_neighbours(sw.id)
-        print(cdp_neighbours)
-        phone_list = []
-        for c in cdp_neighbours:
-            if "IP Phone" in c['neighborDevicePlatformType']:
-                phone_list.append(c['neighborDeviceName'])
-            else:
-                pass
+        print(json.dumps(cdp_neighbours, indent=4))
+        # phone_list = []
+        # for c in cdp_neighbours:
+        #     if "IP Phone" in c['neighborDevicePlatformType']:
+        #         phone_list.append(c['neighborDeviceName'])
+        #     else:
+        #         pass
 
-        print(phone_list)
-
-        if self.ping("{}.voip.ualberta.ca".format(phone_list.pop()), logger):
-            print('phone is alive')
 
 if __name__ == '__main__':
 

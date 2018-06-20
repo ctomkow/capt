@@ -33,23 +33,8 @@ class connector:
 
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-    def print_info(self, dev_id):
 
-        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, url, False, username, password)
-        print(json.dumps(result.json(), indent=4))
-
-    def print_detailed_info(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, url, False, username, password)
-        print(json.dumps(result.json(), indent=4))
-
-    def print_client_summary(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/Clients/{}.json".format(cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, url, False, username, password)
-        print(json.dumps(result.json(), indent=4))
+    #--- POST calls
 
     # Forcing a sync is broken only with switches on IOS-XE 03.03.03 code base
     def sync(self, dev_ipv4_address):
@@ -57,6 +42,10 @@ class connector:
         url = "https://{}/webacs/api/v3/op/devices/syncDevices.json".format(cpi_ipv4_address)
         payload = { "syncDevicesDTO" : { "devices" : { "device" : [ { "address" : "{}".format(dev_ipv4_address) } ] } } }
         result = self.error_handling(requests.post, url, False, username, password, payload)
+
+    #--- end POST calls
+
+    #--- PUT calls (usually requires templates built in Prime to execute)
 
     def reload_switch(self, dev_id, timeout):
 
@@ -82,6 +71,10 @@ class connector:
         job_id = result.json()['mgmtResponse']['cliTemplateCommandJobResult'][0]['jobName']
         return job_id
 
+    #--- end PUT calls
+
+    #--- Prime job execution and handling
+
     def job_complete(self, job_id):
 
         url = "https://{}/webacs/api/v3/data/JobSummary.json?jobName=\"{}\"".format(cpi_ipv4_address, job_id)
@@ -103,6 +96,10 @@ class connector:
         elif status == "FAILURE":
             return False
 
+    #--- end Prime job handling
+
+    #--- GET calls
+
     def get_sync_status(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(cpi_ipv4_address, dev_id)
@@ -116,9 +113,16 @@ class connector:
         return result.json()['queryResponse']['entity'][0]['devicesDTO']['collectionTime']
 
     # device id is needed for most future API calls
-    def get_dev_id(self, dev_ipv4_address):
+    def get_switch_id(self, dev_ipv4_address):
 
         url = "https://{}/webacs/api/v3/data/Devices.json?ipAddress=\"{}\"".format(cpi_ipv4_address, dev_ipv4_address)
+        result = self.error_handling(requests.get, url, False, username, password)
+        return result.json()['queryResponse']['entityId'][0]['$']
+
+    def get_access_point_id(self, name):
+
+        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
+        url = "https://{}/webacs/api/v3/data/AccessPoints.json?name=\"{}\"".format(cpi_ipv4_address, name)
         result = self.error_handling(requests.get, url, False, username, password)
         return result.json()['queryResponse']['entityId'][0]['$']
 
@@ -154,20 +158,12 @@ class connector:
         result = self.error_handling(requests.get, url, False, username, password)
         return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces']['ethernetInterface']
 
-    def get_access_point_id(self, name):
-
-        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
-        url = "https://{}/webacs/api/v3/data/AccessPoints.json?name=\"{}\"".format(cpi_ipv4_address, name)
-        result = self.error_handling(requests.get, url, False, username, password)
-        return result.json()['queryResponse']['entityId'][0]['$']
-
     def get_access_point_ip(self, dev_id):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/AccessPoints/{}.json".format(cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, url, False, username, password)
         return result.json()['queryResponse']['entity'][0]['accessPointsDTO']['ipAddress']
-
 
     # a decorator-like method for error handling
     def error_handling(self, api_call_method, *args):
