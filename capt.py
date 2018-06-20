@@ -418,7 +418,7 @@ class capt:
         for p in sw.phones:
             logger.debug("phone: {}".format(p))
             if not self.ping("{}.voip.ualberta.ca".format(p), logger):
-                logger.error("{}.voip.ualberta.ca is not pingable")
+                logger.error("{}.voip.ualberta.ca is not pingable".format(p))
 
         logger.debug("CDP neighbour phones: {}".format(sw.phones))
         logger.info("Phone reachability testing complete.")
