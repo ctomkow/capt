@@ -19,15 +19,17 @@ import json
 class connector:
 
 
-    def __init__(self, uname, passwd, cpi_ipv4_addr):
+    def __init__(self, uname, passwd, cpi_ipv4_addr, log):
 
         global username
         global password
         global cpi_ipv4_address
+        global logger
 
         username = uname
         password = passwd
         cpi_ipv4_address = cpi_ipv4_addr
+        logger = log
 
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -168,19 +170,20 @@ class connector:
         except requests.exceptions.HTTPError as error:
             if req.status_code == 503:
                 # too many requests at once
-                print("Too many API calls at once. Slight delay before retrying")
+                logger.warning("Too many API calls at once. Slight delay before retrying")
                 time.sleep(random.uniform(1.5, 3.5))
                 req = self.error_handling(api_call_method, args[0], args[1], args[2], args[3])
             elif req.status_code == 401:
-                print("Bad authentication. Check credentials.")
-                print(error)
+                logger.critical("Bad authentication. Check credentials.")
+                logger.critical(error)
                 sys.exit(1)
             else:
-                print(error)
+                logger.critical("API call failed.")
+                logger.critical(error)
                 sys.exit(1)
         except requests.exceptions.RequestException as e:
             # catch-all failure, exit program
-            print(e)
+            logger.critical(e)
             sys.exit(1)
         finally:
             return req

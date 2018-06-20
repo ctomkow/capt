@@ -157,7 +157,7 @@ class capt:
         #--------------------------#
         #      PRE_PROCESSING      #
         #--------------------------#
-        api_call = connector(cpi_username, cpi_password, cpi_ipv4_address)
+        api_call = connector(cpi_username, cpi_password, cpi_ipv4_address, logger)
 
         sw = switch()
         sw.ipv4_address = switch_ipv4_address
