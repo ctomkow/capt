@@ -227,11 +227,6 @@ class capt:
         logger.debug("Stack member descriptions: {}".format(sw.pre_stack_member_desc))
         logger.info("Stack members stored!")
 
-        # 5. get VLANs
-        # TO-DO
-        #
-        #
-
         # 6. get CDP neighbour state
         logger.info("Getting CDP neighbours ...")
         sw.pre_cdp_neighbour = api_call.get_cdp_neighbours(sw.id)
@@ -260,6 +255,23 @@ class capt:
 
         logger.debug("CDP neighbour phones: {}".format(sw.phones))
         logger.info("Phone reachability tested.")
+
+        # 8. test access point reachability
+        logger.info("Testing access point reachability ...")
+        sw.access_points = []
+        for c in sw.pre_cdp_neighbour:
+            if "AIR-" in c['neighborDevicePlatformType']:
+                sw.access_points.append(c['neighborDeviceName'])
+
+        # test access point connectivity
+        for a in sw.access_points:
+            logger.debug("access point: {}".format(a))
+            if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
+                logger.info("{} phone is not pingable, removing from list".format(a))
+                sw.access_points.remove(a)
+
+        logger.debug("CDP neighbour access points: {}".format(sw.access_points))
+        logger.info("Access point reachability tested.")
 
         logger.info("State collection complete!")
 
@@ -379,11 +391,6 @@ class capt:
                     if "Provisioned" in d:
                         logger.error("Stack member has OS-mismatch or V-mismatch!")
 
-        # 5. get VLANs
-        # TO-DO
-        #
-        #
-
         # 6. get CDP neighbour state
         logger.info("Getting CDP neighbours ...")
         sw.post_cdp_neighbour = api_call.get_cdp_neighbours(sw.id)
@@ -423,6 +430,18 @@ class capt:
 
         logger.debug("CDP neighbour phones: {}".format(sw.phones))
         logger.info("Phone reachability testing complete.")
+
+        # 8. test access point reachability
+        logger.info("Testing access point reachability ...")
+
+        # test access point connectivity
+        for a in sw.access_points:
+            logger.debug("access point: {}".format(a))
+            if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
+                logger.error("{} is not pingable".format(a))
+
+        logger.debug("CDP neighbour access points: {}".format(sw.access_points))
+        logger.info("Access point reachability testing complete.")
 
         logger.info("State comparision complete. Check all 'warning', 'error', and 'critical' messages for issues.")
         return True
@@ -523,11 +542,13 @@ class capt:
 
         # TESTING METHOD CALLS #
 
-        api_call = connector(cpi_username, cpi_password, cpi_ipv4_address)
+        api_call = connector(cpi_username, cpi_password, cpi_ipv4_address, logger)
 
         sw = switch()
         sw.ipv4_address = switch_ipv4_address
         sw.id = api_call.get_dev_id(sw.ipv4_address)
+
+
 
         # print("sync")
         # api_call.sync(sw.ipv4_address)  # force a sync!
@@ -539,19 +560,21 @@ class capt:
         #         logger.critical("Timed out. Sync failed.")
         #         sys.exit(1)
 
-        # cdp_neighbours = api_call.get_cdp_neighbours(sw.id)
-        # print(cdp_neighbours)
+        #print(api_call.get_access_point_ip(api_call.get_access_point_id("PLH_4_470_468c")))
+
+        cdp_neighbours = api_call.get_cdp_neighbours(sw.id)
+        print(cdp_neighbours)
         phone_list = []
-        # for c in cdp_neighbours:
-        #     if "IP Phone" in c['neighborDevicePlatformType']:
-        #         phone_list.append(c['neighborDeviceName'])
-        #     else:
-        #         pass
-        #
-        # print(phone_list)
-        #
-        # if self.ping("{}.voip.ualberta.ca".format(phone_list.pop()), logger):
-        #     print('phone is alive')
+        for c in cdp_neighbours:
+            if "IP Phone" in c['neighborDevicePlatformType']:
+                phone_list.append(c['neighborDeviceName'])
+            else:
+                pass
+
+        print(phone_list)
+
+        if self.ping("{}.voip.ualberta.ca".format(phone_list.pop()), logger):
+            print('phone is alive')
 
 if __name__ == '__main__':
 

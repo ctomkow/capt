@@ -19,6 +19,7 @@ class switch:
         global reachability
         global sync_state
         global phones          # a list of phone names
+        global access_points   # a list of access points
 
         global pre_software_version
         global pre_stack_member            # a list of sorted dictionaries based on 'name'

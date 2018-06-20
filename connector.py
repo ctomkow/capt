@@ -154,6 +154,21 @@ class connector:
         result = self.error_handling(requests.get, url, False, username, password)
         return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces']['ethernetInterface']
 
+    def get_access_point_id(self, name):
+
+        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
+        url = "https://{}/webacs/api/v3/data/AccessPoints.json?name=\"{}\"".format(cpi_ipv4_address, name)
+        result = self.error_handling(requests.get, url, False, username, password)
+        return result.json()['queryResponse']['entityId'][0]['$']
+
+    def get_access_point_ip(self, dev_id):
+
+        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
+        url = "https://{}/webacs/api/v3/data/AccessPoints/{}.json".format(cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, url, False, username, password)
+        return result.json()['queryResponse']['entity'][0]['accessPointsDTO']['ipAddress']
+
+
     # a decorator-like method for error handling
     def error_handling(self, api_call_method, *args):
 
