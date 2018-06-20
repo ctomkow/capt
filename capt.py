@@ -253,7 +253,7 @@ class capt:
                 logger.info("{} phone is not pingable, removing from list")
                 sw.phones.remove(p)
 
-        logger.debug("CDP neighbour phones: {}".format(sw.phones))
+        logger.debug("CDP neighbour phones tested: {}".format(sw.phones))
         logger.info("Phone reachability tested.")
 
         # 8. test access point reachability
@@ -269,6 +269,9 @@ class capt:
             if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
                 logger.info("{} phone is not pingable, removing from list".format(a))
                 sw.access_points.remove(a)
+            else:
+                sw.access_points = a # access point is pingable, so only keep this one in the list
+                break
 
         logger.debug("CDP neighbour access points: {}".format(sw.access_points))
         logger.info("Access point reachability tested.")
@@ -558,8 +561,13 @@ class capt:
         #         logger.critical("Timed out. Sync failed.")
         #         sys.exit(1)
 
-        cdp_neighbours = api_call.get_cdp_neighbours(sw.id)
-        print(json.dumps(cdp_neighbours, indent=4))
+        api_call.test()
+
+        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
+
+
+        #cdp_neighbours = api_call.get_cdp_neighbours(sw.id)
+        #print(json.dumps(cdp_neighbours, indent=4))
         # phone_list = []
         # for c in cdp_neighbours:
         #     if "IP Phone" in c['neighborDevicePlatformType']:

@@ -199,3 +199,29 @@ class connector:
         finally:
             return req
 
+    # --- print API calls, mainly for testing
+
+    def test(self):
+        url = "https://{}/webacs/api/v3/data/AccessPoints.json?name=\"ESQ_4-430_5e3c\""
+        result = self.error_handling(requests.get, url, False, username, password)
+        print(json.dumps(result.json(), indent=4))
+
+    def print_info(self, dev_id):
+
+        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, url, False, username, password)
+        print(json.dumps(result.json(), indent=4))
+
+    def print_detailed_info(self, dev_id):
+
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, url, False, username, password)
+        print(json.dumps(result.json(), indent=4))
+
+    def print_client_summary(self, dev_id):
+
+        url = "https://{}/webacs/api/v3/data/Clients/{}.json".format(cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, url, False, username, password)
+        print(json.dumps(result.json(), indent=4))
+
+    # --- end print API calls, mainly for testing
