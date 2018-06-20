@@ -336,7 +336,7 @@ class capt:
         if sw.pre_software_version == sw.post_software_version:
             logger.debug("Pre-software: {}".format(sw.pre_software_version))
             logger.debug("Post-software: {}".format(sw.post_software_version))
-            logger.error("Upgrade failed. Software is same as before.")
+            logger.warning("Upgrade failed. Software is same as before.")
         else:
             logger.info("Software is different (whew).")
 
