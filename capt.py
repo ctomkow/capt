@@ -270,7 +270,8 @@ class capt:
                 logger.info("{} phone is not pingable, removing from list".format(a))
                 sw.access_points.remove(a)
             else:
-                sw.access_points = a # access point is pingable, so only keep this one in the list
+                sw.test_ap = []
+                sw.test_ap.append(a) # access point is pingable, so only keep this one in the list
                 break
 
         logger.debug("CDP neighbour access points: {}".format(sw.access_points))
@@ -288,7 +289,7 @@ class capt:
         timeout = time.time() + 60 * 5  # 5 minute timeout starting now
         time.sleep(90)  # Prime template needs a 1 minute delay before rebooting, so wait 90 seconds so reachability test doesn't false-positive
         while not api_call.job_complete(job_id): # while not completed ... wait...
-            time.sleep(5)
+            time.sleep(10)
             if time.time() > timeout:
                 logger.critical("Timed out. CPI job failed.")
                 sys.exit(1)
@@ -354,7 +355,7 @@ class capt:
             logger.debug("Post-software: {}".format(sw.post_software_version))
             logger.warning("Upgrade failed. Software is same as before.")
         else:
-            logger.info("Software is different (whew).")
+            logger.info("Software is different.")
 
         # 4. get stack members
         logger.info("Getting stack members ...")
@@ -378,21 +379,21 @@ class capt:
         pre_desc_diff, post_desc_diff = self.compare_list(sw.pre_stack_member_desc, sw.post_stack_member_desc, logger)
 
         if not pre_name_diff and not post_name_diff and not pre_desc_diff and not post_desc_diff:
-            logger.info("Stack members are the same pre/post (noice).")
+            logger.info("Stack members are the same pre/post.")
         else:
             # if the name difference exists before but not after ... switch is missing!
             if pre_name_diff:
                 logger.error("Stack member(s) no longer part of stack!")
                 logger.error(pre_name_diff)
-            # if the name difference exists after but not before ... switch was found???
+            # if the name difference exists after but not before ... switch was found? sw powered off, then powered up ... boom, discovered.
             if post_name_diff:
-                logger.error("New stack member(s) found!? after upgrade.")
+                logger.error("New stack member(s) detected! Could be an issue with a stack member.")
                 logger.error(post_name_diff)
             # if the description diff exists before and after, then "Provisioned" was tacked on or removed
             if pre_desc_diff and post_desc_diff:
                 for d in post_desc_diff:
                     if "Provisioned" in d:
-                        logger.error("Stack member has OS-mismatch or V-mismatch!")
+                        logger.error("Stack member has OS-mismatch or V-mismatch! (or some other issue)")
 
         # 6. get CDP neighbour state
         logger.info("Getting CDP neighbours ...")
@@ -411,7 +412,7 @@ class capt:
         pre_cdp_diff, post_cdp_diff = self.compare_list(sw.pre_cdp_neighbour_nearend, sw.post_cdp_neighbour_nearend, logger)
 
         if not pre_cdp_diff and not post_cdp_diff:
-            logger.info("CDP neighour(s) are the same pre/post (noice).")
+            logger.info("CDP neighour(s) are the same pre/post.")
         else:
             # if the name difference exists before but not after ... switch is missing!
             if pre_cdp_diff:
@@ -438,7 +439,7 @@ class capt:
         logger.info("Testing access point reachability ...")
 
         # test access point connectivity
-        for a in sw.access_points:
+        for a in sw.test_ap:
             logger.debug("access point: {}".format(a))
             if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
                 logger.error("{} is not pingable".format(a))

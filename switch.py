@@ -20,6 +20,7 @@ class switch:
         global sync_state
         global phones          # a list of phone names
         global access_points   # a list of access points
+        global test_ap         # a list of one access point to test (save on API calls until core code is fixed)
 
         global pre_software_version
         global pre_stack_member            # a list of sorted dictionaries based on 'name'
