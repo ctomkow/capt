@@ -40,34 +40,34 @@ class capt:
 
         subparsers = parser.add_subparsers(dest="sub_command")
 
-        #  -----
-        # capt push
-        push = subparsers.add_parser('push', help="send configuration to switch")
-        # capt push "show int status"
-        push.add_argument('cisco_config', help="specify the cisco IOS command to push")
-        push_subparsers = push.add_subparsers()
-        # capt push "show int status" to
-        push_to = push_subparsers.add_parser('to', help="specify the IPv4 address of switch")
-        # capt push "show int status" to 10.10.10.10
-        push_to.add_argument('ip_address', help="specify the IPv4 address of switch")
-        push_to.set_defaults(func=self.push_command)
-        #  -----
-        # capt push "no logging" config
-        push_config = push_subparsers.add_parser('config', help="config_t configuration given")
-        push_config_subparsers = push_config.add_subparsers()
-        # capt push "no logging" config to
-        push_config_to = push_config_subparsers.add_parser('to', help="specify the IPv4 address of switch")
-        # capt push "no logging" config to 10.10.10.10
-        push_config_to.add_argument('ip_address', help="specify the IPv4 address of switch")
-        push_config_to.set_defaults(func=self.push_configuration)
-        #  -----
-
-        # capt upgrade
-        upgrade = subparsers.add_parser('upgrade', help="initiate code upgrade and verify")
-        # capt upgrade 10.10.10.10
-
-        # test api calls
-        test = subparsers.add_parser('test_api', help="API testing")
+        # #  -----
+        # # capt push
+        # push = subparsers.add_parser('push', help="send configuration to switch")
+        # # capt push "show int status"
+        # push.add_argument('cisco_config', help="specify the cisco IOS command to push")
+        # push_subparsers = push.add_subparsers()
+        # # capt push "show int status" to
+        # push_to = push_subparsers.add_parser('to', help="specify the IPv4 address of switch")
+        # # capt push "show int status" to 10.10.10.10
+        # push_to.add_argument('ip_address', help="specify the IPv4 address of switch")
+        # push_to.set_defaults(func=self.push_command)
+        # #  -----
+        # # capt push "no logging" config
+        # push_config = push_subparsers.add_parser('config', help="config_t configuration given")
+        # push_config_subparsers = push_config.add_subparsers()
+        # # capt push "no logging" config to
+        # push_config_to = push_config_subparsers.add_parser('to', help="specify the IPv4 address of switch")
+        # # capt push "no logging" config to 10.10.10.10
+        # push_config_to.add_argument('ip_address', help="specify the IPv4 address of switch")
+        # push_config_to.set_defaults(func=self.push_configuration)
+        # #  -----
+        #
+        # # capt upgrade
+        # upgrade = subparsers.add_parser('upgrade', help="initiate code upgrade and verify")
+        # # capt upgrade 10.10.10.10
+        #
+        # # test api calls
+        # test = subparsers.add_parser('test_api', help="API testing")
 
         args = parser.parse_args()
 

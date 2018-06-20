@@ -31,11 +31,7 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 ### USAGE
 
-For simple usage (e.g. one command, one switch). Use cli subcommands (think, `ip addr show`)
-
-`capt push "show int status" to 10.10.10.10`
-
-`capt push "no logging" config to 10.10.10.10`
+Cli commands are a work in progress.
 
 If cli commands are not given, the configuration is done through a configuration file; `config.text`
 
