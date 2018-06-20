@@ -423,7 +423,7 @@ class capt:
         logger.debug("CDP neighbour phones: {}".format(sw.phones))
         logger.info("Phone reachability testing complete.")
 
-        logger.info("State comparision and upgrade complete!")
+        logger.info("State comparision complete. Check all 'warning', 'error', and 'critical' messages for issues.")
         return True
 
     def push_command(self, *args):
