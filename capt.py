@@ -274,7 +274,7 @@ class capt:
                 sw.test_ap.append(a) # access point is pingable, so only keep this one in the list
                 break
 
-        logger.debug("CDP neighbour access points: {}".format(sw.access_points))
+        logger.debug("CDP neighbour access points: {}".format(sw.test_ap))
         logger.info("Access point reachability tested.")
 
         logger.info("State collection complete!")
@@ -444,7 +444,7 @@ class capt:
             if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
                 logger.error("{} is not pingable".format(a))
 
-        logger.debug("CDP neighbour access points: {}".format(sw.access_points))
+        logger.debug("CDP neighbour access points: {}".format(sw.test_ap))
         logger.info("Access point reachability testing complete.")
 
         logger.info("State comparision complete. Check all 'warning', 'error', and 'critical' messages for issues.")
