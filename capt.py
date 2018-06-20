@@ -314,7 +314,7 @@ class capt:
         count = 0
         while not self.reachable(sw, api_call, logger):
             time.sleep(5)
-            if count == 5:
+            if count > 8: # how often informational logging is displayed
                 logger.info("Switch reachability state: {}".format(sw.reachability))
                 count = 0
             else:
