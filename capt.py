@@ -289,7 +289,7 @@ class capt:
         timeout = time.time() + 60 * 5  # 5 minute timeout starting now
         time.sleep(90)  # Prime template needs a 1 minute delay before rebooting, so wait 90 seconds so reachability test doesn't false-positive
         while not api_call.job_complete(job_id): # while not completed ... wait...
-            time.sleep(10)
+            time.sleep(5)
             if time.time() > timeout:
                 logger.critical("Timed out. CPI job failed.")
                 sys.exit(1)
@@ -312,8 +312,8 @@ class capt:
         timeout = time.time() + 60*45 # 45 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(45))
         while not self.reachable(sw, api_call, logger):
-            time.sleep(5)
-            logger.debug("Switch reachability state: {}".format(sw.reachability))
+            time.sleep(20)
+            logger.info("Switch reachability state: {}".format(sw.reachability))
             if time.time() > timeout:
                 logger.critical("Timed out. Not reachable.")
                 sys.exit(1)
