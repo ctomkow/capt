@@ -447,7 +447,7 @@ class capt:
         logger.debug("CDP neighbour access points: {}".format(sw.test_ap))
         logger.info("Access point reachability testing complete.")
 
-        logger.info("State comparision complete. Check all 'warning', 'error', and 'critical' messages for issues.")
+        logger.info("State comparision complete. Check all 'error', and 'critical' messages.")
         return True
 
     def push_command(self, *args):
