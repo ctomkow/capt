@@ -142,7 +142,7 @@ class capt:
                 t_count += 1
 
                 sys_logger.debug("Thread count: {}".format(t_count))
-                switch_ipv4_address_list.pop()  # remove referenced switch
+                switch_ipv4_address_list.pop(0)  # remove referenced switch
 
                 # when last device is popped off list, wait for ALL threads to finish
                 if len(switch_ipv4_address_list) == 0:
