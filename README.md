@@ -36,6 +36,7 @@ Cli commands are a work in progress.
 If cli commands are not given, the configuration is done through a configuration file; `config.text`
 
 Then simply run the program, `python capt.py`
+For debug output, `python capt.py -v`
 
 ```
 [DEFAULT]
@@ -54,13 +55,14 @@ ipv4_address:
 
 # specify one procedure (yes)
 [PROCEDURE]
-code_upgrade:
+code_upgrade:yes
 push_command:
-push_configuration:yes
+push_configuration:
 test_api_calls:
 
 [CONF]
 command:
-    show ver
+
 configuration:
+
 ```
