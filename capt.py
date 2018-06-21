@@ -265,14 +265,14 @@ class capt:
 
         # test access point connectivity
         for a in sw.access_points:
+            a = a.split('.')[0] # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
             logger.debug("access point: {}".format(a))
             if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
                 logger.info("{} phone is not pingable, removing from list".format(a))
                 sw.access_points.remove(a)
             else:  # access point is pingable, so only keep this one in the list
                 sw.test_ap = []
-                sw.test_ap.append(
-                a.split('.')[0])  # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
+                sw.test_ap.append(a)
                 break
 
         logger.debug("CDP neighbour access points: {}".format(sw.test_ap))
@@ -664,13 +664,14 @@ class capt:
 
         # test access point connectivity
         for a in sw.access_points:
+            a = a.split('.')[0] # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
             logger.debug("access point: {}".format(a))
             if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
                 logger.info("{} phone is not pingable, removing from list".format(a))
                 sw.access_points.remove(a)
-            else: # access point is pingable, so only keep this one in the list
+            else:  # access point is pingable, so only keep this one in the list
                 sw.test_ap = []
-                sw.test_ap.append(a.split('.')[0]) # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
+                sw.test_ap.append(a)
                 break
 
         logger.debug("CDP neighbour access points: {}".format(sw.test_ap))
