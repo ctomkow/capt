@@ -309,8 +309,8 @@ class capt:
 
         # 1. check for reachability
         logger.info("Testing reachability ...")
-        timeout = time.time() + 60*45 # 45 minute timeout starting now
-        logger.info("Timeout set to {} minutes.".format(45))
+        timeout = time.time() + 60*60 # 60 minute timeout starting now
+        logger.info("Timeout set to {} minutes.".format(60))
         count = 0
         while not self.reachable(sw, api_call, logger):
             time.sleep(5)
