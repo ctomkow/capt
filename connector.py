@@ -183,7 +183,10 @@ class connector:
                 # too many requests at once
                 logger.warning("Too many API calls at once. Slight delay before retrying")
                 time.sleep(random.uniform(1.5, 3.5))
-                req = self.error_handling(api_call_method, args[0], args[1], args[2], args[3])
+                if api_call_method == requests.get:
+                    req = self.error_handling(api_call_method, args[0], args[1], args[2], args[3])
+                elif api_call_method == requests.post or api_call_method == requests.put:
+                    req = self.error_handling(api_call_method, args[0], args[1], args[2], args[3], args[4])
             elif req.status_code == 401:
                 logger.critical("Bad authentication. Check credentials.")
                 logger.critical(error)
