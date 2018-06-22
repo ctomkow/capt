@@ -195,7 +195,7 @@ class capt:
         logger.info("Timeout set to {} minutes.".format(10))
 
         while not self.synchronized(sw, api_call, logger):
-            time.sleep(5)
+            time.sleep(10)
             logger.debug("Switch sync state: {}".format(sw.sync_state))
             if time.time() > timeout:
                 logger.critical("Timed out. Sync failed.")
@@ -339,7 +339,7 @@ class capt:
         logger.info("Timeout set to {} minutes.".format(10))
 
         while not self.synchronized(sw, api_call, logger):
-            time.sleep(5)
+            time.sleep(10)
             logger.debug("Switch sync state: {}".format(sw.sync_state))
             if time.time() > timeout:
                 logger.critical("Timed out. Sync failed.")
@@ -593,7 +593,7 @@ class capt:
         logger.info("Timeout set to {} minutes.".format(10))
 
         while not self.synchronized(sw, api_call, logger):
-            time.sleep(5)
+            time.sleep(10)
             logger.debug("Switch sync state: {}".format(sw.sync_state))
             if time.time() > timeout:
                 logger.critical("Timed out. Sync failed.")
@@ -727,7 +727,7 @@ class capt:
         logger.info("Timeout set to {} minutes.".format(10))
 
         while not self.synchronized(sw, api_call, logger):
-            time.sleep(5)
+            time.sleep(10)
             logger.debug("Switch sync state: {}".format(sw.sync_state))
             if time.time() > timeout:
                 logger.critical("Timed out. Sync failed.")
