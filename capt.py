@@ -151,7 +151,7 @@ class capt:
                     for t in threads:
                         t.join()
                 else:
-                    time.sleep(5) # give delay before creating the next thread.
+                    time.sleep(30) # give delay before creating the next thread.
 
     def upgrade_code(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
