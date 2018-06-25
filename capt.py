@@ -173,7 +173,7 @@ class capt:
 
         # 1. check for reachability
         logger.info("Testing reachability ...")
-        timeout = time.time() + 60*5 # 5 minute timeout starting now (this is before the code upgrade, so short timeout)
+        timeout = time.time() + 60 * 5  # 5 minute timeout starting now (this is before the code upgrade, so short timeout)
         logger.info("Timeout set to {} minutes.".format(5))
 
         while not self.reachable(sw, api_call, logger):
@@ -189,8 +189,8 @@ class capt:
         # 2. force sync of switch state
         logger.info("Synchronizing ...")
         old_sync_time = api_call.get_sync_time(sw.id)
-        api_call.sync(sw.ipv4_address) # force a sync!
-        time.sleep(5) # don't test for sync status too soon (CPI delay and all that)
+        api_call.sync(sw.ipv4_address)  # force a sync!
+        time.sleep(5)  # don't test for sync status too soon (CPI delay and all that)
         timeout = time.time() + 60 * 10  # 10 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(10))
 
@@ -202,7 +202,7 @@ class capt:
                 sys.exit(1)
 
         new_sync_time = api_call.get_sync_time(sw.id)
-        if old_sync_time == new_sync_time: # KEEP CODE! needed for corner case issue where force sync fails (e.g. code 03.03.03)
+        if old_sync_time == new_sync_time:  # KEEP CODE! needed for corner case issue where force sync fails (e.g. code 03.03.03)
             logger.critical("Before and after sync time is the same. Sync failed.")
             sys.exit(1)
 
@@ -232,12 +232,13 @@ class capt:
         # 6. get CDP neighbour state
         logger.info("Getting CDP neighbours ...")
         sw.pre_cdp_neighbour = api_call.get_cdp_neighbours(sw.id)
-        sw.pre_cdp_neighbour = sorted(sw.pre_cdp_neighbour, key=lambda k: k['nearEndInterface']) # sort the list of dicts
+        sw.pre_cdp_neighbour = sorted(sw.pre_cdp_neighbour,
+                                      key=lambda k: k['nearEndInterface'])  # sort the list of dicts
 
         # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
-        sw.pre_cdp_neighbour_nearend = [x['nearEndInterface'] for x in sw.pre_cdp_neighbour] # extract nearEnd values
+        sw.pre_cdp_neighbour_nearend = [x['nearEndInterface'] for x in sw.pre_cdp_neighbour]  # extract nearEnd values
 
-        #logger.debug("CDP neighbours: {}".format(sw.pre_cdp_neighbour))
+        # logger.debug("CDP neighbours: {}".format(sw.pre_cdp_neighbour))
         logger.debug("CDP neighbours near-end: {}".format(sw.pre_cdp_neighbour_nearend))
         logger.info("CDP neighbours stored!")
 
@@ -252,7 +253,7 @@ class capt:
         for p in sw.phones:
             logger.debug("phone: {}".format(p))
             if not self.ping("{}.voip.ualberta.ca".format(p), logger):
-                logger.info("{} phone is not pingable, removing from list")
+                logger.info("{}.voip.ualberta.ca is not pingable, removing from list".format(p))
                 sw.phones.remove(p)
 
         logger.debug("CDP neighbour phones tested: {}".format(sw.phones))
@@ -267,10 +268,10 @@ class capt:
 
         # test access point connectivity
         for a in sw.access_points:
-            a = a.split('.')[0] # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
+            a = a.split('.')[0]  # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
             logger.debug("access point: {}".format(a))
             if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
-                logger.info("{} phone is not pingable, removing from list".format(a))
+                logger.info("{} is not pingable, removing from list".format(a))
                 sw.access_points.remove(a)
             else:  # access point is pingable, so only keep this one in the list
                 sw.test_ap = []
@@ -651,7 +652,7 @@ class capt:
         for p in sw.phones:
             logger.debug("phone: {}".format(p))
             if not self.ping("{}.voip.ualberta.ca".format(p), logger):
-                logger.info("{} phone is not pingable, removing from list")
+                logger.info("{}.voip.ualberta.ca is not pingable, removing from list".format(p))
                 sw.phones.remove(p)
 
         logger.debug("CDP neighbour phones tested: {}".format(sw.phones))
@@ -669,7 +670,7 @@ class capt:
             a = a.split('.')[0] # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
             logger.debug("access point: {}".format(a))
             if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
-                logger.info("{} phone is not pingable, removing from list".format(a))
+                logger.info("{} is not pingable, removing from list".format(a))
                 sw.access_points.remove(a)
             else:  # access point is pingable, so only keep this one in the list
                 sw.test_ap = []
