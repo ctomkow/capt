@@ -191,8 +191,8 @@ class capt:
         old_sync_time = api_call.get_sync_time(sw.id)
         api_call.sync(sw.ipv4_address)  # force a sync!
         time.sleep(5)  # don't test for sync status too soon (CPI delay and all that)
-        timeout = time.time() + 60 * 10  # 10 minute timeout starting now
-        logger.info("Timeout set to {} minutes.".format(10))
+        timeout = time.time() + 60 * 20  # 20 minute timeout starting now
+        logger.info("Timeout set to {} minutes.".format(20))
 
         while not self.synchronized(sw, api_call, logger):
             time.sleep(10)
@@ -336,8 +336,8 @@ class capt:
         old_sync_time = api_call.get_sync_time(sw.id)
         api_call.sync(sw.ipv4_address)  # force a sync!
         time.sleep(20)  # don't test for sync status too soon (CPI delay and all that)
-        timeout = time.time() + 60 * 10  # 10 minute timeout starting now
-        logger.info("Timeout set to {} minutes.".format(10))
+        timeout = time.time() + 60 * 20  # 20 minute timeout starting now
+        logger.info("Timeout set to {} minutes.".format(20))
 
         while not self.synchronized(sw, api_call, logger):
             time.sleep(10)
@@ -590,8 +590,8 @@ class capt:
         old_sync_time = api_call.get_sync_time(sw.id)
         api_call.sync(sw.ipv4_address)  # force a sync!
         time.sleep(5)  # don't test for sync status too soon (CPI delay and all that)
-        timeout = time.time() + 60 * 10  # 10 minute timeout starting now
-        logger.info("Timeout set to {} minutes.".format(10))
+        timeout = time.time() + 60 * 20  # 20 minute timeout starting now
+        logger.info("Timeout set to {} minutes.".format(20))
 
         while not self.synchronized(sw, api_call, logger):
             time.sleep(10)
@@ -724,8 +724,8 @@ class capt:
         old_sync_time = api_call.get_sync_time(sw.id)
         api_call.sync(sw.ipv4_address)  # force a sync!
         time.sleep(20)  # don't test for sync status too soon (CPI delay and all that)
-        timeout = time.time() + 60 * 10  # 10 minute timeout starting now
-        logger.info("Timeout set to {} minutes.".format(10))
+        timeout = time.time() + 60 * 20  # 20 minute timeout starting now
+        logger.info("Timeout set to {} minutes.".format(20))
 
         while not self.synchronized(sw, api_call, logger):
             time.sleep(10)
