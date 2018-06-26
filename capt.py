@@ -574,7 +574,7 @@ class capt:
             sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict[0]))
             return False
         elif proc_dict[0] == "push_configuration":
-             sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict[0]))
+            sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict[0]))
             return False
         elif proc_dict[0] == "test_api_calls":
             sys_logger.error("{} is selected. This procedure will test api calls.".format(proc_dict[0]))
