@@ -101,7 +101,7 @@ class capt:
             proc_dict['test_api_calls'] = config.proc_test_api_calls
 
         # Validate user's configuration file
-        if not self.config_validation(proc_dict, switch_ipv4_address_list, max_threads, sys_logger):
+        if not self.config_validated(proc_dict, switch_ipv4_address_list, max_threads, sys_logger):
             sys_logger.critical("config.text validation failed!")
             sys.exit(1)
 
