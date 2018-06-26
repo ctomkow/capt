@@ -564,7 +564,7 @@ class capt:
 
         if 'code_upgrade' in proc_dict:
             sys_logger.info("{} is selected.".format(proc_dict))
-            sys_logger.info("This will RELOAD switches: {}".format(proc_dict, devices))")
+            sys_logger.info("This will RELOAD switches: {}".format(devices))
             time.sleep(3)
             user_choice = input("Continue (yes/no)? ")
             if user_choice == "yes":
