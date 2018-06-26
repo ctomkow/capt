@@ -562,7 +562,7 @@ class capt:
             sys_logger.critical("'concurrent' should be between 1 and 5 (inclusive).")
             return False
 
-        if proc_dict[0] == "code_upgrade":
+        if 'code_upgrade' in proc_dict:
             sys_logger.info("{} is selected. This will RELOAD switches: {}".format(proc_dict[0], devices))
             time.sleep(3)
             user_choice = input("Continue (yes/no)? ")
@@ -570,13 +570,13 @@ class capt:
                 return True
             else:
                 return False
-        elif proc_dict[0] == "push_command":
+        elif 'push_command' in proc_dict:
             sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict[0]))
             return False
-        elif proc_dict[0] == "push_configuration":
+        elif 'push_configuration' in proc_dict:
             sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict[0]))
             return False
-        elif proc_dict[0] == "test_api_calls":
+        elif 'test_api_calls' in proc_dict:
             sys_logger.error("{} is selected. This procedure will test api calls.".format(proc_dict[0]))
             time.sleep(3)
             user_choice = input("Continue (yes/no)? ")
