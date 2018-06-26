@@ -90,7 +90,6 @@ class capt:
         max_threads = int(config.dev_concurrent_threads)
 
         proc_dict = {}
-
         # only add procedures that are selected
         if config.proc_code_upgrade:
             proc_dict['code_upgrade'] = config.proc_code_upgrade
@@ -101,12 +100,12 @@ class capt:
         if config.proc_test_api_calls:
             proc_dict['test_api_calls'] = config.proc_test_api_calls
 
-        if len(proc_dict) > 1 or len(proc_dict) < 1:
-            sys_logger.error("Too many or too few procedures selected.")
+        # Validate user's configuration file
+        if not self.config_validation(proc_dict, switch_ipv4_address_list, max_threads, sys_logger):
+            sys_logger.critical("config.text validation failed!")
             sys.exit(1)
 
         threads = []
-
         while len(switch_ipv4_address_list) > 0:
 
             # check if thread is alive, if not, remove from list
@@ -552,6 +551,42 @@ class capt:
         logger.addHandler(handler)
         logger.addHandler(screen_handler)
         return logger
+
+    def config_validated(self, proc_dict, devices, max_concurrent, sys_logger):
+
+        if len(proc_dict) > 1 or len(proc_dict) < 1:
+            sys_logger.critical("Select only one procedure to run.")
+            return False
+
+        if max_concurrent > 5 or max_concurrent < 1:
+            sys_logger.critical("'concurrent' should be between 1 and 5 (inclusive).")
+            return False
+
+        if proc_dict[0] == "code_upgrade":
+            sys_logger.info("{} is selected. This will RELOAD switches: {}".format(proc_dict[0], devices))
+            time.sleep(3)
+            user_choice = input("Continue (yes/no)? ")
+            if user_choice == "yes":
+                return True
+            else:
+                return False
+        elif proc_dict[0] == "push_command":
+            sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict[0]))
+            return False
+        elif proc_dict[0] == "push_configuration":
+             sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict[0]))
+            return False
+        elif proc_dict[0] == "test_api_calls":
+            sys_logger.error("{} is selected. This procedure will test api calls.".format(proc_dict[0]))
+            time.sleep(3)
+            user_choice = input("Continue (yes/no)? ")
+            if user_choice == "yes":
+                return True
+            else:
+                return False
+        else:
+            sys_logger.debug("config.text validation failed within config_validated().")
+            return False
 
     def test_api_calls(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
