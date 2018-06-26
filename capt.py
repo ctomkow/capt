@@ -563,7 +563,7 @@ class capt:
             return False
 
         if 'code_upgrade' in proc_dict:
-            sys_logger.info("{} is selected. This will RELOAD switches: {}".format(proc_dict[0], devices))
+            sys_logger.info("{} is selected. This will RELOAD switches: {}".format(proc_dict, devices))
             time.sleep(3)
             user_choice = input("Continue (yes/no)? ")
             if user_choice == "yes":
@@ -571,13 +571,13 @@ class capt:
             else:
                 return False
         elif 'push_command' in proc_dict:
-            sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict[0]))
+            sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict))
             return False
         elif 'push_configuration' in proc_dict:
-            sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict[0]))
+            sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict))
             return False
         elif 'test_api_calls' in proc_dict:
-            sys_logger.error("{} is selected. This procedure will test api calls.".format(proc_dict[0]))
+            sys_logger.error("{} is selected. This procedure will test api calls.".format(proc_dict))
             time.sleep(3)
             user_choice = input("Continue (yes/no)? ")
             if user_choice == "yes":
