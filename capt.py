@@ -232,8 +232,7 @@ class capt:
         # 6. get CDP neighbour state
         logger.info("Getting CDP neighbours ...")
         sw.pre_cdp_neighbour = api_call.get_cdp_neighbours(sw.id)
-        sw.pre_cdp_neighbour = sorted(sw.pre_cdp_neighbour,
-                                      key=lambda k: k['nearEndInterface'])  # sort the list of dicts
+        sw.pre_cdp_neighbour = sorted(sw.pre_cdp_neighbour, key=lambda k: k['nearEndInterface'])  # sort the list of dicts
 
         # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
         sw.pre_cdp_neighbour_nearend = [x['nearEndInterface'] for x in sw.pre_cdp_neighbour]  # extract nearEnd values
@@ -250,11 +249,14 @@ class capt:
                 sw.phones.append(c['neighborDeviceName'])
 
         # test phone connectivity
+        tmp_phone_list = []  # DON'T MODIFY A LIST YOUR LOOPING THROUGH!
         for p in sw.phones:
             logger.debug("phone: {}".format(p))
-            if not self.ping("{}.voip.ualberta.ca".format(p), logger):
-                logger.info("{}.voip.ualberta.ca is not pingable, removing from list".format(p))
-                sw.phones.remove(p)
+            if self.ping("{}.voip.ualberta.ca".format(p), logger):
+                tmp_phone_list.append(p)
+            else:
+                logger.info("{}.voip.ualberta.ca is not pingable".format(p))
+        sw.phones = tmp_phone_list
 
         logger.debug("CDP neighbour phones tested: {}".format(sw.phones))
         logger.info("Phone reachability tested.")
@@ -267,16 +269,15 @@ class capt:
                 sw.access_points.append(c['neighborDeviceName'])
 
         # test access point connectivity
+        sw.test_ap = []
         for a in sw.access_points:
             a = a.split('.')[0]  # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
             logger.debug("access point: {}".format(a))
-            if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
-                logger.info("{} is not pingable, removing from list".format(a))
-                sw.access_points.remove(a)
-            else:  # access point is pingable, so only keep this one in the list
-                sw.test_ap = []
+            if self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
                 sw.test_ap.append(a)
-                break
+                break # access point is pingable, so only keep this one in the list
+            else:
+                logger.info("{} is not pingable".format(a))
 
         logger.debug("CDP neighbour access points: {}".format(sw.test_ap))
         logger.info("Access point reachability tested.")
@@ -554,7 +555,7 @@ class capt:
 
     def test_api_calls(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
-        logger.info("Initiate code upgrade.")
+        logger.info("Initiate TEST.")
 
         # --------------------------#
         #      PRE_PROCESSING      #
@@ -649,11 +650,14 @@ class capt:
                 sw.phones.append(c['neighborDeviceName'])
 
         # test phone connectivity
+        tmp_phone_list = []  # DON'T MODIFY A LIST YOUR LOOPING THROUGH!
         for p in sw.phones:
             logger.debug("phone: {}".format(p))
-            if not self.ping("{}.voip.ualberta.ca".format(p), logger):
-                logger.info("{}.voip.ualberta.ca is not pingable, removing from list".format(p))
-                sw.phones.remove(p)
+            if self.ping("{}.voip.ualberta.ca".format(p), logger):
+                tmp_phone_list.append(p)
+            else:
+                logger.info("{}.voip.ualberta.ca is not pingable".format(p))
+        sw.phones = tmp_phone_list
 
         logger.debug("CDP neighbour phones tested: {}".format(sw.phones))
         logger.info("Phone reachability tested.")
@@ -666,16 +670,15 @@ class capt:
                 sw.access_points.append(c['neighborDeviceName'])
 
         # test access point connectivity
+        sw.test_ap = []
         for a in sw.access_points:
-            a = a.split('.')[0] # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
+            a = a.split('.')[0]  # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
             logger.debug("access point: {}".format(a))
-            if not self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
-                logger.info("{} is not pingable, removing from list".format(a))
-                sw.access_points.remove(a)
-            else:  # access point is pingable, so only keep this one in the list
-                sw.test_ap = []
+            if self.ping(api_call.get_access_point_ip(api_call.get_access_point_id(a)), logger):
                 sw.test_ap.append(a)
-                break
+                break  # access point is pingable, so only keep this one in the list
+            else:
+                logger.info("{} is not pingable".format(a))
 
         logger.debug("CDP neighbour access points: {}".format(sw.test_ap))
         logger.info("Access point reachability tested.")
@@ -686,7 +689,7 @@ class capt:
         #          RELOAD          #
         # --------------------------#
 
-        logger.info("TEST Reload TEST (not actually reloading")
+        logger.info("FAKE RELOAD!")
 
         # DON'T CHECK IF JOB WAS SUCCESSFUL, IT FAILS CAUSE SWITCH DROPS CONNECTIVITY WHEN REBOOTING
         # if api_call.job_successful(job_id):
