@@ -109,8 +109,10 @@ class capt:
         while len(switch_ipv4_address_list) > 0:
 
             # check if thread is alive, if not, remove from list
-            threads = [t for t in threads if t.is_alive()]
+            alive_threads = [t for t in threads if t.is_alive()] # DON'T MODIFY THE LIST YOUR ITERATING OVER!
+            threads = alive_threads
             t_count = len(threads)
+            sys_logger.debug("Thread count before: {}".format(t_count))
 
             # spawn thread if max concurrent number is not reached
             if t_count < max_threads:
@@ -138,9 +140,9 @@ class capt:
 
                 threads.append(t)
                 t.start()
-                t_count += 1
+                #t_count += 1
 
-                sys_logger.debug("Thread count: {}".format(t_count))
+                sys_logger.debug("Thread count after: {}".format(t_count))
                 sys_logger.debug("Threads: {}".format(threads))
                 switch_ipv4_address_list.pop(0)  # remove referenced switch
                 sys_logger.debug("IP list: {}".format(switch_ipv4_address_list))
