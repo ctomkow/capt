@@ -142,7 +142,7 @@ class capt:
                 t.start()
                 #t_count += 1
 
-                sys_logger.debug("Thread count after: {}".format(t_count))
+                sys_logger.debug("Thread count after: {}".format(len(threads)))
                 sys_logger.debug("Threads: {}".format(threads))
                 switch_ipv4_address_list.pop(0)  # remove referenced switch
                 sys_logger.debug("IP list: {}".format(switch_ipv4_address_list))
