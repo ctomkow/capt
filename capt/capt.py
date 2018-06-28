@@ -7,11 +7,9 @@
 # Pulls state info from Cisco Prime Infrastructure
 
 # system imports
-import argparse
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 import threading
-import json
 import time
 import os
 import sys
@@ -21,9 +19,7 @@ import datetime
 
 # local imports
 import config
-import connector
 from connector import connector
-import switch
 from switch import switch
 
 
@@ -126,14 +122,14 @@ class capt:
                 try:
                     if 'code_upgrade' in proc_dict:
                         t = threading.Thread(target=self.upgrade_code, args=(switch_ipv4_address_list[0], config.username,
-                                                                config.password, config.cpi_ipv4_address, logger))
+                                                                             config.password, config.cpi_ipv4_address, logger))
                     elif 'push_command' in proc_dict:
                         t = threading.Thread(target=self.push_command(switch_ipv4_address_list[0], config.config_command, logger))
                     elif 'push_configuration' in proc_dict:
                         t = threading.Thread(target=self.push_configuration(switch_ipv4_address_list[0], config.config_configuration, logger))
                     elif 'test_api_calls' in proc_dict:
                         t = threading.Thread(target=self.test_api_calls, args=(switch_ipv4_address_list[0], config.username,
-                                                                config.password, config.cpi_ipv4_address, logger))
+                                                                               config.password, config.cpi_ipv4_address, logger))
                 except KeyError:
                     sys_logger.critical("Thread failed to execute function.")
                     sys.exit(1)
