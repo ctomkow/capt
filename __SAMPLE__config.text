@@ -14,13 +14,11 @@ ipv4_address:
 
 # specify one procedure (yes)
 [PROCEDURE]
-code_upgrade:
+code_upgrade:yes
+test_code_upgrade:
 push_command:
-push_configuration:yes
-test_api_calls:
+push_configuration:
 
 [CONF]
 command:
-    show ver
 configuration:
-    no logging

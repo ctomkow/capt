@@ -25,9 +25,9 @@ def load_configuration():
     global dev_ipv4_address
 
     global proc_code_upgrade
+    global proc_test_code_upgrade
     global proc_push_command
     global proc_push_configuration
-    global proc_test_api_calls
 
     global config_command
     global config_configuration
@@ -43,9 +43,9 @@ def load_configuration():
     dev_ipv4_address        = config['DEVICE']['ipv4_address']
 
     proc_code_upgrade       = config['PROCEDURE']['code_upgrade']
+    proc_test_code_upgrade  = config['PROCEDURE']['test_code_upgrade']
     proc_push_command       = config['PROCEDURE']['push_command']
     proc_push_configuration = config['PROCEDURE']['push_configuration']
-    proc_test_api_calls     = config['PROCEDURE']['test_api_calls']
 
     config_command          = config['CONF']['command']
     config_configuration    = config['CONF']['configuration']
