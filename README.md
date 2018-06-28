@@ -31,8 +31,6 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 * Cisco Prime Infrastructure 3.3+
 * Python 3.5+
-* (future) swITch.py 0.1.2 (https://github.com/ctomkow/swITch)
-* (future) netmiko 2.1.1
 
 ### USAGE
 
