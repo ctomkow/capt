@@ -1,3 +1,0 @@
-# simple travis ci file
-language: python
-script: python3 ./capt/tests/test_capt.py
