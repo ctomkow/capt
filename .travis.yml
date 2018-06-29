@@ -4,6 +4,8 @@ language: python
 python:
   - "3.5"
   
-install: pip install urllib3
+install:
+  - pip install urllib3
+  - pip install requests
   
 script: python3 -m unittest discover -s tests
