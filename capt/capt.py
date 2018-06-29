@@ -16,9 +16,10 @@ import logging
 import datetime
 
 # local imports
-import config
-from upgrade_code import upgrade_code
-from test_upgrade_code import test_upgrade_code
+# for unit testing, need the relative imports
+from .config import * # needed vs. 'import config' for unit testing
+from .upgrade_code import upgrade_code
+from .test_upgrade_code import test_upgrade_code
 
 
 class capt:

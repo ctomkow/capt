@@ -12,8 +12,8 @@ import sys
 import platform
 
 # local imports
-from connector import connector
-from switch import switch
+from .connector import connector
+from .switch import switch
 
 
 class upgrade_code:
