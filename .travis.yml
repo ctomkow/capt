@@ -1,5 +1,11 @@
 # simple travis ci file
 language: python
+
 python:
   - "3.5"
-script: python3 -m unittest discover -s tests
+  
+install:
+  - pip install urllib3
+  
+script:
+  - python3 -m unittest discover -s tests
