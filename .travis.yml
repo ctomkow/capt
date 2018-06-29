@@ -1,3 +1,5 @@
 # simple travis ci file
 language: python
+python:
+  - "3.5"
 script: python3 ./capt/tests/test_capt.py
