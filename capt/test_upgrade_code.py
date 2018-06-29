@@ -10,7 +10,10 @@ import time
 import sys
 
 # local imports
-from .upgrade_code import upgrade_code
+try:
+    from .upgrade_code import upgrade_code
+except ImportError:
+    from upgrade_code import upgrade_code
 
 
 class test_upgrade_code(upgrade_code):

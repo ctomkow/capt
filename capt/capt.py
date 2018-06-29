@@ -17,9 +17,14 @@ import datetime
 
 # local imports
 # for unit testing, need the relative imports
-from .config import * # needed vs. 'import config' for unit testing
-from .upgrade_code import upgrade_code
-from .test_upgrade_code import test_upgrade_code
+try:
+    from .config import * # needed vs. 'import config' for unit testing
+    from .upgrade_code import upgrade_code
+    from .test_upgrade_code import test_upgrade_code
+except ImportError:
+    from config import *
+    from upgrade_code import upgrade_code
+    from test_upgrade_code import test_upgrade_code
 
 
 class capt:
