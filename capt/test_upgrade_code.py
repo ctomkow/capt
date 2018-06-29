@@ -12,7 +12,7 @@ import sys
 # local imports
 try:
     from .upgrade_code import upgrade_code
-except ImportError:
+except ImportError, SystemError:
     from upgrade_code import upgrade_code
 
 

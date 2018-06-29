@@ -15,7 +15,7 @@ import platform
 try:
     from .connector import connector
     from .switch import switch
-except ImportError:
+except ImportError, SystemError:
     from connector import connector
     from switch import switch
 
