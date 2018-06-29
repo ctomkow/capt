@@ -22,7 +22,7 @@ try:
     from .upgrade_code import upgrade_code
     from .test_upgrade_code import test_upgrade_code
 except (ImportError, SystemError):
-    from config import *
+    import config
     from upgrade_code import upgrade_code
     from test_upgrade_code import test_upgrade_code
 
