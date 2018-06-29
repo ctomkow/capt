@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ctomkow/capt.svg?branch=master)](https://travis-ci.org/ctomkow/capt)
+
 # Installation and Usage 
 
 ## Cisco APi Tool (capt): a nettool built on Cisco Prime's API
