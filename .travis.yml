@@ -6,5 +6,6 @@ python:
   
 install:
   - pip install requests
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)
   
 script: python3 -m unittest discover -s tests
