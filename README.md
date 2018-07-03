@@ -8,7 +8,7 @@ Aye Aye Capt.
 
 I can't hear yoooouu!
 
-The tool currently (as of v0.1.0) only verifies that code upgrades on Cisco switches were successful. This is mainly done through Cisco Prime Infrastructure's REST API. The code_upgrade method pulls the 'before' state of a switch, reloads the switch to initiate the code upgrade, then pulls the 'after' state of the switch. Comparison of the two states is done to ensure nothing is broken. This upgrade procedure can be scaled up by having concurrent processes.
+The tool currently (as of v0.1.0) only verifies that code upgrades on Cisco switches were successful. This is mainly done through Cisco Prime Infrastructure's REST API. The code_upgrade method pulls the 'before' state of a switch, reloads the switch to initiate the code upgrade, then pulls the 'after' state of the switch. Comparison of the two states is done to ensure nothing is broken. This upgrade procedure can be scaled up by having concurrent threads.
 
 Other functions are a work in progress, such as pushing configuration to switches.
 
@@ -17,7 +17,7 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 ### DEVICE SUPPORT
 
-* Cisco 3650 switch
+* Cisco switches
 
 ### PROCEDURE SUPPORT
 
@@ -25,7 +25,6 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 ### FUTURE DEVELOPMENT
 
-* Verify functionality on other Cisco switches
 * Implement more procedures
 * (see bug tracking for other enhancements)
 
@@ -33,12 +32,11 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 * Cisco Prime Infrastructure 3.3+
 * Python 3.5+
+* Requests 2.9.1+
 
 ### USAGE
 
 cli subcommands are a work in progress (think, `ip addr show`).
-
-
 
 If cli commands are not given, the configuration is done through a configuration file; `config.text`
 
@@ -59,17 +57,18 @@ type=switch
 concurrent=1
 ipv4_address:
     20.20.20.20
+    20.20.20.21
+    20.20.20.22
 
 # specify one procedure (yes)
 [PROCEDURE]
 code_upgrade:yes
+test_code_upgrade:
 push_command:
 push_configuration:
-test_api_calls:
 
 [CONF]
 command:
-
 configuration:
 
 ```
