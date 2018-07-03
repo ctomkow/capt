@@ -47,7 +47,7 @@ class Connector:
 
     #--- PUT calls (usually requires templates built in Prime to execute)
 
-    def reload_switch(self, dev_id, timeout):
+    def reload(self, dev_id, timeout):
 
         url = "https://{}/webacs/api/v3/op/cliTemplateConfiguration/deployTemplateThroughJob.json".format(cpi_ipv4_address)
         payload = \
@@ -113,13 +113,13 @@ class Connector:
         return result.json()['queryResponse']['entity'][0]['devicesDTO']['collectionTime']
 
     # device id is needed for most future API calls
-    def get_switch_id(self, dev_ipv4_address):
+    def get_dev_id(self, dev_ipv4_address):
 
         url = "https://{}/webacs/api/v3/data/Devices.json?ipAddress=\"{}\"".format(cpi_ipv4_address, dev_ipv4_address)
         result = self.error_handling(requests.get, 5, url, False, username, password)
         return result.json()['queryResponse']['entityId'][0]['$']
 
-    def get_access_point_id(self, name):
+    def get_ap_id(self, name):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/AccessPoints.json?name=\"{}\"".format(cpi_ipv4_address, name)
@@ -221,13 +221,13 @@ class Connector:
         result = self.error_handling(requests.get, 5, url, False, username, password)
         print(json.dumps(result.json(), indent=4))
 
-    def print_info(self, dev_id):
+    def print_dev_info(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, username, password)
         print(json.dumps(result.json(), indent=4))
 
-    def print_detailed_info(self, dev_id):
+    def print_dev_detailed_info(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, username, password)
