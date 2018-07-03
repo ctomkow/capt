@@ -8,17 +8,18 @@
 # system imports
 import unittest
 import logging
+from unittest.mock import patch
 
 # local imports
-from capt import capt
-from unittest.mock import patch
+from capt.capt import capt
+# from package.module import class
 
 class test_capt(unittest.TestCase):
 
 
     def setUp(self):
 
-        self.test_logger = capt.capt.set_logger(self, 'test_logger', logging.DEBUG)
+        self.test_logger = capt.set_logger(self, 'test_logger', logging.DEBUG)
         self.proc_dict = {'test_code_upgrade': 'yes'}
         self.devices = ['10.10.10.10']
 
@@ -27,10 +28,10 @@ class test_capt(unittest.TestCase):
 
         for i in range(-1,8):
             if i <= 0 or i >= 6:
-                self.assertFalse(capt.capt.config_validated(
+                self.assertFalse(capt.config_validated(
                     self, self.proc_dict, self.devices, i, self.test_logger))
             if i >= 1 and i <= 5:
-                self.assertTrue(capt.capt.config_validated(
+                self.assertTrue(capt.config_validated(
                         self, self.proc_dict, self.devices, 5, self.test_logger))
 
 
