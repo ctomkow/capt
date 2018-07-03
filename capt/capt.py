@@ -20,11 +20,11 @@ import datetime
 try:
     from . import config # needed vs. 'import config' for unit testing
     from .upgrade_code import upgrade_code
-    from .test_upgrade_code import test_upgrade_code
+    from .mock_upgrade_code import mock_upgrade_code
 except (ImportError, SystemError):
     import config
     from upgrade_code import upgrade_code
-    from test_upgrade_code import test_upgrade_code
+    from mock_upgrade_code import mock_upgrade_code
 
 
 class capt:
@@ -137,8 +137,8 @@ class capt:
                         t = threading.Thread(target=upgrade_code, args=(switch_ipv4_address_list[0], config.username,
                                                                              config.password, config.cpi_ipv4_address, logger))
                     elif 'test_code_upgrade' in proc_dict:
-                        t = threading.Thread(target=test_upgrade_code, args=(switch_ipv4_address_list[0], config.username,
-                                                                               config.password, config.cpi_ipv4_address, logger))
+                        t = threading.Thread(target=mock_upgrade_code, args=(switch_ipv4_address_list[0], config.username,
+                                                                             config.password, config.cpi_ipv4_address, logger))
                     elif 'push_command' in proc_dict:
                         t = threading.Thread(target=self.push_command(switch_ipv4_address_list[0], config.config_command, logger))
                     elif 'push_configuration' in proc_dict:

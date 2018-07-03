@@ -16,7 +16,7 @@ except (ImportError, SystemError):
     from upgrade_code import upgrade_code
 
 
-class test_upgrade_code(upgrade_code):
+class mock_upgrade_code(upgrade_code):
 
 
     # override parent method
