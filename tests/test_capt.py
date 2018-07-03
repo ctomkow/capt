@@ -31,39 +31,39 @@ class test_capt(unittest.TestCase):
 
         self.assertTrue(capt.set_logger(self, 'T.E.S.T', logging.INFO))
 
-    def test_proc_num_is_valid(self):
+    def test_valid_proc_num(self):
 
-        self.assertFalse(capt.proc_num_is_valid(self, self.empty_dict, self.test_logger))
-        self.assertFalse(capt.proc_num_is_valid(self, self.two_dict, self.test_logger))
-        self.assertTrue(capt.proc_num_is_valid(self, self.one_dict, self.test_logger))
+        self.assertFalse(capt.valid_proc_num(self, self.empty_dict, self.test_logger))
+        self.assertFalse(capt.valid_proc_num(self, self.two_dict, self.test_logger))
+        self.assertTrue(capt.valid_proc_num(self, self.one_dict, self.test_logger))
 
-    def test_concurrent_num_is_valid(self):
+    def test_valid_concurrent_num(self):
 
         for i in range(-1,8):
             if i <= 0 or i >= 6:
-                self.assertFalse(capt.concurrent_num_is_valid(self, i, self.test_logger))
+                self.assertFalse(capt.valid_concurrent_num(self, i, self.test_logger))
             if i >= 1 and i <= 5:
-                self.assertTrue(capt.concurrent_num_is_valid(self, i, self.test_logger))
+                self.assertTrue(capt.valid_concurrent_num(self, i, self.test_logger))
 
     @patch('builtins.input', return_value='yes')
-    def test_proc_type_is_valid(self, input):
+    def test_valid_proc_type(self, input):
 
-        self.assertFalse(capt.proc_type_is_valid(self, self.empty_dict, self.devices, self.test_logger))
-        self.assertFalse(capt.proc_type_is_valid(self, self.one_bad_dict, self.devices, self.test_logger))
-        self.assertTrue(capt.proc_type_is_valid(self, self.one_dict, self.devices, self.test_logger))
-        self.assertTrue(capt.proc_type_is_valid(self, self.one_test_dict, self.devices, self.test_logger))
+        self.assertFalse(capt.valid_proc_type(self, self.empty_dict, self.devices, self.test_logger))
+        self.assertFalse(capt.valid_proc_type(self, self.one_bad_dict, self.devices, self.test_logger))
+        self.assertTrue(capt.valid_proc_type(self, self.one_dict, self.devices, self.test_logger))
+        self.assertTrue(capt.valid_proc_type(self, self.one_test_dict, self.devices, self.test_logger))
 
     @patch('builtins.input', return_value='x')
-    def test_proc_type_is_valid_a(self, input):
+    def test_valid_proc_type_a(self, input):
 
-        self.assertFalse(capt.proc_type_is_valid(self, self.one_dict, self.devices, self.test_logger))
-        self.assertFalse(capt.proc_type_is_valid(self, self.one_test_dict, self.devices, self.test_logger))
+        self.assertFalse(capt.valid_proc_type(self, self.one_dict, self.devices, self.test_logger))
+        self.assertFalse(capt.valid_proc_type(self, self.one_test_dict, self.devices, self.test_logger))
 
     @patch('builtins.input', return_value='')
-    def test_proc_type_is_valid_b(self, input):
+    def test_valid_proc_type_b(self, input):
 
-        self.assertFalse(capt.proc_type_is_valid(self, self.one_dict, self.devices, self.test_logger))
-        self.assertFalse(capt.proc_type_is_valid(self, self.one_test_dict, self.devices, self.test_logger))
+        self.assertFalse(capt.valid_proc_type(self, self.one_dict, self.devices, self.test_logger))
+        self.assertFalse(capt.valid_proc_type(self, self.one_test_dict, self.devices, self.test_logger))
 
 
 if __name__ == '__main__':

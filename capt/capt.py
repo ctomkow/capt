@@ -101,15 +101,15 @@ class capt:
             proc_dict['push_configuration'] = config.proc_push_configuration
 
         # Validate user's configuration file
-        if not self.proc_num_is_valid(proc_dict, sys_logger):
+        if not self.valid_proc_num(proc_dict, sys_logger):
             sys_logger.critical("procedure selection failed")
             sys_logger.critical("config.text validation failed")
             sys.exit(1)
-        if not self.concurrent_num_is_valid(max_threads, sys_logger):
+        if not self.valid_concurrent_num(max_threads, sys_logger):
             sys_logger.critical("concurrent threads can only be between 1 and 5 (inclusive)")
             sys_logger.critical("config.text validation failed")
             sys.exit(1)
-        if not self.proc_type_is_valid(proc_dict, switch_ipv4_address_list, sys_logger):
+        if not self.valid_proc_type(proc_dict, switch_ipv4_address_list, sys_logger):
             sys_logger.critical("procedure type selection failed")
             sys_logger.critical("config.text validation failed")
             sys.exit(1)
@@ -183,14 +183,14 @@ class capt:
         logger.addHandler(screen_handler)
         return logger
 
-    def proc_num_is_valid(self, proc_dict, sys_logger):
+    def valid_proc_num(self, proc_dict, sys_logger):
         if len(proc_dict) > 1 or len(proc_dict) < 1:
             sys_logger.debug("Procedures selected:{}".format(proc_dict))
             return False
         else:
             return True
 
-    def concurrent_num_is_valid(self, max_concurrent, sys_logger):
+    def valid_concurrent_num(self, max_concurrent, sys_logger):
 
         if max_concurrent > 5 or max_concurrent < 1:
             sys_logger.debug("Max concurrent selected:{}".format(max_concurrent))
@@ -198,7 +198,7 @@ class capt:
         else:
             return True
 
-    def proc_type_is_valid(self, proc_dict, devices, sys_logger):
+    def valid_proc_type(self, proc_dict, devices, sys_logger):
 
         if 'code_upgrade' in proc_dict:
             sys_logger.info("{} is selected.".format(proc_dict))
