@@ -27,7 +27,7 @@ class MockUpgradeCode(UpgradeCode):
         #      PRE_PROCESSING      #
         # --------------------------#
 
-        sw.id = api_call.get_dev_id(sw.ipv4_address)
+        sw.id = api_call.get_sw_id(sw.ipv4_address)
 
         # --------------------------#
         #   PRE_STATE_COLLECTION   #
@@ -136,7 +136,7 @@ class MockUpgradeCode(UpgradeCode):
         for a in sw.access_points:
             a = a.split('.')[0]  # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
             logger.debug("access point: {}".format(a))
-            if self.ping(api_call.get_access_point_ip(api_call.get_ap_id(a)), logger):
+            if self.ping(api_call.get_ap_ip(api_call.get_ap_id(a)), logger):
                 sw.test_ap.append(a)
                 break  # access point is pingable, so only keep this one in the list
             else:
@@ -306,7 +306,7 @@ class MockUpgradeCode(UpgradeCode):
         # test access point connectivity
         for a in sw.test_ap:
             logger.debug("access point: {}".format(a))
-            if not self.ping(api_call.get_access_point_ip(api_call.get_ap_id(a)), logger):
+            if not self.ping(api_call.get_ap_ip(api_call.get_ap_id(a)), logger):
                 logger.error("{} is not pingable".format(a))
 
         logger.debug("CDP neighbour access points: {}".format(sw.test_ap))

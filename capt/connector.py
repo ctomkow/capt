@@ -113,7 +113,7 @@ class Connector:
         return result.json()['queryResponse']['entity'][0]['devicesDTO']['collectionTime']
 
     # device id is needed for most future API calls
-    def get_dev_id(self, dev_ipv4_address):
+    def get_sw_id(self, dev_ipv4_address):
 
         url = "https://{}/webacs/api/v3/data/Devices.json?ipAddress=\"{}\"".format(cpi_ipv4_address, dev_ipv4_address)
         result = self.error_handling(requests.get, 5, url, False, username, password)
@@ -123,6 +123,12 @@ class Connector:
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/AccessPoints.json?name=\"{}\"".format(cpi_ipv4_address, name)
+        result = self.error_handling(requests.get, 5, url, False, username, password)
+        return result.json()['queryResponse']['entityId'][0]['$']
+
+    def get_dev_id(self, address):
+
+        url = "https://{}/webacs/api/v3/data/Clients.json?ipAddress=\"{}\"".format(cpi_ipv4_address, address)
         result = self.error_handling(requests.get, 5, url, False, username, password)
         return result.json()['queryResponse']['entityId'][0]['$']
 
@@ -152,18 +158,25 @@ class Connector:
         result = self.error_handling(requests.get, 5, url, False, username, password)
         return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['cdpNeighbors']['cdpNeighbor']
 
-    def get_switch_ports(self, dev_id):
+    def get_sw_ports(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, username, password)
         return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces']['ethernetInterface']
 
-    def get_access_point_ip(self, dev_id):
+    def get_ap_ip(self, dev_id):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/AccessPoints/{}.json".format(cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, username, password)
         return result.json()['queryResponse']['entity'][0]['accessPointsDTO']['ipAddress']
+
+    def get_dev_details(self, dev_id):
+
+        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
+        url = "https://{}/webacs/api/v3/data/ClientDetails/{}.json".format(cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, 5, url, False, username, password)
+        return result
 
     # a decorator-like method for error handling
     def error_handling(self, api_call_method, base_case, *args):

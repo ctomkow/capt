@@ -21,10 +21,12 @@ try:
     from . import config # needed vs. 'import config' for unit testing
     from .upgrade_code import UpgradeCode
     from .mock_upgrade_code import MockUpgradeCode
+    from .device import Device
 except (ImportError, SystemError):
     import config
     from upgrade_code import UpgradeCode
     from mock_upgrade_code import MockUpgradeCode
+    from device import Device
 
 
 class Capt:
@@ -40,6 +42,13 @@ class Capt:
 
         subparsers = parser.add_subparsers(dest="sub_command")
 
+        #  -----
+        # capt get
+        get = subparsers.add_parser('get', help="get client device information")
+        # capt get "20.20.20.20 / 00:11:22:33:44:55"
+        get.add_argument('address', help="specify the device ipv4 address")
+        get.set_defaults(func=Device)
+        get_subparsers = get.add_subparsers()
         # #  -----
         # # capt push
         # push = subparsers.add_parser('push', help="send configuration to switch")
@@ -72,8 +81,9 @@ class Capt:
         args = parser.parse_args()
 
         if args.sub_command:
-            logger = self.set_logger(args.ip_address, logging.INFO)
-            args.func(args, logger)
+            config.load_base_conf()
+            logger = self.set_logger(args.address, logging.INFO)
+            args.func(args.address, config.username, config.password, config.cpi_ipv4_address, logger)
         else:
             config.load_configuration()
             self.main(args.verbose)
