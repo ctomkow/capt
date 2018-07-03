@@ -14,7 +14,7 @@ class test_upgrade_code(unittest.TestCase):
 
         self.test_logger = capt.set_logger(self, 'test_logger', logging.DEBUG)
         self.loopback = "127.0.0.1"
-        self.blackhole = "0.0.0.0"
+        self.blackhole = "203.0.113.0" # reserved for documentation (0.0.0.0 is localhost on linux)
 
         self.test_list1 = ['a', 'b']
         self.test_list2 = ['b', 'c']
