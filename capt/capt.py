@@ -19,15 +19,15 @@ import datetime
 # for unit testing, need the relative imports
 try:
     from . import config # needed vs. 'import config' for unit testing
-    from .upgrade_code import upgrade_code
-    from .mock_upgrade_code import mock_upgrade_code
+    from .upgrade_code import UpgradeCode
+    from .mock_upgrade_code import MockUpgradeCode
 except (ImportError, SystemError):
     import config
-    from upgrade_code import upgrade_code
-    from mock_upgrade_code import mock_upgrade_code
+    from upgrade_code import UpgradeCode
+    from mock_upgrade_code import MockUpgradeCode
 
 
-class capt:
+class Capt:
 
 
     def __init__(self):
@@ -134,11 +134,11 @@ class capt:
 
                 try:
                     if 'code_upgrade' in proc_dict:
-                        t = threading.Thread(target=upgrade_code, args=(switch_ipv4_address_list[0], config.username,
-                                                                             config.password, config.cpi_ipv4_address, logger))
+                        t = threading.Thread(target=UpgradeCode, args=(switch_ipv4_address_list[0], config.username,
+                                                                       config.password, config.cpi_ipv4_address, logger))
                     elif 'test_code_upgrade' in proc_dict:
-                        t = threading.Thread(target=mock_upgrade_code, args=(switch_ipv4_address_list[0], config.username,
-                                                                             config.password, config.cpi_ipv4_address, logger))
+                        t = threading.Thread(target=MockUpgradeCode, args=(switch_ipv4_address_list[0], config.username,
+                                                                           config.password, config.cpi_ipv4_address, logger))
                     elif 'push_command' in proc_dict:
                         t = threading.Thread(target=self.push_command(switch_ipv4_address_list[0], config.config_command, logger))
                     elif 'push_configuration' in proc_dict:
@@ -230,4 +230,4 @@ class capt:
 
 if __name__ == '__main__':
 
-    capt()
+    Capt()

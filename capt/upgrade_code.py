@@ -13,20 +13,20 @@ import platform
 
 # local imports
 try:
-    from .connector import connector
-    from .switch import switch
+    from .connector import Connector
+    from .switch import Switch
 except (ImportError, SystemError):
-    from connector import connector
-    from switch import switch
+    from connector import Connector
+    from switch import Switch
 
 
-class upgrade_code:
+class UpgradeCode:
 
 
     def __init__(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
-        api_call = connector(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        sw = switch()
+        api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        sw = Switch()
         sw.ipv4_address = switch_ipv4_address
         self.upgrade_code(api_call, sw, logger)
 

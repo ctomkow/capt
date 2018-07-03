@@ -11,12 +11,12 @@ import sys
 
 # local imports
 try:
-    from .upgrade_code import upgrade_code
+    from .upgrade_code import UpgradeCode
 except (ImportError, SystemError):
-    from upgrade_code import upgrade_code
+    from upgrade_code import UpgradeCode
 
 
-class mock_upgrade_code(upgrade_code):
+class MockUpgradeCode(UpgradeCode):
 
 
     # override parent method
