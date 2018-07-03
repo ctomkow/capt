@@ -22,12 +22,15 @@ class Device:
     def device(self, api_call, dev_addr, logger):
 
         result = self.get_device_info(api_call, dev_addr, logger).json()
-        print("Switch      :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['deviceName']))
-        print("Interface   :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['clientInterface']))
-        print("Description :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['ifDescr']))
+
+
+        print("switch      :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['deviceName']))
+        print("interface   :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['clientInterface']))
+        print("description :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['ifDescr']))
         print("mac addr    :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['macAddress']))
 
     def get_device_info(self, api_call, dev_addr, logger):
 
         dev_id = api_call.get_dev_id(dev_addr)
         return api_call.get_dev_details(dev_id)
+
