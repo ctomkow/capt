@@ -18,7 +18,7 @@ import datetime
 # local imports
 # for unit testing, need the relative imports
 try:
-    from .config import * # needed vs. 'import config' for unit testing
+    from . import config # needed vs. 'import config' for unit testing
     from .upgrade_code import upgrade_code
     from .test_upgrade_code import test_upgrade_code
 except (ImportError, SystemError):
