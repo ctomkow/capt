@@ -27,6 +27,10 @@ class test_capt(unittest.TestCase):
         self.one_test_dict = {'test_code_upgrade': 'yes'}
         self.devices = ['10.10.10.10']
 
+    def test_set_logger(self):
+
+        self.assertTrue(capt.set_logger(self, 'T.E.S.T', logging.INFO))
+
     def test_proc_num_is_valid(self):
 
         self.assertFalse(capt.proc_num_is_valid(self, self.empty_dict, self.test_logger))

@@ -149,7 +149,6 @@ class capt:
 
                 threads.append(t)
                 t.start()
-                #t_count += 1
 
                 sys_logger.debug("Thread count after: {}".format(len(threads)))
                 sys_logger.debug("Threads: {}".format(threads))
