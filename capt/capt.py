@@ -101,8 +101,17 @@ class capt:
             proc_dict['push_configuration'] = config.proc_push_configuration
 
         # Validate user's configuration file
-        if not self.config_validated(proc_dict, switch_ipv4_address_list, max_threads, sys_logger):
-            sys_logger.critical("config.text validation failed!")
+        if not self.proc_num_is_valid(proc_dict, sys_logger):
+            sys_logger.critical("procedure selection failed")
+            sys_logger.critical("config.text validation failed")
+            sys.exit(1)
+        if not self.concurrent_num_is_valid(max_threads, sys_logger):
+            sys_logger.critical("concurrent threads can only be between 1 and 5 (inclusive)")
+            sys_logger.critical("config.text validation failed")
+            sys.exit(1)
+        if not self.proc_type_is_valid(proc_dict, switch_ipv4_address_list, sys_logger):
+            sys_logger.critical("procedure type selection failed")
+            sys_logger.critical("config.text validation failed")
             sys.exit(1)
 
         threads = []
@@ -175,14 +184,22 @@ class capt:
         logger.addHandler(screen_handler)
         return logger
 
-    def config_validated(self, proc_dict, devices, max_concurrent, sys_logger):
+    def proc_num_is_valid(self, proc_dict, sys_logger):
         if len(proc_dict) > 1 or len(proc_dict) < 1:
-            sys_logger.critical("Select only one procedure to run.")
+            sys_logger.debug("Procedures selected:{}".format(proc_dict))
             return False
+        else:
+            return True
+
+    def concurrent_num_is_valid(self, max_concurrent, sys_logger):
 
         if max_concurrent > 5 or max_concurrent < 1:
-            sys_logger.critical("'concurrent' should be between 1 and 5 (inclusive).")
+            sys_logger.debug("Max concurrent selected:{}".format(max_concurrent))
             return False
+        else:
+            return True
+
+    def proc_type_is_valid(self, proc_dict, devices, sys_logger):
 
         if 'code_upgrade' in proc_dict:
             sys_logger.info("{} is selected.".format(proc_dict))
@@ -208,7 +225,7 @@ class capt:
             sys_logger.error("{} is selected. This procedure is not implemented yet.".format(proc_dict))
             return False
         else:
-            sys_logger.debug("config.text validation failed within config_validated().")
+            sys_logger.debug("procedure types:{}".format(proc_dict))
             return False
 
 
