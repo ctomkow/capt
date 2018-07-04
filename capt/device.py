@@ -42,6 +42,10 @@ class Device:
 
     def find_dev_mac(self, dev_addr, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
+        # address manipulation
+        dev_addr = self.format_mac(self, dev_addr)
+
+
         api_call = DeviceConnector(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = api_call.get_id_by_mac(dev_addr, logger)
         result = api_call.get_json_details(dev_id)
@@ -64,3 +68,12 @@ class Device:
         print("description :{}".format(description))
         print("vlan        :{};{}".format(vlan, vlan_name))
         print("ip addr     :{}".format(ip_addr))
+
+    def format_mac(self, address):
+
+        tmp = address.replace(':', '') # remove all colons
+        address = tmp.replace('-', '') # remove all dashes
+        tmp = address.replace(' ', '') # remove all blanks
+        return ':'.join(a+b for a,b in zip(tmp[::2], tmp[1::2])) # insert colon every two chars
+
+
