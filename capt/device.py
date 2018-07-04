@@ -23,6 +23,8 @@ class Device:
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
         neigh_name = JsonParser.get_value(JsonParser, result, key_list, logger)
+        key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceIpAddress', 'address']
+        neigh_ip = JsonParser.get_value(JsonParser, result, key_list, logger)
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'clientInterface']
         interface = JsonParser.get_value(JsonParser, result, key_list, logger)
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'ifDescr']
@@ -34,7 +36,8 @@ class Device:
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'macAddress']
         mac_addr = JsonParser.get_value(JsonParser, result, key_list, logger)
 
-        print("switch      :{}".format(neigh_name))
+        print("switch fqdn :{}".format(neigh_name))
+        print("switch ip   :{}".format(neigh_ip))
         print("interface   :{}".format(interface))
         print("description :{}".format(description))
         print("vlan        :{};{}".format(vlan, vlan_name))
@@ -52,6 +55,8 @@ class Device:
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
         neigh_name = JsonParser.get_value(JsonParser, result, key_list, logger)
+        key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceIpAddress', 'address']
+        neigh_ip = JsonParser.get_value(JsonParser, result, key_list, logger)
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'clientInterface']
         interface = JsonParser.get_value(JsonParser, result, key_list, logger)
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'ifDescr']
@@ -63,7 +68,8 @@ class Device:
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'ipAddress', 'address']
         ip_addr = JsonParser.get_value(JsonParser, result, key_list, logger)
 
-        print("switch      :{}".format(neigh_name))
+        print("switch fqdn :{}".format(neigh_name))
+        print("switch ip   :{}".format(neigh_ip))
         print("interface   :{}".format(interface))
         print("description :{}".format(description))
         print("vlan        :{};{}".format(vlan, vlan_name))
