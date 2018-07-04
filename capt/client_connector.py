@@ -17,7 +17,7 @@ except (ImportError, SystemError):
     from connector import Connector
 
 
-class DeviceConnector(Connector):
+class ClientConnector(Connector):
 
 
     def get_id_by_ip(self, address, logger):

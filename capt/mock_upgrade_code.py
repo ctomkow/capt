@@ -20,14 +20,15 @@ class MockUpgradeCode(UpgradeCode):
 
 
     # override parent method
-    def upgrade_code(self, api_call, sw, logger):
-        logger.info("Initiate TEST.")
+    def upgrade_code(self, api_call, sw_api_call, ap_api_call, sw, logger):
+
+        logger.info("Initiate code upgrade.")
 
         # --------------------------#
         #      PRE_PROCESSING      #
         # --------------------------#
 
-        sw.id = api_call.get_sw_id(sw.ipv4_address)
+        sw.id = sw_api_call.get_id(sw.ipv4_address)
 
         # --------------------------#
         #   PRE_STATE_COLLECTION   #
@@ -38,7 +39,7 @@ class MockUpgradeCode(UpgradeCode):
         timeout = time.time() + 60 * 5  # 5 minute timeout starting now (this is before the code upgrade, so short timeout)
         logger.info("Timeout set to {} minutes.".format(5))
 
-        while not self.reachable(sw, api_call, logger):
+        while not self.reachable(sw, sw_api_call, logger):
             time.sleep(5)
             logger.debug("Switch reachability state: {}".format(sw.reachability))
             if time.time() > timeout:
@@ -50,20 +51,20 @@ class MockUpgradeCode(UpgradeCode):
 
         # 2. force sync of switch state
         logger.info("Synchronizing ...")
-        old_sync_time = api_call.get_sync_time(sw.id)
-        api_call.sync(sw.ipv4_address)  # force a sync!
+        old_sync_time = sw_api_call.get_sync_time(sw.id)
+        sw_api_call.sync(sw.ipv4_address)  # force a sync!
         timeout = time.time() + 60 * 20  # 20 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(20))
         time.sleep(20)  # don't test for sync status too soon (CPI delay and all that)
 
-        while not self.synchronized(sw, api_call, logger):
+        while not self.synchronized(sw, sw_api_call, logger):
             time.sleep(10)
             logger.debug("Switch sync state: {}".format(sw.sync_state))
             if time.time() > timeout:
                 logger.critical("Timed out. Sync failed.")
                 sys.exit(1)
 
-        new_sync_time = api_call.get_sync_time(sw.id)
+        new_sync_time = sw_api_call.get_sync_time(sw.id)
         if old_sync_time == new_sync_time:  # KEEP CODE! needed for corner case issue where force sync fails (e.g. code 03.03.03)
             logger.critical("Before and after sync time is the same. Sync failed.")
             sys.exit(1)
@@ -72,12 +73,12 @@ class MockUpgradeCode(UpgradeCode):
         logger.info("Synchronized!")
 
         # 3. get current software version
-        sw.pre_software_version = api_call.get_software_version(sw.id)
+        sw.pre_software_version = sw_api_call.get_software_version(sw.id)
         logger.info("Software version: {}".format(sw.pre_software_version))
 
         # 4. get stack members
         logger.info("Getting stack members ...")
-        sw.pre_stack_member = api_call.get_stack_members(sw.id)
+        sw.pre_stack_member = sw_api_call.get_stack_members(sw.id)
         sw.pre_stack_member = sorted(sw.pre_stack_member, key=lambda k: k['name'])  # sort the list of dicts
 
         # the switch 'name' (e.g. 'Switch 1') is used to test switch existence (e.g. powered off, not detected at all)
@@ -93,12 +94,13 @@ class MockUpgradeCode(UpgradeCode):
 
         # 6. get CDP neighbour state
         logger.info("Getting CDP neighbours ...")
-        sw.pre_cdp_neighbour = api_call.get_cdp_neighbours(sw.id)
+        sw.pre_cdp_neighbour = sw_api_call.get_cdp_neighbours(sw.id)
         sw.pre_cdp_neighbour = sorted(sw.pre_cdp_neighbour,
                                       key=lambda k: k['nearEndInterface'])  # sort the list of dicts
 
         # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
-        sw.pre_cdp_neighbour_nearend = [x['nearEndInterface'] for x in sw.pre_cdp_neighbour]  # extract nearEnd values
+        sw.pre_cdp_neighbour_nearend = [x['nearEndInterface'] for x in
+                                        sw.pre_cdp_neighbour]  # extract nearEnd values
 
         # logger.debug("CDP neighbours: {}".format(sw.pre_cdp_neighbour))
         logger.debug("CDP neighbours near-end: {}".format(sw.pre_cdp_neighbour_nearend))
@@ -136,7 +138,7 @@ class MockUpgradeCode(UpgradeCode):
         for a in sw.access_points:
             a = a.split('.')[0]  # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
             logger.debug("access point: {}".format(a))
-            if self.ping(api_call.get_ap_ip(api_call.get_ap_id(a)), logger):
+            if self.ping(ap_api_call.get_ip(ap_api_call.get_id(a)), logger):
                 sw.test_ap.append(a)
                 break  # access point is pingable, so only keep this one in the list
             else:
@@ -169,7 +171,7 @@ class MockUpgradeCode(UpgradeCode):
         timeout = time.time() + 60 * 60  # 60 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(60))
         count = 0
-        while not self.reachable(sw, api_call, logger):
+        while not self.reachable(sw, sw_api_call, logger):
             time.sleep(5)
             if count > 8:  # how often informational logging is displayed
                 logger.info("Switch reachability state: {}".format(sw.reachability))
@@ -186,20 +188,20 @@ class MockUpgradeCode(UpgradeCode):
 
         # 2. force sync of switch state
         logger.info("Synchronizing ...")
-        old_sync_time = api_call.get_sync_time(sw.id)
-        api_call.sync(sw.ipv4_address)  # force a sync!
+        old_sync_time = sw_api_call.get_sync_time(sw.id)
+        sw_api_call.sync(sw.ipv4_address)  # force a sync!
         timeout = time.time() + 60 * 20  # 20 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(20))
         time.sleep(20)  # don't test for sync status too soon (CPI delay and all that)
 
-        while not self.synchronized(sw, api_call, logger):
+        while not self.synchronized(sw, sw_api_call, logger):
             time.sleep(10)
             logger.debug("Switch sync state: {}".format(sw.sync_state))
             if time.time() > timeout:
                 logger.critical("Timed out. Sync failed.")
                 sys.exit(1)
 
-        new_sync_time = api_call.get_sync_time(sw.id)
+        new_sync_time = sw_api_call.get_sync_time(sw.id)
         if old_sync_time == new_sync_time:  # KEEP CODE! needed for corner case issue where force sync fails (e.g. code 03.03.03)
             logger.critical("Before and after sync time is the same. Sync failed.")
             sys.exit(1)
@@ -208,7 +210,7 @@ class MockUpgradeCode(UpgradeCode):
         logger.info("Synchronized!")
 
         # 3. get software version
-        sw.post_software_version = api_call.get_software_version(sw.id)
+        sw.post_software_version = sw_api_call.get_software_version(sw.id)
         logger.info("Software version: {}".format(sw.post_software_version))
 
         # compare
@@ -222,7 +224,7 @@ class MockUpgradeCode(UpgradeCode):
 
         # 4. get stack members
         logger.info("Getting stack members ...")
-        sw.post_stack_member = api_call.get_stack_members(sw.id)
+        sw.post_stack_member = sw_api_call.get_stack_members(sw.id)
         sw.post_stack_member = sorted(sw.post_stack_member, key=lambda k: k['name'])  # sort the list of dicts
 
         # the switch 'name' (e.g. 'Switch 1') is used to test switch existence (e.g. powered off, not detected at all)
@@ -238,8 +240,10 @@ class MockUpgradeCode(UpgradeCode):
 
         # compare states
         logger.info("Comparing stack member states ...")
-        pre_name_diff, post_name_diff = self.compare_list(sw.pre_stack_member_name, sw.post_stack_member_name, logger)
-        pre_desc_diff, post_desc_diff = self.compare_list(sw.pre_stack_member_desc, sw.post_stack_member_desc, logger)
+        pre_name_diff, post_name_diff = self.compare_list(sw.pre_stack_member_name, sw.post_stack_member_name,
+                                                          logger)
+        pre_desc_diff, post_desc_diff = self.compare_list(sw.pre_stack_member_desc, sw.post_stack_member_desc,
+                                                          logger)
 
         if not pre_name_diff and not post_name_diff and not pre_desc_diff and not post_desc_diff:
             logger.info("Stack members are the same pre/post.")
@@ -260,12 +264,13 @@ class MockUpgradeCode(UpgradeCode):
 
         # 6. get CDP neighbour state
         logger.info("Getting CDP neighbours ...")
-        sw.post_cdp_neighbour = api_call.get_cdp_neighbours(sw.id)
+        sw.post_cdp_neighbour = sw_api_call.get_cdp_neighbours(sw.id)
         sw.post_cdp_neighbour = sorted(sw.post_cdp_neighbour,
                                        key=lambda k: k['nearEndInterface'])  # sort the list of dicts
 
         # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
-        sw.post_cdp_neighbour_nearend = [x['nearEndInterface'] for x in sw.post_cdp_neighbour]  # extract nearEnd values
+        sw.post_cdp_neighbour_nearend = [x['nearEndInterface'] for x in
+                                         sw.post_cdp_neighbour]  # extract nearEnd values
 
         # logger.debug("CDP neighbours: {}".format(sw.post_cdp_neighbour))
         logger.debug("CDP neighbours near-end: {}".format(sw.post_cdp_neighbour_nearend))
@@ -306,7 +311,7 @@ class MockUpgradeCode(UpgradeCode):
         # test access point connectivity
         for a in sw.test_ap:
             logger.debug("access point: {}".format(a))
-            if not self.ping(api_call.get_ap_ip(api_call.get_ap_id(a)), logger):
+            if not self.ping(ap_api_call.get_ip(ap_api_call.get_id(a)), logger):
                 logger.error("{} is not pingable".format(a))
 
         logger.debug("CDP neighbour access points: {}".format(sw.test_ap))
@@ -314,5 +319,3 @@ class MockUpgradeCode(UpgradeCode):
 
         logger.info("State comparision complete. Check all 'error', and 'critical' messages.")
         return True
-
-

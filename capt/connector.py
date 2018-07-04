@@ -34,46 +34,6 @@ class Connector:
 
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
-    #--- POST calls
-
-    # Forcing a sync is broken only with switches on IOS-XE 03.03.03 code base
-    def sync(self, dev_ipv4_address):
-
-        url = "https://{}/webacs/api/v3/op/devices/syncDevices.json".format(self.cpi_ipv4_address)
-        payload = { "syncDevicesDTO" : { "devices" : { "device" : [ { "address" : "{}".format(dev_ipv4_address) } ] } } }
-        result = self.error_handling(requests.post, 5, url, False, self.username, self.password, payload)
-
-    #--- end POST calls
-
-    #--- PUT calls (usually requires templates built in Prime to execute)
-
-    def reload(self, dev_id, timeout):
-
-        url = "https://{}/webacs/api/v3/op/cliTemplateConfiguration/deployTemplateThroughJob.json".format(self.cpi_ipv4_address)
-        payload = \
-            {
-                "cliTemplateCommand": {
-                    "targetDevices": {
-                        "targetDevice": [{
-                            "targetDeviceID": "{}".format(dev_id),
-                            "variableValues": {
-                                "variableValue": [{
-                                    "name": "waittimeout",
-                                    "value": "{}".format(timeout)
-                                }]
-                            }
-                        }]
-                    },
-                "templateName": "API_CALL_reload_switch"
-                }
-            }
-        result = self.error_handling(requests.put, 5, url, False, self.username, self.password, payload)
-        job_id = result.json()['mgmtResponse']['cliTemplateCommandJobResult'][0]['jobName']
-        return job_id
-
-    #--- end PUT calls
-
     #--- Prime job execution and handling
 
     def job_complete(self, job_id):
@@ -98,73 +58,6 @@ class Connector:
             return False
 
     #--- end Prime job handling
-
-    #--- GET calls
-
-    def get_sync_status(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['devicesDTO']['collectionStatus']
-
-    def get_sync_time(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['devicesDTO']['collectionTime']
-
-    # device id is needed for most future API calls
-    def get_sw_id(self, dev_ipv4_address):
-
-        url = "https://{}/webacs/api/v3/data/Devices.json?ipAddress=\"{}\"".format(self.cpi_ipv4_address, dev_ipv4_address)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entityId'][0]['$']
-
-    def get_ap_id(self, name):
-
-        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
-        url = "https://{}/webacs/api/v3/data/AccessPoints.json?name=\"{}\"".format(self.cpi_ipv4_address, name)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entityId'][0]['$']
-
-    def get_reachability(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['devicesDTO']['reachability']
-
-    def get_software_version(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['devicesDTO']['softwareVersion']
-
-    # Switch chassis info
-    def get_stack_members(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['chassis']['chassis']
-
-    # CDP neighbour info gets populated when the device syncs
-    def get_cdp_neighbours(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['cdpNeighbors']['cdpNeighbor']
-
-    def get_sw_ports(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces']['ethernetInterface']
-
-    def get_ap_ip(self, dev_id):
-
-        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
-        url = "https://{}/webacs/api/v3/data/AccessPoints/{}.json".format(self.cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['accessPointsDTO']['ipAddress']
 
     # a decorator-like method for error handling
     def error_handling(self, api_call_method, base_case, *args):

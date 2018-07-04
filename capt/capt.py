@@ -21,12 +21,12 @@ try:
     from . import config # needed vs. 'import config' for unit testing
     from .upgrade_code import UpgradeCode
     from .mock_upgrade_code import MockUpgradeCode
-    from .device import Device
+    from .client import Client
 except (ImportError, SystemError):
     import config
     from upgrade_code import UpgradeCode
     from mock_upgrade_code import MockUpgradeCode
-    from device import Device
+    from client import Client
 
 
 class Capt:
@@ -50,12 +50,12 @@ class Capt:
         find_ip = find_subparsers.add_parser('ip', help="IPv4 address of client device")
         # capt find ip 20.20.20.20
         find_ip.add_argument('address', help="specify the device ipv4 address")
-        find_ip.set_defaults(func=Device.find_dev_ip)
+        find_ip.set_defaults(func=Client.find_dev_ip)
         # capt find mac
         find_mac = find_subparsers.add_parser('mac', help="mac address of client device")
         # capt find mac xx:xx:xx:xx:xx:xx
         find_mac.add_argument('address', help=("specify the device mac address"))
-        find_mac.set_defaults(func=Device.find_dev_mac)
+        find_mac.set_defaults(func=Client.find_dev_mac)
 
         # #  -----
         # # capt push
@@ -91,7 +91,7 @@ class Capt:
         if args.sub_command:
             config.load_base_conf()
             logger = self.set_logger(args.address, logging.INFO)
-            args.func(Device, args.address, config.username, config.password, config.cpi_ipv4_address, logger)
+            args.func(Client, args.address, config.username, config.password, config.cpi_ipv4_address, logger)
         else:
             config.load_configuration()
             self.main(args.verbose)
