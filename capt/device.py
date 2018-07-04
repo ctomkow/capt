@@ -26,10 +26,15 @@ class Device:
         interface = JsonParser.get_value(JsonParser, result, key_list, logger)
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'ifDescr']
         description = JsonParser.get_value(JsonParser, result, key_list, logger)
+        key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'vlan']
+        vlan = JsonParser.get_value(JsonParser, result, key_list, logger)
+        key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'vlanName']
+        vlan_name = JsonParser.get_value(JsonParser, result, key_list, logger)
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'macAddress']
         mac_addr = JsonParser.get_value(JsonParser, result, key_list, logger)
 
         print("switch      :{}".format(dev_name))
         print("interface   :{}".format(interface))
         print("description :{}".format(description))
+        print("vlan        :{};{}".format(vlan,vlan_name))
         print("mac addr    :{}".format(mac_addr))
