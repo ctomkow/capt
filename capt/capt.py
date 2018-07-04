@@ -43,12 +43,15 @@ class Capt:
         subparsers = parser.add_subparsers(dest="sub_command")
 
         #  -----
-        # capt get
-        get = subparsers.add_parser('get', help="get client device information")
-        # capt get "20.20.20.20 / 00:11:22:33:44:55"
-        get.add_argument('address', help="specify the device ipv4 address")
-        get.set_defaults(func=Device)
-        get_subparsers = get.add_subparsers()
+        # capt find
+        find = subparsers.add_parser('find', help="get client device information")
+        find_subparsers = find.add_subparsers()
+        # capt find ip
+        find_ip = find_subparsers.add_parser('ip', help="IPv4 address of client device")
+        # capt find ip 20.20.20.20
+        find_ip.add_argument('address', help="specify the device ipv4 address")
+        find_ip.set_defaults(func=Device.find_device)
+
         # #  -----
         # # capt push
         # push = subparsers.add_parser('push', help="send configuration to switch")
@@ -83,7 +86,7 @@ class Capt:
         if args.sub_command:
             config.load_base_conf()
             logger = self.set_logger(args.address, logging.INFO)
-            args.func(args.address, config.username, config.password, config.cpi_ipv4_address, logger)
+            args.func(Device, args.address, config.username, config.password, config.cpi_ipv4_address, logger)
         else:
             config.load_configuration()
             self.main(args.verbose)

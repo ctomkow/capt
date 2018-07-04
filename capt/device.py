@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 # system imports
-import ipaddress
-import json
 
 # local imports
 try:
@@ -16,14 +14,11 @@ except (ImportError, SystemError):
 class Device:
 
 
-    def __init__(self, dev_addr, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def find_device(self, dev_addr, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call = Connector(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        self.device(api_call, dev_addr, logger)
-
-    def device(self, api_call, dev_addr, logger):
-
-        result = self.get_device_info(api_call, dev_addr, logger).json()
+        dev_id = api_call.get_dev_id(dev_addr)
+        result = api_call.get_dev_details(dev_id).json()
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
         dev_name = JsonParser.get_value(JsonParser, result, key_list, logger)
@@ -38,9 +33,3 @@ class Device:
         print("interface   :{}".format(interface))
         print("description :{}".format(description))
         print("mac addr    :{}".format(mac_addr))
-
-    def get_device_info(self, api_call, dev_addr, logger):
-
-        dev_id = api_call.get_dev_id(dev_addr)
-        return api_call.get_dev_details(dev_id)
-

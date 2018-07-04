@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 # system imports
-import ipaddress
-import json
 
 # local imports
 
@@ -24,7 +22,3 @@ class JsonParser:
                 return json_data[key] # found result
             except KeyError:
                 return ""
-
-    def format_reload_payload(self):
-
-        pass
