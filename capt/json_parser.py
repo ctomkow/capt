@@ -16,9 +16,12 @@ class JsonParser:
             return ""
 
         if key_list:
-            return self.get_value(self, json_data[key], key_list, logger)
+            try:
+                return self.get_value(self, json_data[key], key_list, logger)
+            except KeyError: # fails on first lookup
+                return ""
         else:
             try:
                 return json_data[key] # found result
-            except KeyError:
+            except KeyError: # fails on last lookup
                 return ""

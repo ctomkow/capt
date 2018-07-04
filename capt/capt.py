@@ -50,7 +50,12 @@ class Capt:
         find_ip = find_subparsers.add_parser('ip', help="IPv4 address of client device")
         # capt find ip 20.20.20.20
         find_ip.add_argument('address', help="specify the device ipv4 address")
-        find_ip.set_defaults(func=Device.find_device)
+        find_ip.set_defaults(func=Device.find_dev_ip)
+        # capt find mac
+        find_mac = find_subparsers.add_parser('mac', help="mac address of client device")
+        # capt find mac xx:xx:xx:xx:xx:xx
+        find_mac.add_argument('address', help=("specify the device mac address"))
+        find_mac.set_defaults(func=Device.find_dev_mac)
 
         # #  -----
         # # capt push
@@ -177,7 +182,10 @@ class Capt:
             else:
                 time.sleep(5) # give delay before trying again
 
-    def set_logger(self, name, level):
+    def set_logger(self, nm, level):
+
+        # remove colons from name if exists (e.g. mac address)
+        name = nm.replace(":","")
 
         formatter = logging.Formatter(
             fmt='%(asctime)s : {} : %(levelname)-8s : %(message)s'.format(name),
