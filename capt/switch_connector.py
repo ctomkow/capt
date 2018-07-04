@@ -48,8 +48,8 @@ class SwitchConnector(Connector):
                 }
             }
         result = self.error_handling(requests.put, 5, url, False, self.username, self.password, payload)
-        job_id = result.json()['mgmtResponse']['cliTemplateCommandJobResult'][0]['jobName']
-        return job_id
+        key_list = ['mgmtResponse', 'cliTemplateCommandJobResult', 0, 'jobName']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
     # --- end PUT calls
 
@@ -57,7 +57,8 @@ class SwitchConnector(Connector):
         url = "https://{}/webacs/api/v3/data/Devices.json?ipAddress=\"{}\"".format(self.cpi_ipv4_address,
                                                                                    dev_ipv4_address)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entityId'][0]['$']
+        key_list = ['queryResponse', 'entityId', 0, '$']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
     #--- GET calls
 
@@ -65,42 +66,65 @@ class SwitchConnector(Connector):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['devicesDTO']['collectionStatus']
+        key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'collectionStatus']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
     def get_sync_time(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['devicesDTO']['collectionTime']
+        key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'collectionTime']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
     def get_reachability(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['devicesDTO']['reachability']
+        key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'reachability']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
     def get_software_version(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['devicesDTO']['softwareVersion']
+        key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'softwareVersion']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
     # Switch chassis info
     def get_stack_members(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['chassis']['chassis']
+        key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'chassis', 'chassis']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
     # CDP neighbour info gets populated when the device syncs
     def get_cdp_neighbours(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['cdpNeighbors']['cdpNeighbor']
+        key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'cdpNeighbors', 'cdpNeighbor']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
     def get_ports(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        return result.json()['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces']['ethernetInterface']
+        key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'ethernetInterfaces', 'ethernetInterface']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+
+    # --- print API calls, mainly for testing
+
+    def print_json_info(self, dev_id):
+
+        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        print(json.dumps(result.json(), indent=4))
+
+    def print_json_detailed_info(self, dev_id):
+
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        print(json.dumps(result.json(), indent=4))
+
+    # --- end print API calls, mainly for testing

@@ -40,7 +40,8 @@ class Connector:
 
         url = "https://{}/webacs/api/v3/data/JobSummary.json?jobName=\"{}\"".format(self.cpi_ipv4_address, job_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        result_list = result.json()['queryResponse']['entityId'][0]['@displayName']
+        key_list = ['queryResponse', 'entityId', 0, '@displayName']
+        result_list = JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
         status = [x.strip() for x in result_list.split(',')]
         if status[-1] == "COMPLETED": # if last element in list = COMPLETED
             return True
@@ -51,7 +52,8 @@ class Connector:
 
         url = "https://{}/webacs/api/v3/op/jobService/runhistory.json?jobName=\"{}\"".format(self.cpi_ipv4_address, job_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        status = result.json()['mgmtResponse']['job'][0]['runInstances']['runInstance'][0]['resultStatus']
+        key_list = ['mgmtResponse', 'job', 0, 'runInstances', 'runInstance', 0, 'resultStatus']
+        status = JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
         if status == "SUCCESS":
             return True
         elif status == "FAILURE":
@@ -112,24 +114,6 @@ class Connector:
 
     def test(self):
         url = "https://{}/webacs/api/v3/data/AccessPoints.json?name=\"ESQ_4-430_5e3c\""
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        print(json.dumps(result.json(), indent=4))
-
-    def print_dev_info(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        print(json.dumps(result.json(), indent=4))
-
-    def print_dev_detailed_info(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        print(json.dumps(result.json(), indent=4))
-
-    def print_client_summary(self, dev_id):
-
-        url = "https://{}/webacs/api/v3/data/Clients/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         print(json.dumps(result.json(), indent=4))
 
