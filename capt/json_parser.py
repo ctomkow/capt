@@ -18,17 +18,12 @@ class JsonParser:
             return ""
 
         if key_list:
-            try:
-                return self.get_value(self, json_data[key], key_list, logger)
-            except UnboundLocalError: # hit a key/value that doesn't exist
-                return ""
+            return self.get_value(self, json_data[key], key_list, logger)
         else:
             try:
-                value = json_data[key] # found result
+                return json_data[key] # found result
             except KeyError:
                 return ""
-            finally:
-                return value
 
     def format_reload_payload(self):
 
