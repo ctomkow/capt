@@ -2,6 +2,7 @@
 
 # system imports
 import json
+import socket
 
 # local imports
 try:
@@ -23,8 +24,11 @@ class Device:
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
         neigh_name = JsonParser.get_value(JsonParser, result, key_list, logger)
+
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceIpAddress', 'address']
-        neigh_ip = JsonParser.get_value(JsonParser, result, key_list, logger)
+        tmp = JsonParser.get_value(JsonParser, result, key_list, logger)
+        neigh_ip = socket.gethostbyname(tmp) # resolve fqdn to IP. Prime resolves IP if possible
+
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'clientInterface']
         interface = JsonParser.get_value(JsonParser, result, key_list, logger)
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'ifDescr']
@@ -36,7 +40,7 @@ class Device:
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'macAddress']
         mac_addr = JsonParser.get_value(JsonParser, result, key_list, logger)
 
-        print("switch fqdn :{}".format(neigh_name))
+        print("switch name :{}".format(neigh_name))
         print("switch ip   :{}".format(neigh_ip))
         print("interface   :{}".format(interface))
         print("description :{}".format(description))
@@ -55,8 +59,11 @@ class Device:
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
         neigh_name = JsonParser.get_value(JsonParser, result, key_list, logger)
+
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceIpAddress', 'address']
-        neigh_ip = JsonParser.get_value(JsonParser, result, key_list, logger)
+        tmp = JsonParser.get_value(JsonParser, result, key_list, logger)
+        neigh_ip = socket.gethostbyname(tmp) # resolve fqdn to IP. Prime resolves IP if possible
+
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'clientInterface']
         interface = JsonParser.get_value(JsonParser, result, key_list, logger)
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'ifDescr']
@@ -68,7 +75,7 @@ class Device:
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'ipAddress', 'address']
         ip_addr = JsonParser.get_value(JsonParser, result, key_list, logger)
 
-        print("switch fqdn :{}".format(neigh_name))
+        print("switch name :{}".format(neigh_name))
         print("switch ip   :{}".format(neigh_ip))
         print("interface   :{}".format(interface))
         print("description :{}".format(description))
