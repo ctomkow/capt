@@ -7,8 +7,10 @@ import json
 # local imports
 try:
     from .connector import Connector
+    from .json_parser import JsonParser
 except (ImportError, SystemError):
     from connector import Connector
+    from json_parser import JsonParser
 
 
 class Device:
@@ -23,11 +25,19 @@ class Device:
 
         result = self.get_device_info(api_call, dev_addr, logger).json()
 
+        key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
+        dev_name = JsonParser.get_value(JsonParser, result, key_list, logger)
+        key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'clientInterface']
+        interface = JsonParser.get_value(JsonParser, result, key_list, logger)
+        key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'ifDescr']
+        description = JsonParser.get_value(JsonParser, result, key_list, logger)
+        key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'macAddress']
+        mac_addr = JsonParser.get_value(JsonParser, result, key_list, logger)
 
-        print("switch      :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['deviceName']))
-        print("interface   :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['clientInterface']))
-        print("description :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['ifDescr']))
-        print("mac addr    :{}".format(result['queryResponse']['entity'][0]['clientDetailsDTO']['macAddress']))
+        print("switch      :{}".format(dev_name))
+        print("interface   :{}".format(interface))
+        print("description :{}".format(description))
+        print("mac addr    :{}".format(mac_addr))
 
     def get_device_info(self, api_call, dev_addr, logger):
 

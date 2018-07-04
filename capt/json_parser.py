@@ -10,32 +10,25 @@ import json
 class JsonParser:
 
 
-    def get_value(self, json_data, desired_key, logger):
+    def get_value(self, json_data, key_list, logger):
 
-        for key in json_data:
-            if isinstance(json_data[key], list):
-                for sub_key in json_data[key][0]:
-                    if sub_key == desired_key:  # found key
-                        return json_data[desired_key]
-            elif isinstance(json_data[key], dict):
-                for sub_key in json_data[key]:
-                    if isinstance(json_data[key], list):
-                        for sub_key in json_data[key][0]:
-                            if sub_key == desired_key:  # found key
-                                return json_data[desired_key]
-                    elif isinstance(json_data[key], dict):
-                        for sub_key in json_data[key]:
-                            if isinstance(json_data[key], list):
-                                for sub_key in json_data[key][0]:
-                                    if sub_key == desired_key:  # found key
-                                        return json_data[desired_key]
-                            elif isinstance(json_data[key], dict):
-                                for sub_key in json_data[key]:
-                                    if sub_key == desired_key:  # found key
-                                        return json_data[desired_key]
-            elif key == desired_key: # found key
-                return json_data[desired_key]
+        try:
+            key = key_list.pop(0)
+        except IndexError:
+            return ""
 
+        if key_list:
+            try:
+                return self.get_value(self, json_data[key], key_list, logger)
+            except UnboundLocalError: # hit a key/value that doesn't exist
+                return ""
+        else:
+            try:
+                value = json_data[key] # found result
+            except KeyError:
+                return ""
+            finally:
+                return value
 
     def format_reload_payload(self):
 
