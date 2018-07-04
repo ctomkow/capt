@@ -8,11 +8,9 @@ Aye Aye Capt.
 
 I can't hear yoooouu!
 
-The tool currently (as of v0.1.0) only verifies that code upgrades on Cisco switches were successful. This is mainly done through Cisco Prime Infrastructure's REST API. The code_upgrade method pulls the 'before' state of a switch, reloads the switch to initiate the code upgrade, then pulls the 'after' state of the switch. Comparison of the two states is done to ensure nothing is broken. This upgrade procedure can be scaled up by having concurrent threads.
+A network tool based on Cisco Prime Infrastructure's REST API. The code_upgrade method pulls the 'before' state of a switch, reloads the switch to initiate the code upgrade, then pulls the 'after' state of the switch. Comparison of the two states is done to ensure nothing is broken. This upgrade procedure can be scaled up by having concurrent threads. Other cli commands exist as well as one-off executions.
 
-Other functions are a work in progress, such as pushing configuration to switches.
-
-Note: the program does not push new code to the device. The code needs to be uploaded ahead of time so that a reboot is all that is necessary.
+Note: the program does not push new code to the device. The code needs to be uploaded ahead for the code_upgrade procedure to work (it reloads the switch).
 
 
 ### DEVICE SUPPORT
@@ -36,7 +34,10 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 ### USAGE
 
-cli subcommands are a work in progress (think, `ip addr show`).
+cli subcommands.
+
+`$python capt.py find ip x.x.x.x`
+`$python capt.py find mac xx:xx:xx:xx:xx:xx`
 
 If cli commands are not given, the configuration is done through a configuration file; `config.text`
 
