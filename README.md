@@ -37,6 +37,7 @@ Note: the program does not push new code to the device. The code needs to be upl
 cli subcommands.
 
 `$python capt.py find ip x.x.x.x`
+
 `$python capt.py find mac xx:xx:xx:xx:xx:xx`
 
 If cli commands are not given, the configuration is done through a configuration file; `config.text`
