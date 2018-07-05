@@ -30,12 +30,12 @@ class Capt:
 
         parser.add_argument('-v', '--verbose', action='store_true', required=False, help="debug output")
 
-        subparsers = parser.add_subparsers(dest="sub_command")
+        subparsers = parser.add_subparsers(dest="sub_cmd")
 
         #  -----
         # capt find
         find = subparsers.add_parser('find', help="get client device information")
-        find_subparsers = find.add_subparsers()
+        find_subparsers = find.add_subparsers(dest="find")
         # capt find ip
         find_ip = find_subparsers.add_parser('ip', help="IPv4 address of client device")
         # capt find ip 20.20.20.20
@@ -69,19 +69,35 @@ class Capt:
         # push_config_to.set_defaults(func=self.push_configuration)
         # #  -----
         #
-        # # capt upgrade
-        # upgrade = subparsers.add_parser('upgrade', help="initiate code upgrade and verify")
-        # # capt upgrade 10.10.10.10
-        #
-        # # test api calls
-        # test = subparsers.add_parser('test_api', help="API testing")
+        # capt upgrade
+        upgrade = subparsers.add_parser('upgrade', help="initiate code upgrade on switch")
+        # capt upgrade 20.20.20.20
+        upgrade.add_argument('address', help="specify the switch ipv4 address")
+        upgrade.set_defaults(func=UpgradeCode)
+        #  -----
+        # capt mock
+        mock = subparsers.add_parser('mock', help="initiate test procedure (non prod impacting)")
+        mock_subparsers = mock.add_subparsers(dest="mock")
+        # capt mock upgrade
+        mock_upgrade = mock_subparsers.add_parser('upgrade', help="initiate test code upgrade on switch (no reload)")
+        # capt mock upgrade 20.20.20.20
+        mock_upgrade.add_argument('address', help="specify the test device ipv4 address")
+        mock_upgrade.set_defaults(func=MockUpgradeCode)
 
         args = parser.parse_args()
 
-        if args.sub_command:
+        if args.sub_cmd == 'find':
             config.load_base_conf()
             logger = self.set_logger(args.address, logging.INFO)
             args.func(Find, args.address, config.username, config.password, config.cpi_ipv4_address, logger)
+        elif args.sub_cmd == 'upgrade':
+            config.load_base_conf()
+            logger = self.set_logger(args.address, logging.INFO)
+            args.func(args.address, config.username, config.password, config.cpi_ipv4_address, logger)
+        elif args.mock == 'upgrade':
+            config.load_base_conf()
+            logger = self.set_logger(args.address, logging.INFO)
+            args.func(args.address, config.username, config.password, config.cpi_ipv4_address, logger)
         else:
             config.load_configuration()
             self.main(args.verbose)
