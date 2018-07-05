@@ -10,10 +10,7 @@ import requests
 import json
 
 # local imports
-try:
-    from .json_parser import JsonParser
-except (ImportError, SystemError):
-    from json_parser import JsonParser
+from json_parser import JsonParser
 
 
 class Connector:

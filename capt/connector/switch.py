@@ -6,12 +6,8 @@ import json
 import requests
 
 # local imports
-try:
-    from .json_parser import JsonParser
-    from .connector.connector import Connector
-except (ImportError, SystemError):
-    from json_parser import JsonParser
-    from connector.connector import Connector
+from json_parser import JsonParser
+from connector.connector import Connector
 
 
 class Switch(Connector):
