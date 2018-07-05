@@ -4,8 +4,8 @@ import socket
 
 # local imports
 try:
-    from connector.client import Client
-    from json_parser import JsonParser
+    from .connector.client import Client
+    from .json_parser import JsonParser
 except (ImportError, SystemError):
     from connector.client import Client
     from json_parser import JsonParser

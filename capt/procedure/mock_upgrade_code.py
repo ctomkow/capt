@@ -8,7 +8,7 @@ import sys
 
 # local imports
 try:
-    from procedure.upgrade_code import UpgradeCode
+    from .procedure.upgrade_code import UpgradeCode
 except (ImportError, SystemError):
     from procedure.upgrade_code import UpgradeCode
 
