@@ -11,5 +11,4 @@ install:
   
 script:
   - python3 setup.py install
-  - python3 tests/procedure/test_upgrade_code.py
-  - python3 tests/test_capt.py
+  - python3 -m unittest discover -s tests
