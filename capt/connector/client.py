@@ -26,7 +26,14 @@ class Client(Connector):
         key_list = ['queryResponse', 'entityId', 0, '$']
         return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
-    def get_json_details(self, dev_id):
+    def get_json_basic(self, dev_id):
+
+        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
+        url = "https://{}/webacs/api/v3/data/Clients/{}.json".format(self.cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        return result.json()
+
+    def get_json_detailed(self, dev_id):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/ClientDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
@@ -35,7 +42,7 @@ class Client(Connector):
 
     # --- print API calls, mainly for testing
 
-    def print_client_summary(self, dev_id):
+    def print_client_basic(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Clients/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)

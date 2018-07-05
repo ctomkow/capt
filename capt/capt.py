@@ -44,13 +44,21 @@ class Capt:
         find_ip = find_subparsers.add_parser('ip', help="IPv4 address of client device")
         # capt find ip 20.20.20.20
         find_ip.add_argument('address', help="specify the device ipv4 address")
-        find_ip.set_defaults(func=Find.find_dev_ip)
+        find_ip.set_defaults(func=Find.find_client_ip)
         # capt find mac
         find_mac = find_subparsers.add_parser('mac', help="mac address of client device")
         # capt find mac xx:xx:xx:xx:xx:xx
-        find_mac.add_argument('address', help=("specify the device mac address"))
-        find_mac.set_defaults(func=Find.find_dev_mac)
-
+        find_mac.add_argument('address', help="specify the device mac address")
+        find_mac.set_defaults(func=Find.find_client_mac)
+        #  -----
+        # capt find ap
+        find_ap = find_subparsers.add_parser('ap', help="find access point")
+        find_ap_subparsers = find_ap.add_subparsers(dest="find_ap")
+        # capt find ap mac
+        find_ap_mac = find_ap_subparsers.add_parser('mac', help="mac address of access point")
+        # capt find ap mac xx:xx:xx:xx:xx:xx
+        find_ap_mac.add_argument('address', help="specify the access point mac address")
+        find_ap_mac.set_defaults(func=Find.find_ap_mac)
         # #  -----
         # # capt push
         # push = subparsers.add_parser('push', help="send configuration to switch")
@@ -87,12 +95,23 @@ class Capt:
         # capt mock upgrade 20.20.20.20
         mock_upgrade.add_argument('address', help="specify the test device ipv4 address")
         mock_upgrade.set_defaults(func=MockUpgradeCode)
+        #  -----
+        #  -----
+        #  -----
+        # capt test_api
+        test_api = subparsers.add_parser('test_api', help="initiate test api calls")
+        test_api.add_argument('address', help="specify the switch ipv4 address")
+        test_api.set_defaults(func=Find.find_ap_mac)
 
         argcomplete.autocomplete(parser)
 
         args = parser.parse_args()
 
-        if args.sub_cmd == 'find':
+        if args.sub_cmd == 'test_api':
+            config.load_base_conf()
+            logger = self.set_logger(args.address, logging.INFO)
+            args.func(Find, args.address, config.username, config.password, config.cpi_ipv4_address, logger)
+        elif args.sub_cmd == 'find':
             config.load_base_conf()
             logger = self.set_logger(args.address, logging.INFO)
             args.func(Find, args.address, config.username, config.password, config.cpi_ipv4_address, logger)
