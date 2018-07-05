@@ -1,6 +1,7 @@
 
 # system imports
 import socket
+import json
 
 # local imports
 from connector.client import Client
@@ -79,6 +80,7 @@ class Find:
         tmp = address.replace(':', '') # remove all colons
         address = tmp.replace('-', '') # remove all dashes
         tmp = address.replace(' ', '') # remove all blanks
-        return ':'.join(a+b for a,b in zip(tmp[::2], tmp[1::2])) # insert colon every two chars
+        address = tmp.replace('.', '') # remove all dots
+        return ':'.join(a+b for a,b in zip(address[::2], address[1::2])) # insert colon every two chars
 
 
