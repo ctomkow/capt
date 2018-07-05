@@ -9,4 +9,6 @@ sudo: required
 install:
   - pip install requests
   
-script: python3 -m unittest discover -s tests
+script:
+  - python3 setup.py install
+  - python3 -m unittest discover -s tests
