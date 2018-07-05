@@ -14,7 +14,11 @@ import datetime
 
 # local imports
 # for unit testing, need the relative imports
-import config
+try:
+    from . import config
+except (ImportError, SystemError):
+    import config
+
 from procedure.upgrade_code import UpgradeCode
 from procedure.mock_upgrade_code import MockUpgradeCode
 from function.find import Find
