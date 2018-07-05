@@ -15,7 +15,7 @@ class Find:
 
     def find_dev_ip(self, dev_addr, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
-        api_call = Find(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = api_call.get_id_by_ip(dev_addr)
         result = api_call.get_json_details(dev_id)
 
@@ -49,8 +49,7 @@ class Find:
         # address manipulation
         dev_addr = self.format_mac(self, dev_addr)
 
-
-        api_call = Find(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = api_call.get_id_by_mac(dev_addr)
         result = api_call.get_json_details(dev_id)
 
