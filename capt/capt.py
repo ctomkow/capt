@@ -12,6 +12,9 @@ import sys
 import logging
 import datetime
 
+# 3rd party imports
+import argcomplete
+
 # local imports
 import config
 from procedure.upgrade_code import UpgradeCode
@@ -27,6 +30,8 @@ class Capt:
         # arg parsing
         parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, add_help=True,
                                 description="""Cisco APi Tool: a nettool built on Cisco Prime's API""")
+
+        argcomplete.autocomplete(parser)
 
         parser.add_argument('-v', '--verbose', action='store_true', required=False, help="debug output")
 

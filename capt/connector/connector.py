@@ -4,10 +4,10 @@ import urllib3
 import time
 import sys
 import random
+import json
 
 # 3rd part imports
 import requests
-import json
 
 # local imports
 from json_parser import JsonParser
