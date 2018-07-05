@@ -31,8 +31,6 @@ class Capt:
         parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, add_help=True,
                                 description="""Cisco APi Tool: a nettool built on Cisco Prime's API""")
 
-        argcomplete.autocomplete(parser)
-
         parser.add_argument('-v', '--verbose', action='store_true', required=False, help="debug output")
 
         subparsers = parser.add_subparsers(dest="sub_cmd")
@@ -88,6 +86,8 @@ class Capt:
         # capt mock upgrade 20.20.20.20
         mock_upgrade.add_argument('address', help="specify the test device ipv4 address")
         mock_upgrade.set_defaults(func=MockUpgradeCode)
+
+        argcomplete.autocomplete(parser)
 
         args = parser.parse_args()
 
