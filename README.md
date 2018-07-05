@@ -7,22 +7,24 @@ Aye Aye Capt.
 
 I can't hear yoooouu!
 
-A network tool based on Cisco Prime Infrastructure's REST API. The code_upgrade method pulls the 'before' state of a switch, reloads the switch to initiate the code upgrade, then pulls the 'after' state of the switch. Comparison of the two states is done to ensure nothing is broken. This upgrade procedure can be scaled up by having concurrent threads. Other cli commands exist as well as one-off executions.
+A network tool based on Cisco Prime Infrastructure's REST API.
+
+The code_upgrade method pulls the 'before' state of a switch, reloads the switch to initiate the code upgrade, then pulls the 'after' state of the switch. Comparison of the two states is done to ensure nothing is broken. This upgrade procedure can be scaled up by having concurrent threads. Other cli commands exist as well as one-off executions.
 
 Note: the program does not push new code to the device. The code needs to be uploaded ahead for the code_upgrade procedure to work (it reloads the switch).
-
-
-### DEVICE SUPPORT
-
-* Cisco switches
 
 ### PROCEDURE SUPPORT
 
 * code_upgrade
 
+### FUNCTION SUPPORT
+
+* find ip
+* find mac
+
 ### FUTURE DEVELOPMENT
 
-* Implement more procedures
+* Implement more procedures and functions
 * (see bug tracking for other enhancements)
 
 ### DEPENDENCIES
@@ -30,19 +32,34 @@ Note: the program does not push new code to the device. The code needs to be upl
 * Cisco Prime Infrastructure 3.3+
 * Python 3.5+
 * Requests 2.9.1+
+* argcomplete 1.9.4+
 
 ### USAGE
 
-cli subcommands.
+The program can be configured with a conf file; `config.text`
+
+Once the conf file is made, simply run the program, `$python capt.py`
+For debug output, `$python capt.py -v`
+
+<br><br>
+
+capt can be executed through cli commands. Note: The `config.text` needs to still exist as the [DEFAULT] and [CPI] sections are required.
+
+cli function commands.
 
 `$python capt.py find ip x.x.x.x`
 
 `$python capt.py find mac xx:xx:xx:xx:xx:xx`
 
-If cli commands are not given, the configuration is done through a configuration file; `config.text`
+cli procedure commands.
 
-Then simply run the program, `python capt.py`
-For debug output, `python capt.py -v`
+`$python capt.py upgrade x.x.x.x`
+
+`$python capt.py mock upgrade x.x.x.x`
+
+<br><br>
+
+Sample `config.text`
 
 ```
 [DEFAULT]
