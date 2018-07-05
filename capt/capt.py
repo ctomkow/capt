@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# PYTHON_ARGCOMPLETE_OK
 
 # Used to compare switch state before and after code upgrades.
 # Pulls state info from Cisco Prime Infrastructure
