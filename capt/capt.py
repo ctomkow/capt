@@ -13,17 +13,10 @@ import logging
 import datetime
 
 # local imports
-# for unit testing, need the relative imports
-try:
-    from . import config
-    from .procedure.upgrade_code import UpgradeCode
-    from .procedure.mock_upgrade_code import MockUpgradeCode
-    from .function.find import Find
-except (ImportError, SystemError):
-    import config
-    from procedure.upgrade_code import UpgradeCode
-    from procedure.mock_upgrade_code import MockUpgradeCode
-    from function.find import Find
+import config
+from procedure.upgrade_code import UpgradeCode
+from procedure.mock_upgrade_code import MockUpgradeCode
+from function.find import Find
 
 
 class Capt:

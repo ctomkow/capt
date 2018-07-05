@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/ctomkow/capt.svg?branch=master)](https://travis-ci.org/ctomkow/capt)
 
 # Installation and Usage 
 
