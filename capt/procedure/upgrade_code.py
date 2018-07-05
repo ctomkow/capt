@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# Craig Tomkow
-# June 28, 2018
-#
 # the upgrade code procedure
 
 # system imports
@@ -13,25 +10,24 @@ import platform
 
 # local imports
 try:
-    from .connector import Connector
-    from .switch_connector import SwitchConnector
-    from .access_point_connector import AccessPointConnector
-    from .switch import Switch
+    from connector.connector import Connector
+    from connector.switch import Switch as ConnSwitch
+    from connector.access_point import AccessPoint
+    from switch import Switch
 except (ImportError, SystemError):
-    from connector import Connector
-    from switch_connector import SwitchConnector
-    from access_point_connector import AccessPointConnector
+    from connector.connector import Connector
+    from connector.switch import Switch as ConnSwitch
+    from connector.access_point import AccessPoint
     from switch import Switch
 
 
 class UpgradeCode:
 
-
     def __init__(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call    = Connector(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        sw_api_call = SwitchConnector(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        ap_api_call = AccessPointConnector(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        sw_api_call = ConnSwitch(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        ap_api_call = AccessPoint(cpi_username, cpi_password, cpi_ipv4_address, logger)
 
         sw = Switch()
         sw.ipv4_address = switch_ipv4_address

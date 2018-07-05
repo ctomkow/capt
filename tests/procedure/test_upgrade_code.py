@@ -1,10 +1,11 @@
+
 # system imports
 import unittest
 import logging
 
 # local imports
 from capt.capt import Capt
-from capt.upgrade_code import UpgradeCode
+from procedure.upgrade_code import UpgradeCode
 # from package.module import class
 
 

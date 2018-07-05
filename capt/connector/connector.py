@@ -1,9 +1,3 @@
-# Craig Tomkow
-# May 22, 2018
-#
-# Connector class to pull state from Cisco Prime Infrastructure
-# Note: Use API v3 in calls (released in Prime 3.3
-#       When Prime goes to 3.4, change to APIv4
 
 # system imports
 import urllib3
@@ -17,13 +11,12 @@ import json
 
 # local imports
 try:
-    from .json_parser import JsonParser
+    from json_parser import JsonParser
 except (ImportError, SystemError):
     from json_parser import JsonParser
 
 
 class Connector:
-
 
     def __init__(self, uname, passwd, cpi_ipv4_addr, log):
 

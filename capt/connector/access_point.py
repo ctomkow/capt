@@ -1,20 +1,19 @@
+
 # system imports
 
 # 3rd part imports
 import requests
-import json
 
 # local imports
 try:
-    from .json_parser import JsonParser
-    from .connector import Connector
+    from json_parser import JsonParser
+    from connector.connector import Connector
 except (ImportError, SystemError):
     from json_parser import JsonParser
-    from connector import Connector
+    from connector.connector import Connector
 
 
-class AccessPointConnector(Connector):
-
+class AccessPoint(Connector):
 
     def get_id(self, name):
 

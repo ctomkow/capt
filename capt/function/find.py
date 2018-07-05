@@ -1,24 +1,21 @@
-#!/usr/bin/env python3
 
 # system imports
-import json
 import socket
 
 # local imports
 try:
-    from .client_connector import ClientConnector
-    from .json_parser import JsonParser
+    from connector.client import Client
+    from json_parser import JsonParser
 except (ImportError, SystemError):
-    from client_connector import ClientConnector
+    from connector.client import Client
     from json_parser import JsonParser
 
 
-class Client:
-
+class Find:
 
     def find_dev_ip(self, dev_addr, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
-        api_call = ClientConnector(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        api_call = Find(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = api_call.get_id_by_ip(dev_addr)
         result = api_call.get_json_details(dev_id)
 
@@ -53,7 +50,7 @@ class Client:
         dev_addr = self.format_mac(self, dev_addr)
 
 
-        api_call = ClientConnector(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        api_call = Find(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = api_call.get_id_by_mac(dev_addr)
         result = api_call.get_json_details(dev_id)
 

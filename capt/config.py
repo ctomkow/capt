@@ -1,8 +1,5 @@
-# Craig Tomkow
-# May 22, 2018
-#
-# Config handler module (singleton)
 
+# Config handler module (singleton)
 
 # system imports
 import configparser
@@ -24,6 +21,7 @@ def load_base_conf():
 
     cpi_version = config['CPI']['version']
     cpi_ipv4_address = config['CPI']['ipv4_address']
+
 
 def load_configuration():
 

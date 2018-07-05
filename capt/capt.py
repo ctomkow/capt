@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# Craig Tomkow
-# May 22, 2018
-#
 # Used to compare switch state before and after code upgrades.
 # Pulls state info from Cisco Prime Infrastructure
 
@@ -19,14 +16,14 @@ import datetime
 # for unit testing, need the relative imports
 try:
     from . import config # needed vs. 'import config' for unit testing
-    from .upgrade_code import UpgradeCode
-    from .mock_upgrade_code import MockUpgradeCode
-    from .client import Client
+    from procedure.upgrade_code import UpgradeCode
+    from procedure.mock_upgrade_code import MockUpgradeCode
+    from function.find import Find
 except (ImportError, SystemError):
     import config
-    from upgrade_code import UpgradeCode
-    from mock_upgrade_code import MockUpgradeCode
-    from client import Client
+    from procedure.upgrade_code import UpgradeCode
+    from procedure.mock_upgrade_code import MockUpgradeCode
+    from function.find import Find
 
 
 class Capt:
@@ -50,12 +47,12 @@ class Capt:
         find_ip = find_subparsers.add_parser('ip', help="IPv4 address of client device")
         # capt find ip 20.20.20.20
         find_ip.add_argument('address', help="specify the device ipv4 address")
-        find_ip.set_defaults(func=Client.find_dev_ip)
+        find_ip.set_defaults(func=Find.find_dev_ip)
         # capt find mac
         find_mac = find_subparsers.add_parser('mac', help="mac address of client device")
         # capt find mac xx:xx:xx:xx:xx:xx
         find_mac.add_argument('address', help=("specify the device mac address"))
-        find_mac.set_defaults(func=Client.find_dev_mac)
+        find_mac.set_defaults(func=Find.find_dev_mac)
 
         # #  -----
         # # capt push
@@ -91,7 +88,7 @@ class Capt:
         if args.sub_command:
             config.load_base_conf()
             logger = self.set_logger(args.address, logging.INFO)
-            args.func(Client, args.address, config.username, config.password, config.cpi_ipv4_address, logger)
+            args.func(Find, args.address, config.username, config.password, config.cpi_ipv4_address, logger)
         else:
             config.load_configuration()
             self.main(args.verbose)

@@ -1,16 +1,9 @@
-# Craig Tomkow
-# June 1, 2018
-#
-# Device class to store state information (a Globals class pattern). No instantiation should be done.
-# I like to liken this to a C struct (functionally speaking)
-# Also remember, resist the getters and setters!
-#
-# ... Hmmm, if I want to multi-thread this, I need to convert this to a instantiable class so I can have device objects
-# .. Ok, so I succumb and turned it into a instantiable class with global variables, now I can multi-thread
+
+# Instantiable (so it can be threaded) class to store state information (a Globals class pattern).
+# I liken this to a C struct (functionally speaking)
 
 
 class Switch:
-
 
     def __init__(self):
 

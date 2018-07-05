@@ -1,12 +1,11 @@
-#!/usr/bin/env python3
 
 # system imports
 
 # local imports
 
+
 # Move all JSON related formatting and parsing here!
 class JsonParser:
-
 
     def get_value(self, json_data, key_list, logger):
 

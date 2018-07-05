@@ -1,19 +1,20 @@
+
 # system imports
+import json
 
 # 3rd part imports
 import requests
-import json
 
 # local imports
 try:
-    from .json_parser import JsonParser
-    from .connector import Connector
+    from json_parser import JsonParser
+    from connector.connector import Connector
 except (ImportError, SystemError):
     from json_parser import JsonParser
-    from connector import Connector
+    from connector.connector import Connector
 
 
-class SwitchConnector(Connector):
+class Switch(Connector):
 
     # --- POST calls
 

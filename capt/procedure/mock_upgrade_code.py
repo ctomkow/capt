@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# Craig Tomkow
-# June 28, 2018
-#
 # the test api procedure
 
 # system imports
@@ -11,13 +8,12 @@ import sys
 
 # local imports
 try:
-    from .upgrade_code import UpgradeCode
+    from procedure.upgrade_code import UpgradeCode
 except (ImportError, SystemError):
-    from upgrade_code import UpgradeCode
+    from procedure.upgrade_code import UpgradeCode
 
 
 class MockUpgradeCode(UpgradeCode):
-
 
     # override parent method
     def upgrade_code(self, api_call, sw_api_call, ap_api_call, sw, logger):
