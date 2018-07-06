@@ -5,8 +5,6 @@
 # Pulls state info from Cisco Prime Infrastructure
 
 # system imports
-from argparse import ArgumentParser
-from argparse import RawDescriptionHelpFormatter
 import threading
 import time
 import sys
@@ -21,6 +19,7 @@ import config
 from procedure.upgrade_code import UpgradeCode
 from procedure.mock_upgrade_code import MockUpgradeCode
 from function.find import Find
+from cli_crafter import CliCrafter
 
 
 class Capt:
@@ -28,102 +27,79 @@ class Capt:
 
     def __init__(self):
 
-        # arg parsing
-        parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, add_help=True,
-                                description="""Cisco APi Tool: a nettool built on Cisco Prime's API""")
-
-        parser.add_argument('-v', '--verbose', action='store_true', required=False, help="debug output")
-
-        subparsers = parser.add_subparsers(dest="sub_cmd")
+        craft = CliCrafter()
+        subparsers = craft.subparsers
 
         #  -----
-        # capt find
-        find = subparsers.add_parser('find', help="get client device information")
-        find_subparsers = find.add_subparsers(dest="find")
-        # capt find ip
-        find_ip = find_subparsers.add_parser('ip', help="IPv4 address of client device")
-        # capt find ip 20.20.20.20
-        find_ip.add_argument('address', help="specify the device ipv4 address")
-        find_ip.set_defaults(func=Find.find_client_ip)
-        # capt find mac
-        find_mac = find_subparsers.add_parser('mac', help="mac address of client device")
+        # base sub-commands
+        find_sp = craft.find_subparser(subparsers)
+        mock_sp = craft.mock_subparser(subparsers)
+        #  -----
+        #  -----
+        # capt find ip x.x.x.x
+        find_ip = craft.ip_parser(find_sp)
+        craft.addr_arg(find_ip)
+        find_ip.set_defaults(func=Find)
+        #  -----
         # capt find mac xx:xx:xx:xx:xx:xx
-        find_mac.add_argument('address', help="specify the device mac address")
-        find_mac.set_defaults(func=Find.find_client_mac)
+        find_mac = craft.mac_parser(find_sp)
+        craft.addr_arg(find_mac)
+        find_mac.set_defaults(func=Find)
         #  -----
-        # capt find ap
-        find_ap = find_subparsers.add_parser('ap', help="find access point")
-        find_ap_subparsers = find_ap.add_subparsers(dest="find_ap")
-        # capt find ap mac
-        find_ap_mac = find_ap_subparsers.add_parser('mac', help="mac address of access point")
-        # capt find ap mac xx:xx:xx:xx:xx:xx
-        find_ap_mac.add_argument('address', help="specify the access point mac address")
-        find_ap_mac.set_defaults(func=Find.find_ap_mac)
-        # #  -----
-        # # capt push
-        # push = subparsers.add_parser('push', help="send configuration to switch")
-        # # capt push "show int status"
-        # push.add_argument('cisco_config', help="specify the cisco IOS command to push")
-        # push_subparsers = push.add_subparsers()
-        # # capt push "show int status" to
-        # push_to = push_subparsers.add_parser('to', help="specify the IPv4 address of switch")
-        # # capt push "show int status" to 10.10.10.10
-        # push_to.add_argument('ip_address', help="specify the IPv4 address of switch")
-        # push_to.set_defaults(func=self.push_command)
-        # #  -----
-        # # capt push "no logging" config
-        # push_config = push_subparsers.add_parser('config', help="config_t configuration given")
-        # push_config_subparsers = push_config.add_subparsers()
-        # # capt push "no logging" config to
-        # push_config_to = push_config_subparsers.add_parser('to', help="specify the IPv4 address of switch")
-        # # capt push "no logging" config to 10.10.10.10
-        # push_config_to.add_argument('ip_address', help="specify the IPv4 address of switch")
-        # push_config_to.set_defaults(func=self.push_configuration)
-        # #  -----
-        #
-        # capt upgrade
-        upgrade = subparsers.add_parser('upgrade', help="initiate code upgrade on switch")
-        # capt upgrade 20.20.20.20
-        upgrade.add_argument('address', help="specify the switch ipv4 address")
+        # capt find mac xx:xx:xx:xx:xx:xx --ap
+        craft.ap_arg(find_mac)
+        #  -----
+        # capt upgrade x.x.x.x
+        upgrade = craft.upgrade_parser(subparsers)
+        craft.addr_arg(upgrade)
         upgrade.set_defaults(func=UpgradeCode)
         #  -----
-        # capt mock
-        mock = subparsers.add_parser('mock', help="initiate test procedure (non prod impacting)")
-        mock_subparsers = mock.add_subparsers(dest="mock")
-        # capt mock upgrade
-        mock_upgrade = mock_subparsers.add_parser('upgrade', help="initiate test code upgrade on switch (no reload)")
-        # capt mock upgrade 20.20.20.20
-        mock_upgrade.add_argument('address', help="specify the test device ipv4 address")
+        # capt mock upgrade x.x.x.x
+        mock_upgrade = craft.upgrade_parser(mock_sp)
+        craft.addr_arg(mock_upgrade)
         mock_upgrade.set_defaults(func=MockUpgradeCode)
         #  -----
-        #  -----
-        #  -----
         # capt test_api
-        test_api = subparsers.add_parser('test_api', help="initiate test api calls")
-        test_api.add_argument('address', help="specify the switch ipv4 address")
-        test_api.set_defaults(func=Find.find_ap_mac)
+        test_api = craft.test_api_parser(subparsers)
+        craft.addr_arg(test_api)
+        test_api.set_defaults(func=Find)
+
+        parser = craft.parser
 
         argcomplete.autocomplete(parser)
-
         args = parser.parse_args()
+
+        print(args)
+
+        # handle addressing for ip/mac selection
+        if 'ip' in sys.argv or 'mac' in sys.argv:
+            addr = craft.normalize_addr(args.address, sys.argv)
+            addr_type = craft.detect_addr_type(sys.argv)
+
+        if args.sub_cmd == 'find':
+            if args.find == 'ip' or args.find == 'mac':
+                config.load_base_conf()
+                logger = self.set_logger(args.address, logging.INFO)
+                args.func(args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
+
+        if args.sub_cmd == 'upgrade':
+            config.load_base_conf()
+            logger = self.set_logger(args.address, logging.INFO)
+            args.func(args.address, config.username, config.password, config.cpi_ipv4_address, logger)
+
+        if args.sub_cmd == 'mock':
+            if args.mock == 'upgrade':
+                config.load_base_conf()
+                logger = self.set_logger(args.address, logging.INFO)
+                args.func(args.address, config.username, config.password, config.cpi_ipv4_address, logger)
 
         if args.sub_cmd == 'test_api':
             config.load_base_conf()
             logger = self.set_logger(args.address, logging.INFO)
-            args.func(Find, args.address, config.username, config.password, config.cpi_ipv4_address, logger)
-        elif args.sub_cmd == 'find':
-            config.load_base_conf()
-            logger = self.set_logger(args.address, logging.INFO)
-            args.func(Find, args.address, config.username, config.password, config.cpi_ipv4_address, logger)
-        elif args.sub_cmd == 'upgrade':
-            config.load_base_conf()
-            logger = self.set_logger(args.address, logging.INFO)
-            args.func(args.address, config.username, config.password, config.cpi_ipv4_address, logger)
-        elif args.mock == 'upgrade':
-            config.load_base_conf()
-            logger = self.set_logger(args.address, logging.INFO)
-            args.func(args.address, config.username, config.password, config.cpi_ipv4_address, logger)
-        else:
+            args.func(args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
+
+        # if not sub commands are selected, execute configuration file
+        if not args.sub_cmd:
             config.load_configuration()
             self.main(args.verbose)
 
