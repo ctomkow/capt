@@ -41,6 +41,9 @@ class Capt:
         craft.addr_arg(find_ip)
         find_ip.set_defaults(func=Find)
         #  -----
+        # capt find ip x.x.x.x --phone
+        craft.phone_arg(find_ip)
+        #  -----
         # capt find mac xx:xx:xx:xx:xx:xx
         find_mac = craft.mac_parser(find_sp)
         craft.addr_arg(find_mac)
@@ -48,6 +51,9 @@ class Capt:
         #  -----
         # capt find mac xx:xx:xx:xx:xx:xx --ap
         craft.ap_arg(find_mac)
+        #  -----
+        # capt find mac xx:xx:xx:xx:xx:xx --phone
+        craft.phone_arg(find_mac)
         #  -----
         # capt upgrade x.x.x.x
         upgrade = craft.upgrade_parser(subparsers)
