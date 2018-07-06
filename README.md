@@ -19,8 +19,10 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 ### FUNCTION SUPPORT
 
-* find ip x.x.x.x [--phone]
+* find ip x.x.x.x [--phone | --ap]
 * find mac xx:xx:xx:xx:xx:xx [--phone | --ap]
+* upgrade x.x.x.x
+* mock upgrade x.x.x.x (non-production impacting test)
 
 ### FUTURE DEVELOPMENT
 
@@ -45,9 +47,11 @@ For debug output, `$python capt.py -v`
 
 capt can be executed through cli commands. Note: The `config.text` needs to still exist as the [DEFAULT] and [CPI] sections are required.
 
-cli function commands.
+Some cli function commands.
 
 `$python capt.py find ip x.x.x.x`
+
+`$python capt.py find ip x.x.x.x --phone`
 
 `$python capt.py find mac xx:xx:xx:xx:xx:xx`
 
