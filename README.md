@@ -19,8 +19,8 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 ### FUNCTION SUPPORT
 
-* find ip
-* find mac
+* find ip x.x.x.x [--phone]
+* find mac xx:xx:xx:xx:xx:xx [--phone | --ap]
 
 ### FUTURE DEVELOPMENT
 
