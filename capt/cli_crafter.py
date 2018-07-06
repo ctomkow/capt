@@ -77,11 +77,11 @@ class CliCrafter:
 
     def ap_arg(self, p):
 
-        p.add_argument('--ap', help="access point", action="store_true")
+        p.add_argument('--ap', '-a', help="access point", action="store_true")
 
     def phone_arg(self, p):
 
-        p.add_argument('--phone', help="VoIP phone", action="store_true")
+        p.add_argument('--phone', 'p', help="VoIP phone", action="store_true")
 
     def normalize_addr(self, addr, args):
 
