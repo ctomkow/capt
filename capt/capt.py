@@ -41,6 +41,9 @@ class Capt:
         craft.addr_arg(find_ip)
         find_ip.set_defaults(func=Find)
         #  -----
+        # capt find ip x.x.x.x --ap
+        craft.ap_arg(find_ip)
+        #  -----
         # capt find ip x.x.x.x --phone
         craft.phone_arg(find_ip)
         #  -----

@@ -3,6 +3,7 @@
 
 # 3rd part imports
 import requests
+import json
 
 # local imports
 from json_parser import JsonParser
@@ -39,7 +40,11 @@ class AccessPoint(Connector):
     # Can't seem to filter API call on ipAddress (I tried AccessPoints and AccessPointDetail)
     def get_id_by_ip(self, ip):
 
-        pass
+        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
+        url = "https://{}/webacs/api/v3/data/AccessPoints.json?ipAddress=\"{}\"".format(self.cpi_ipv4_address, ip)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['queryResponse', 'entityId', 0, '$']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
     def get_json_basic(self, dev_id):
 
