@@ -11,6 +11,7 @@ import logging
 from unittest.mock import patch
 
 # local imports
+from .context import capt
 from capt.capt import Capt
 # from package.module import class
 
