@@ -12,7 +12,6 @@ class Change:
 
     def __init__(self, args, dev_addr, addr_type, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
-        print(args)
         if args.change == 'mac' and args.vlan:
             self.if_vlan_and_find(dev_addr, addr_type, args.vlan, cpi_username, cpi_password, cpi_ipv4_address, logger)
         else:
