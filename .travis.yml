@@ -12,9 +12,9 @@ sudo: required
 #  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   
 install:
-  - pip install requests
-  - pip install argcomplete
+  - pip3 install requests
+  - pip3 install argcomplete
   
 script:
-  - python setup.py install
-  - python -m unittest discover -s tests
+  - python3 setup.py install
+  - python3 -m unittest discover -s tests
