@@ -78,9 +78,10 @@ class Capt:
         change_mac.set_defaults(func=Change)
         #  -----
         # capt test_api
-        test_api = craft.test_api_parser(subparsers)
-        craft.addr_arg(test_api)
-        test_api.set_defaults(func=TestApi.conf_if_vlan)
+        test_api_sp = craft.test_api_subparser(subparsers)
+        test_api_mac = craft.mac_parser(test_api_sp)
+        craft.addr_arg(test_api_mac)
+        test_api_mac.set_defaults(func=TestApi.test_method)
 
         parser = craft.parser
 
@@ -120,7 +121,7 @@ class Capt:
         if args.sub_cmd == 'test_api':
             config.load_base_conf()
             logger = self.set_logger(args.address, logging.INFO)
-            args.func(args, "172.30.28.246", "gi1/0/1", "Access", "777", config.username, config.password, config.cpi_ipv4_address, logger)
+            args.func(TestApi, args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
 
         # if not sub commands are selected, execute configuration file
         if not args.sub_cmd:

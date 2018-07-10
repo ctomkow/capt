@@ -1,7 +1,11 @@
 
+#system imports
+import json
+
 # local imports
 from connector.switch import Switch
 from connector.access_point import AccessPoint
+from connector.client import Client
 from json_parser import JsonParser
 
 class TestApi:
@@ -10,14 +14,15 @@ class TestApi:
 
         pass
 
-    def conf_if_vlan(self, switch_ip, if_name, sw_port_type, vlan, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def test_method(self, args, addr, addr_type, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
-        print(switch_ip)
-        print(if_name)
-        print(vlan)
+        print(addr)
 
+        api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        dev_id = api_call.get_id_by_mac(addr)
+        print(dev_id)
+        result = api_call.get_json_session(dev_id)
 
-        sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        job_id = sw_api_call.conf_if_vlan(sw_api_call.get_id(switch_ip), if_name, sw_port_type, vlan)
-        print(job_id)
+        print(json.dumps(result, indent=4))
+
 
