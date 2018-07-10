@@ -1,5 +1,5 @@
 #  simple travis ci file
-language: generic
+language: python
 
 python:
   - "3.5"
@@ -12,9 +12,9 @@ sudo: required
 #  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   
 install:
-  - pip3 install requests
-  - pip3 install argcomplete
+  - pip install requests
+  - pip install argcomplete
   
 script:
-  - python3 setup.py install
-  - python3 -m unittest discover -s tests
+  - python setup.py install
+  - python -m unittest discover -s tests
