@@ -13,7 +13,7 @@ from setuptools import find_packages, setup, Command
 
 print('HEREHEREHEREHEREHERE')
 print(sys.path)
-sys.path.insert(0, os.path.abspath(__file__))
+sys.path.insert(0, os.path.abspath('capt'))
 print(sys.path)
 
 # Package meta-data.
