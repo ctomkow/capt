@@ -11,6 +11,8 @@ from shutil import rmtree
 
 from setuptools import find_packages, setup, Command
 
+sys.path.insert(0, os.path.abspath(__file__))
+
 # Package meta-data.
 NAME = 'capt'
 DESCRIPTION = 'A nettool built on Cisco Prime\'s API'

@@ -10,7 +10,7 @@ import json
 import requests
 
 # local imports
-from ..json_parser import JsonParser
+from json_parser import JsonParser
 
 
 class Connector:

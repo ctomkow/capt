@@ -9,10 +9,10 @@ import sys
 import platform
 
 # local imports
-from ..connector.connector import Connector
-from ..connector.switch import Switch as ConnSwitch
-from ..connector.access_point import AccessPoint
-from ..switch import Switch
+from connector.connector import Connector
+from connector.switch import Switch as ConnSwitch
+from connector.access_point import AccessPoint
+from switch import Switch
 
 
 class UpgradeCode:
