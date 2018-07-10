@@ -15,11 +15,11 @@ import datetime
 import argcomplete
 
 # local imports
-import config
-from procedure.upgrade_code import UpgradeCode
-from procedure.mock_upgrade_code import MockUpgradeCode
-from function.find import Find
-from cli_crafter import CliCrafter
+from . import config
+from .procedure.upgrade_code import UpgradeCode
+from .procedure.mock_upgrade_code import MockUpgradeCode
+from .function.find import Find
+from .cli_crafter import CliCrafter
 
 
 class Capt:

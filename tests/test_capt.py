@@ -9,14 +9,10 @@
 import unittest
 import logging
 from unittest.mock import patch
-import sys
-import os
 
 # local imports
 from capt.capt import Capt
 # from package.module import class
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 class test_capt(unittest.TestCase):
 

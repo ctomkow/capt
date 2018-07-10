@@ -2,15 +2,12 @@
 # system imports
 import unittest
 import logging
-import sys
-import os
 
 # local imports
 from capt.capt import Capt
 from procedure.upgrade_code import UpgradeCode
 # from package.module import class
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 class test_upgrade_code(unittest.TestCase):
 
