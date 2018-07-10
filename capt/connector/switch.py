@@ -48,6 +48,57 @@ class Switch(Connector):
         key_list = ['mgmtResponse', 'cliTemplateCommandJobResult', 0, 'jobName']
         return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
+    def conf_if_vlan(self, dev_id, interface, sw_port_type, access_vlan):
+        url = "https://{}/webacs/api/v3/op/cliTemplateConfiguration/deployTemplateThroughJob.json".format(
+            self.cpi_ipv4_address)
+        payload = \
+            {
+                "cliTemplateCommand": {
+                    "targetDevices": {
+                        "targetDevice": [{
+                            "targetDeviceID": "{}".format(dev_id),
+                            "variableValues": {
+                                "variableValue": [{
+                                    "name": "InterfaceName",
+                                    "value": "{}".format(interface)
+                                }, {
+                                    "name": "Description",
+                                    "value": ""
+                                }, {
+                                    "name": "A1",
+                                    "value": "{}".format(sw_port_type)
+                                }, {
+                                    "name": "StaticAccessVLan",
+                                    "value": "{}".format(access_vlan)
+                                }, {
+                                    "name": "TrunkAllowedVLan",
+                                    "value": ""
+                                }, {
+                                    "name": "VoiceVlan",
+                                    "value": ""
+                                }, {
+                                    "name": "NativeVLan",
+                                    "value": ""
+                                }, {
+                                    "name": "PortFast",
+                                    "value": ""
+                                }, {
+                                    "name": "duplexField",
+                                    "value": ""
+                                }, {
+                                    "name": "spd",
+                                    "value": ""
+                                }]
+                            }
+                        }]
+                    },
+                    "templateName": "API_CALL_conf_if_vlan"
+                }
+            }
+        result = self.error_handling(requests.put, 5, url, False, self.username, self.password, payload)
+        key_list = ['mgmtResponse', 'cliTemplateCommandJobResult', 0, 'jobName']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+
     # --- end PUT calls
 
     def get_id(self, dev_ipv4_address):

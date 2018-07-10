@@ -19,6 +19,8 @@ import config
 from procedure.upgrade_code import UpgradeCode
 from procedure.mock_upgrade_code import MockUpgradeCode
 from function.find import Find
+from function.change import Change
+from function.test_api import TestApi
 from cli_crafter import CliCrafter
 
 
@@ -34,6 +36,7 @@ class Capt:
         # base sub-commands
         find_sp = craft.find_subparser(subparsers)
         mock_sp = craft.mock_subparser(subparsers)
+        change_sp = craft.change_subparser(subparsers)
         #  -----
         #  -----
         # capt find ip x.x.x.x
@@ -68,10 +71,16 @@ class Capt:
         craft.addr_arg(mock_upgrade)
         mock_upgrade.set_defaults(func=MockUpgradeCode)
         #  -----
+        # capt change mac xx:xx:xx:xx:xx:xx --vlan yyyy
+        change_mac = craft.mac_parser(change_sp)
+        craft.addr_arg(change_mac)
+        craft.vlan_arg(change_mac)
+        change_mac.set_defaults(func=Change)
+        #  -----
         # capt test_api
         test_api = craft.test_api_parser(subparsers)
         craft.addr_arg(test_api)
-        test_api.set_defaults(func=Find)
+        test_api.set_defaults(func=TestApi.conf_if_vlan)
 
         parser = craft.parser
 
@@ -85,6 +94,12 @@ class Capt:
 
         if args.sub_cmd == 'find':
             if args.find == 'ip' or args.find == 'mac':
+                config.load_base_conf()
+                logger = self.set_logger(args.address, logging.INFO)
+                args.func(args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
+
+        if args.sub_cmd == 'change':
+            if args.change == 'ip' or args.change == 'mac':
                 config.load_base_conf()
                 logger = self.set_logger(args.address, logging.INFO)
                 args.func(args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
@@ -103,7 +118,7 @@ class Capt:
         if args.sub_cmd == 'test_api':
             config.load_base_conf()
             logger = self.set_logger(args.address, logging.INFO)
-            args.func(args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
+            args.func(args, "172.30.28.246", "gi1/0/1", "Access", "777", config.username, config.password, config.cpi_ipv4_address, logger)
 
         # if not sub commands are selected, execute configuration file
         if not args.sub_cmd:

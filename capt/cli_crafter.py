@@ -62,6 +62,24 @@ class CliCrafter:
 
         return sp.add_parser('mac', help="mac address of client device") # return a parser
 
+    def vlan_subparser(self, sp):
+
+        vlan = sp.add_parser('vlan', help="new vlan for client device")
+        return vlan.add_subparsers(dest="vlan")  # return a subparser
+
+    def vlan_parser(self, sp):
+
+        return sp.add_parser('vlan', help="new vlan for client device") # return a parser
+
+    def change_subparser(self, sp):
+
+        change = sp.add_parser('change', help="change switch configuration")
+        return change.add_subparsers(dest="change")  # return a subparser
+
+    def change_parser(self, sp):
+
+        return sp.add_parser('change', help="change switch configuration")
+
     def test_api_subparser(self, sp):
 
         test_api = sp.add_parser('test_api', help="test api calls")
@@ -74,6 +92,10 @@ class CliCrafter:
     def addr_arg(self, p):
 
         p.add_argument('address', help="specify the device address")
+
+    def vlan_arg(self, p):
+
+        p.add_argument('-v', '--vlan', help="specify the new client VLAN ID")
 
     def ap_arg(self, p):
 
