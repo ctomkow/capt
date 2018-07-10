@@ -4,7 +4,6 @@ import unittest
 import logging
 
 # local imports
-from ..context import capt
 from capt.capt import Capt
 from procedure.upgrade_code import UpgradeCode
 # from package.module import class
