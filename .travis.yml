@@ -1,5 +1,5 @@
 #  simple travis ci file
-language: python
+language: generic
 
 python:
   - "3.5"
