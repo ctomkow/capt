@@ -95,13 +95,15 @@ class Capt:
         if args.sub_cmd == 'find':
             if args.find == 'ip' or args.find == 'mac':
                 config.load_base_conf()
-                logger = self.set_logger(args.address, logging.INFO)
+                log_file = False
+                logger = self.set_logger(args.address, logging.INFO, log_file)
                 args.func(args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
 
         if args.sub_cmd == 'change':
             if args.change == 'ip' or args.change == 'mac':
                 config.load_base_conf()
-                logger = self.set_logger(args.address, logging.INFO)
+                log_file = False
+                logger = self.set_logger(args.address, logging.INFO, log_file)
                 args.func(args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
 
         if args.sub_cmd == 'upgrade':
@@ -211,7 +213,7 @@ class Capt:
             else:
                 time.sleep(5) # give delay before trying again
 
-    def set_logger(self, nm, level):
+    def set_logger(self, nm, level, log_file=True):
 
         # remove colons from name if exists (e.g. mac address)
         name = nm.replace(":","")
@@ -220,16 +222,19 @@ class Capt:
             fmt='%(asctime)s : {} : %(levelname)-8s : %(message)s'.format(name),
             datefmt='%Y-%m-%d %H:%M:%S'
         )
-        handler = logging.FileHandler(
-            "{}-{}".format(datetime.datetime.now().strftime("%Y%m%d"), name),
-            mode='a'
-        )
-        handler.setFormatter(formatter)
+        if log_file:
+            handler = logging.FileHandler(
+                "{}-{}".format(datetime.datetime.now().strftime("%Y%m%d"), name),
+                mode='a'
+            )
+            handler.setFormatter(formatter)
         screen_handler = logging.StreamHandler(stream=sys.stdout)
         screen_handler.setFormatter(formatter)
+
         logger = logging.getLogger(name)
         logger.setLevel(level)
-        logger.addHandler(handler)
+        if log_file:
+            logger.addHandler(handler)
         logger.addHandler(screen_handler)
         return logger
 
