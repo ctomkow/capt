@@ -67,15 +67,17 @@ class Find:
             logger.critical('incorrect address type')
             sys.exit(1)
 
-        print("switch name :{}".format(neigh_name))
-        print("switch ip   :{}".format(neigh_ip))
-        print("interface   :{}".format(interface))
-        print("description :{}".format(description))
-        print("vlan        :{};{}".format(vlan, vlan_name))
+        logger.info("switch name :{}".format(neigh_name))
+        logger.info("switch ip   :{}".format(neigh_ip))
+        logger.info("interface   :{}".format(interface))
+        logger.info("description :{}".format(description))
+        logger.info("vlan        :{};{}".format(vlan, vlan_name))
         if addr_type == 'mac':
-            print("ip addr     :{}".format(ip_addr))
+            logger.info("ip addr     :{}".format(ip_addr))
+            return neigh_name, neigh_ip, interface, description, vlan, vlan_name, ip_addr
         elif addr_type == 'ipv4':
-            print("mac addr    :{}".format(mac_addr))
+            logger.info("mac addr    :{}".format(mac_addr))
+            return neigh_name, neigh_ip, interface, description, vlan, vlan_name, mac_addr
         else:
             logger.critical('incorrect address type')
             sys.exit(1)
@@ -119,14 +121,14 @@ class Find:
             logger.critical('incorrect address type')
             sys.exit(1)
 
-        print("switch name :{}".format(neigh_name))
-        print("switch ip   :{}".format(neigh_ip))
-        print("interface   :{}".format(interface))
-        print("vlan        :{};{}".format(vlan, vlan_name))
+        logger.info("switch name :{}".format(neigh_name))
+        logger.info("switch ip   :{}".format(neigh_ip))
+        logger.info("interface   :{}".format(interface))
+        logger.info("vlan        :{};{}".format(vlan, vlan_name))
         if addr_type == 'mac':
-            print("ap ip addr  :{}".format(ip_addr))
+            logger.info("ap ip addr  :{}".format(ip_addr))
         elif addr_type == 'ipv4':
-            print("ap mac addr :{}".format(mac_addr))
+            logger.info("ap mac addr :{}".format(mac_addr))
         else:
             logger.critical('incorrect address type')
             sys.exit(1)
@@ -168,15 +170,16 @@ class Find:
             logger.critical('incorrect address type')
             sys.exit(1)
 
-        print("switch name :{}".format(neigh_name))
-        print("switch ip   :{}".format(neigh_ip))
-        print("interface   :{}".format(interface))
-        print("description :{}".format(description))
-        print("vlan        :{};{}".format(vlan, vlan_name))
+        logger.info("switch name :{}".format(neigh_name))
+        logger.info("switch ip   :{}".format(neigh_ip))
+        logger.info("interface   :{}".format(interface))
+        logger.info("description :{}".format(description))
+        logger.info("vlan        :{};{}".format(vlan, vlan_name))
         if addr_type == 'mac':
-            print("ip addr     :{}".format(ip_addr))
+            logger.info("ip addr     :{}".format(ip_addr))
         elif addr_type == 'ipv4':
-            print("mac addr    :{}".format(mac_addr))
+            logger.info("mac addr    :{}".format(mac_addr))
         else:
             logger.critical('incorrect address type')
             sys.exit(1)
+
