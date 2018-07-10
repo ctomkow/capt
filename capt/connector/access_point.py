@@ -6,8 +6,8 @@ import requests
 import json
 
 # local imports
-from json_parser import JsonParser
-from connector.connector import Connector
+from ..json_parser import JsonParser
+from .connector import Connector
 
 
 class AccessPoint(Connector):

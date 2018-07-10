@@ -5,9 +5,9 @@ import json
 import sys
 
 # local imports
-from connector.client import Client
-from connector.access_point import AccessPoint
-from json_parser import JsonParser
+from ..connector.client import Client
+from ..connector.access_point import AccessPoint
+from ..json_parser import JsonParser
 
 
 class Find:

@@ -7,7 +7,7 @@ import time
 import sys
 
 # local imports
-from procedure.upgrade_code import UpgradeCode
+from .upgrade_code import UpgradeCode
 
 
 class MockUpgradeCode(UpgradeCode):
