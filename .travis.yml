@@ -8,8 +8,8 @@ sudo: required
 
 # https://github.com/travis-ci/travis-ci/issues/5326
 # modules fail to import
-before_install:
-  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
+#before_install:
+#  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   
 install:
   - pip install requests
