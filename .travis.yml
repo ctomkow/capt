@@ -5,11 +5,16 @@ python:
   - "3.5"
 
 sudo: required
+
+# https://github.com/travis-ci/travis-ci/issues/5326
+# modules fail to import
+before_install:
+  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   
 install:
   - pip install requests
   - pip install argcomplete
   
 script:
-  - python3 setup.py install
-  - python3 -m unittest discover -s tests
+  - python setup.py install
+  - python -m unittest discover -s tests
