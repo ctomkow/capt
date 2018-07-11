@@ -168,6 +168,24 @@ class Switch(Connector):
         key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'ethernetInterfaces', 'ethernetInterface']
         return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
+    def port_detail_dict(self, dev_id, interface_name):
+
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'ethernetInterfaces', 'ethernetInterface']
+        interface_list_of_dicts = JsonParser.get_value(JsonParser, result, key_list, self.logger)
+
+        for interface_dict in interface_list_of_dicts:
+            for key in interface_dict:  # iterating over dict's return keys only
+                if interface_dict[key] == interface_name:
+                    return interface_dict
+
+
+    def get_json_detailed(self, dev_id):
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        return result.json()
+
     # --- print API calls, mainly for testing
 
     def print_json_info(self, dev_id):

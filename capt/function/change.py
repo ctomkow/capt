@@ -15,9 +15,17 @@ class Change:
 
         if args.change == 'mac' and args.vlan:
             self.if_vlan_and_find(dev_addr, addr_type, args.vlan, cpi_username, cpi_password, cpi_ipv4_address, logger)
+        elif args.change == 'address':
+            self.if_vlan(args.address, cpi_username, cpi_password, cpi_ipv4_address, logger)
         else:
             logger.critical('failed to execute function. Possibly missing arguments')
             sys.exit(1)
+
+    def if_vlan(self, switch_addr, cpi_username, cpi_password, cpi_ipv4_address, logger):
+
+        # switch.prot_detail_dict(dev_id, 'GigabitEthernet1/0/1')
+        pass
+
 
     def if_vlan_and_find(self, dev_addr, addr_type, vlan, cpi_username, cpi_password, cpi_ipv4_address, logger):
 

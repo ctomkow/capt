@@ -88,6 +88,9 @@ class Capt:
         argcomplete.autocomplete(parser)
         args = parser.parse_args()
 
+        #print(args)
+        #print(sys.argv)
+
         # handle addressing for ip/mac selection
         if 'ip' in sys.argv or 'mac' in sys.argv:
             addr = craft.normalize_addr(args.address, sys.argv)

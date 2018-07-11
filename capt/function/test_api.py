@@ -19,10 +19,25 @@ class TestApi:
         print(addr)
 
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = api_call.get_id_by_mac(addr)
-        print(dev_id)
-        result = api_call.get_json_session(dev_id)
+        sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
 
-        print(json.dumps(result, indent=4))
+        dev_id = sw_api_call.get_id_by_ip("172.30.28.246")
+        result = sw_api_call.get_json_detailed(dev_id)
+
+        key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'ethernetInterfaces', 'ethernetInterface']
+        interface_list_of_dicts = JsonParser.get_value(JsonParser, result, key_list, logger)
+
+        for interface_dict in interface_list_of_dicts:
+            for key in interface_dict: # iterating over dict's return keys only
+                if interface_dict[key] == 'GigabitEthernet1/0/1':
+                    print(json.dumps(interface_dict, indent=4))
+
+        #interface = [d['GigabitEthernet1/0/1'] for d in interface_list]
+
+        #dev_id = api_call.get_id_by_mac(addr)
+        #print(dev_id)
+        #result = api_call.get_json_basic(dev_id)
+
+        #print(json.dumps(interface, indent=4))
 
 
