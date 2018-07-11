@@ -15,7 +15,7 @@ class MockUpgradeCode(UpgradeCode):
     # override parent method
     def upgrade_code(self, api_call, sw_api_call, ap_api_call, sw, logger):
 
-        logger.info("Initiate code upgrade.")
+        logger.info("Initiate MOCK code upgrade.")
 
         # --------------------------#
         #      PRE_PROCESSING      #

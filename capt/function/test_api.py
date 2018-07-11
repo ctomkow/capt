@@ -14,9 +14,9 @@ class TestApi:
 
         pass
 
-    def test_method(self, args, addr, addr_type, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def test_method(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
-        print(addr)
+
 
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
         sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
@@ -31,13 +31,5 @@ class TestApi:
             for key in interface_dict: # iterating over dict's return keys only
                 if interface_dict[key] == 'GigabitEthernet1/0/1':
                     print(json.dumps(interface_dict, indent=4))
-
-        #interface = [d['GigabitEthernet1/0/1'] for d in interface_list]
-
-        #dev_id = api_call.get_id_by_mac(addr)
-        #print(dev_id)
-        #result = api_call.get_json_basic(dev_id)
-
-        #print(json.dumps(interface, indent=4))
 
 

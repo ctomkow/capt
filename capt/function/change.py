@@ -11,30 +11,18 @@ from connector.switch import Switch
 class Change:
 
 
-    def __init__(self, args, dev_addr, addr_type, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def __init__(self):
 
-        if args.change == 'mac' and args.vlan:
-            self.if_vlan_and_find(dev_addr, addr_type, args.vlan, cpi_username, cpi_password, cpi_ipv4_address, logger)
-        elif args.change == 'address':
-            self.if_vlan(args.address, cpi_username, cpi_password, cpi_ipv4_address, logger)
-        else:
-            logger.critical('failed to execute function. Possibly missing arguments')
-            sys.exit(1)
-
-    def if_vlan(self, switch_addr, cpi_username, cpi_password, cpi_ipv4_address, logger):
-
-        # switch.prot_detail_dict(dev_id, 'GigabitEthernet1/0/1')
         pass
 
-
-    def if_vlan_and_find(self, dev_addr, addr_type, vlan, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def change_mac_vlan(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         # find and display
         neigh_name, neigh_ip, interface, description, old_vlan, old_vlan_name, addr = \
-            Find.find_client(self, dev_addr, addr_type, cpi_username, cpi_password, cpi_ipv4_address, logger)
+            Find.find_mac_client(Find, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger)
 
         # require 'yes' input to proceed
-        logger.info('Change VLAN to: {}'.format(vlan))
+        logger.info('Change VLAN to: {}'.format(values_dict['vlan']))
         response = input("Confirm action of changing VLAN ('yes'):")
         if not response == 'yes':
             logger.info('Did not proceed with change.')
@@ -43,7 +31,7 @@ class Change:
         # invoke API call to change VLAN
         sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = sw_api_call.get_id_by_ip(neigh_ip)
-        job_id = sw_api_call.conf_if_vlan(dev_id, interface, "Access", vlan)
+        job_id = sw_api_call.conf_if_vlan(dev_id, interface, "Access", values_dict['vlan'])
 
         timeout = time.time() + 30  # 30 second timeout starting now
         while not sw_api_call.job_complete(job_id):

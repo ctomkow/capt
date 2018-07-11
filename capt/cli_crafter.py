@@ -104,30 +104,3 @@ class CliCrafter:
     def phone_arg(self, p):
 
         p.add_argument('-p', '--phone', help="VoIP phone", action="store_true")
-
-    def normalize_addr(self, addr, args):
-
-        if 'mac' in args:
-            tmp = addr.replace(':', '')  # remove all colons
-            tmp1 = tmp.replace('-', '')  # remove all dashes
-            tmp2 = tmp1.replace(' ', '')  # remove all blanks
-            tmp3 = tmp2.replace('.', '') # remove all dots
-            return ':'.join(a + b for a, b in zip(tmp3[::2], tmp3[1::2]))  # insert colon every two chars
-        elif 'ip' in args:
-            tmp = addr.replace(':', '')  # remove all colons
-            tmp1 = tmp.replace('-', '')  # remove all dashes
-            tmp2 = tmp1.replace(' ', '')  # remove all blanks
-            return tmp2
-        else:
-            print('failed to normalize address')
-            sys.exit(1)
-
-    def detect_addr_type(self, args):
-
-        if 'mac' in args:
-            return 'mac'
-        elif 'ip' in args:
-            return 'ipv4'
-        else:
-            print('failed to detect address type')
-            sys.exit(1)

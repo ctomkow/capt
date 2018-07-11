@@ -17,14 +17,14 @@ from switch import Switch
 
 class UpgradeCode:
 
-    def __init__(self, switch_ipv4_address, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def __init__(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call    = Connector(cpi_username, cpi_password, cpi_ipv4_address, logger)
         sw_api_call = ConnSwitch(cpi_username, cpi_password, cpi_ipv4_address, logger)
         ap_api_call = AccessPoint(cpi_username, cpi_password, cpi_ipv4_address, logger)
 
         sw = Switch()
-        sw.ipv4_address = switch_ipv4_address
+        sw.ipv4_address = values_dict['address']
         self.upgrade_code(api_call, sw_api_call, ap_api_call, sw, logger)
 
     def upgrade_code(self, api_call, sw_api_call, ap_api_call, sw, logger):

@@ -22,6 +22,8 @@ from function.find import Find
 from function.change import Change
 from function.test_api import TestApi
 from cli_crafter import CliCrafter
+from argument_parser import ArgumentParser
+
 
 
 class Capt:
@@ -42,7 +44,7 @@ class Capt:
         # capt find ip x.x.x.x
         find_ip = craft.ip_parser(find_sp)
         craft.addr_arg(find_ip)
-        find_ip.set_defaults(func=Find)
+        find_ip.set_defaults(func=ArgumentParser.find_ip)
         #  -----
         # capt find ip x.x.x.x --ap
         craft.ap_arg(find_ip)
@@ -53,7 +55,7 @@ class Capt:
         # capt find mac xx:xx:xx:xx:xx:xx
         find_mac = craft.mac_parser(find_sp)
         craft.addr_arg(find_mac)
-        find_mac.set_defaults(func=Find)
+        find_mac.set_defaults(func=ArgumentParser.find_mac)
         #  -----
         # capt find mac xx:xx:xx:xx:xx:xx --ap
         craft.ap_arg(find_mac)
@@ -64,70 +66,71 @@ class Capt:
         # capt upgrade x.x.x.x
         upgrade = craft.upgrade_parser(subparsers)
         craft.addr_arg(upgrade)
-        upgrade.set_defaults(func=UpgradeCode)
+        upgrade.set_defaults(func=ArgumentParser.upgrade)
         #  -----
         # capt mock upgrade x.x.x.x
         mock_upgrade = craft.upgrade_parser(mock_sp)
         craft.addr_arg(mock_upgrade)
-        mock_upgrade.set_defaults(func=MockUpgradeCode)
+        mock_upgrade.set_defaults(func=ArgumentParser.mock_upgrade)
         #  -----
         # capt change mac xx:xx:xx:xx:xx:xx --vlan yyyy
         change_mac = craft.mac_parser(change_sp)
         craft.addr_arg(change_mac)
         craft.vlan_arg(change_mac)
-        change_mac.set_defaults(func=Change)
+        change_mac.set_defaults(func=ArgumentParser.change_mac)
         #  -----
         # capt test_api
         test_api_sp = craft.test_api_subparser(subparsers)
         test_api_mac = craft.mac_parser(test_api_sp)
         craft.addr_arg(test_api_mac)
-        test_api_mac.set_defaults(func=TestApi.test_method)
+        test_api_mac.set_defaults(func=ArgumentParser.test_api_mac)
 
         parser = craft.parser
 
         argcomplete.autocomplete(parser)
         args = parser.parse_args()
 
-        #print(args)
-        #print(sys.argv)
+        # determine choice of inputs
+        arg_parse = ArgumentParser(args)
 
-        # handle addressing for ip/mac selection
-        if 'ip' in sys.argv or 'mac' in sys.argv:
-            addr = craft.normalize_addr(args.address, sys.argv)
-            addr_type = craft.detect_addr_type(sys.argv)
+        # if sub commands
+        if arg_parse.sub_cmd_exists():
+            command, values_dict = args.func(arg_parse) # execute argument_parser function
 
-        if args.sub_cmd == 'find':
-            if args.find == 'ip' or args.find == 'mac':
-                config.load_base_conf()
-                log_file = False
-                logger = self.set_logger(args.address, logging.INFO, log_file)
-                args.func(args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
-
-        if args.sub_cmd == 'change':
-            if args.change == 'ip' or args.change == 'mac':
-                config.load_base_conf()
-                log_file = False
-                logger = self.set_logger(args.address, logging.INFO, log_file)
-                args.func(args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
-
-        if args.sub_cmd == 'upgrade':
+            # load base config
             config.load_base_conf()
-            logger = self.set_logger(args.address, logging.INFO)
-            args.func(args.address, config.username, config.password, config.cpi_ipv4_address, logger)
 
-        if args.sub_cmd == 'mock':
-            if args.mock == 'upgrade':
-                config.load_base_conf()
-                logger = self.set_logger(args.address, logging.INFO)
-                args.func(args.address, config.username, config.password, config.cpi_ipv4_address, logger)
+            # determine whether to log to file or not
+            if arg_parse.first_sub_cmd() == 'find' or arg_parse.first_sub_cmd() == 'change':
+                log_file = False
+            if arg_parse.first_sub_cmd() == 'upgrade' or arg_parse.first_sub_cmd() == 'mock':
+                log_file = True
 
-        if args.sub_cmd == 'test_api':
-            config.load_base_conf()
-            logger = self.set_logger(args.address, logging.INFO)
-            args.func(TestApi, args, addr, addr_type, config.username, config.password, config.cpi_ipv4_address, logger)
+            # set up logger
+            logger = self.set_logger(args.address, logging.INFO, log_file)
 
-        # if not sub commands are selected, execute configuration file
-        if not args.sub_cmd:
+            # execute function based on argument parsing
+            if command == 'find_ip':
+                Find.find_ip_client(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'find_ip--ap':
+                Find.find_ip_ap(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'find_ip--phone':
+                Find.find_ip_phone(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'find_mac':
+                Find.find_mac_client(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'find_mac--ap':
+                Find.find_mac_ap(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'find_mac--phone':
+                Find.find_mac_phone(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'change_mac--vlan':
+                Change.change_mac_vlan(Change, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'upgrade':
+                UpgradeCode(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'mock_upgrade':
+                MockUpgradeCode(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'test_api_mac':
+                TestApi.test_method(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+        else: # no sub commands, execute configuration file
             config.load_configuration()
             self.main(args.verbose)
 
