@@ -28,15 +28,19 @@ class Connector:
 
     def job_complete(self, job_id):
 
-        url = "https://{}/webacs/api/v3/data/JobSummary.json?jobName=\"{}\"".format(self.cpi_ipv4_address, job_id)
+        url = "https://{}/webacs/api/v3/op/jobService/runhistory.json?jobName=\"{}\"".format(self.cpi_ipv4_address, job_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        key_list = ['queryResponse', 'entityId', 0, '@displayName']
-        result_list = JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
-        status = [x.strip() for x in result_list.split(',')]
-        if status[-1] == "COMPLETED": # if last element in list = COMPLETED
+        key_list = ['mgmtResponse', 'job', 0, 'runInstances', 'runInstance', 0, 'runStatus']
+        status = JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+
+        if status == "COMPLETED": # job complete
             return True
-        else:
+        elif status == "RUNNING": # job running
             return False
+        else:
+            # ADD CRITICAL LOGGING HERE
+            print('critical, job not run correctly')
+            sys.exit(1)
 
     def job_successful(self, job_id):
 
@@ -77,7 +81,7 @@ class Connector:
                     self.logger.critical(args[0])
                     sys.exit(1)
 
-                    self.logger.debug("Base case just before recursive call: {}".format(base_case))
+                self.logger.debug("Base case just before recursive call: {}".format(base_case))
                 if api_call_method == requests.get:
                     req = self.error_handling(api_call_method, base_case, args[0], args[1], args[2], args[3])
                 elif api_call_method == requests.post or api_call_method == requests.put:

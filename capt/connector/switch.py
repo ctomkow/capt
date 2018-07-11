@@ -101,14 +101,21 @@ class Switch(Connector):
 
     # --- end PUT calls
 
-    def get_id(self, dev_ipv4_address):
+    # --- GET calls
+
+    def get_id_by_ip(self, dev_ipv4_address):
         url = "https://{}/webacs/api/v3/data/Devices.json?ipAddress=\"{}\"".format(self.cpi_ipv4_address,
                                                                                    dev_ipv4_address)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entityId', 0, '$']
         return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
-    #--- GET calls
+    def get_id_by_mac(self, address):
+
+        url = "https://{}/webacs/api/v3/data/Devices.json?macAddress=\"{}\"".format(self.cpi_ipv4_address, address)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['queryResponse', 'entityId', 0, '$']
+        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
 
     def get_sync_status(self, dev_id):
 

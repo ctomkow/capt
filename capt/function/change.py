@@ -1,6 +1,7 @@
 
 # system imports
 import sys
+import time
 
 # local imports
 from function.find import Find
@@ -33,13 +34,17 @@ class Change:
 
         # invoke API call to change VLAN
         sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        job_id = sw_api_call.conf_if_vlan(sw_api_call.get_id(dev_addr), interface, "Access", vlan)
-        if not sw_api_call.job_complete(job_id):
-            logger.critical("Change VLAN failed. Prime job not completed")
-            sys.exit(1)
-        else:
-            if not sw_api_call.job_successful(job_id):
-                logger.critical("Change VLAN failed. Prime job not successful")
+        dev_id = sw_api_call.get_id_by_ip(neigh_ip)
+        job_id = sw_api_call.conf_if_vlan(dev_id, interface, "Access", vlan)
+
+        timeout = time.time() + 30  # 30 second timeout starting now
+        while not sw_api_call.job_complete(job_id):
+            time.sleep(5)
+            if time.time() > timeout:
+                logger.critical("Change VLAN failed. Prime job not completed")
                 sys.exit(1)
+        if not sw_api_call.job_successful(job_id):
+            logger.critical("Change VLAN failed. Prime job not successful")
+            sys.exit(1)
 
         logger.info('Change VLAN complete.')
