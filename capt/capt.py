@@ -190,15 +190,15 @@ class Capt:
 
                 try:
                     if 'code_upgrade' in proc_dict:
-                        t = threading.Thread(target=UpgradeCode, args=(switch_ipv4_address_list[0], config.username,
+                        t = threading.Thread(target=UpgradeCode, args=({'address': switch_ipv4_address_list[0]}, config.username,
                                                                        config.password, config.cpi_ipv4_address, logger))
                     elif 'test_code_upgrade' in proc_dict:
-                        t = threading.Thread(target=MockUpgradeCode, args=(switch_ipv4_address_list[0], config.username,
+                        t = threading.Thread(target=MockUpgradeCode, args=({'address': switch_ipv4_address_list[0]}, config.username,
                                                                            config.password, config.cpi_ipv4_address, logger))
                     elif 'push_command' in proc_dict:
-                        t = threading.Thread(target=self.push_command(switch_ipv4_address_list[0], config.config_command, logger))
+                        t = threading.Thread(target=self.push_command({'address': switch_ipv4_address_list[0]}, config.config_command, logger))
                     elif 'push_configuration' in proc_dict:
-                        t = threading.Thread(target=self.push_configuration(switch_ipv4_address_list[0], config.config_configuration, logger))
+                        t = threading.Thread(target=self.push_configuration({'address': switch_ipv4_address_list[0]}, config.config_configuration, logger))
                 except KeyError:
                     sys_logger.critical("Thread failed to execute function.")
                     sys.exit(1)
