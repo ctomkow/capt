@@ -13,9 +13,9 @@ before_install:
 #   - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
 #   - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   
-install:
-  - pip install requests
-  - pip install argcomplete
+#install:
+#  - pip install requests
+#  - pip install argcomplete
   
 script:
 #  - python setup.py install

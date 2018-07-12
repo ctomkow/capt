@@ -23,13 +23,13 @@ URL = 'https://github.com/ctomkow/capt'
 EMAIL = 'ctomkow@gmail.com'
 AUTHOR = 'Craig Abt Tomkow'
 REQUIRES_PYTHON = '>=3.5.0'
-VERSION = '0.1.7'
+VERSION = '0.1.10'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
+    'urllib3',
     'requests',
-    'argcomplete',
-    'urllib3'
+    'argcomplete'
 ]
 
 # What packages are optional?
