@@ -10,7 +10,9 @@ sudo: required
 # modules fail to import
 before_install:
    - python setup.py install
+   - echo $PATH
    - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
+   - echo $PATH
 #   - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   
 #install:
