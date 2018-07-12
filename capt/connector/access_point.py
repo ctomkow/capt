@@ -10,8 +10,7 @@ from connector.connector import Connector
 
 class AccessPoint(Connector):
 
-    # legacy api_call
-    def get_id(self, name):
+    def id_by_name(self, name):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/AccessPoints.json?name=\"{}\"".format(self.cpi_ipv4_address, name)
@@ -19,7 +18,7 @@ class AccessPoint(Connector):
         key_list = ['queryResponse', 'entityId', 0, '$']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
-    def get_ip(self, dev_id):
+    def ip_by_id(self, dev_id):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/AccessPoints/{}.json".format(self.cpi_ipv4_address, dev_id)
@@ -27,7 +26,7 @@ class AccessPoint(Connector):
         key_list = ['queryResponse', 'entity', 0, 'accessPointsDTO', 'ipAddress']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
-    def get_id_by_mac(self, mac):
+    def id_by_mac(self, mac):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/AccessPoints.json?ethernetMac=\"{}\"".format(self.cpi_ipv4_address, mac)
@@ -36,7 +35,7 @@ class AccessPoint(Connector):
         return self.parse_json.value(result.json(), key_list, self.logger)
 
     # Can't seem to filter API call on ipAddress (I tried AccessPoints and AccessPointDetail)
-    def get_id_by_ip(self, ip):
+    def id_by_ip(self, ip):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/AccessPoints.json?ipAddress=\"{}\"".format(self.cpi_ipv4_address, ip)
@@ -44,14 +43,14 @@ class AccessPoint(Connector):
         key_list = ['queryResponse', 'entityId', 0, '$']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
-    def get_json_basic(self, dev_id):
+    def json_basic(self, dev_id):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/AccessPoints/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         return result.json()
 
-    def get_json_detailed(self, dev_id):
+    def json_detailed(self, dev_id):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
         url = "https://{}/webacs/api/v3/data/AccessPointDetails/{}.json".format(self.cpi_ipv4_address, dev_id)

@@ -2,6 +2,7 @@
 # system imports
 import sys
 
+
 class CliParser:
 
     def __init__(self, args):

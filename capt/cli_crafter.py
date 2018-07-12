@@ -6,7 +6,6 @@ from argparse import RawDescriptionHelpFormatter
 
 class CliCrafter:
 
-
     def __init__(self):
 
         # arg parsing

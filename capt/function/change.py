@@ -29,7 +29,7 @@ class Change:
 
         # invoke API call to change VLAN
         sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = sw_api_call.get_id_by_ip(neigh_ip)
+        dev_id = sw_api_call.id_by_ip(neigh_ip)
         job_id = sw_api_call.conf_if_vlan(dev_id, interface, "Access", values_dict['vlan'])
 
         timeout = time.time() + 30  # 30 second timeout starting now

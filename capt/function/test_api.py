@@ -19,8 +19,8 @@ class TestApi:
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
         sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
 
-        dev_id = sw_api_call.get_id_by_ip("172.30.28.246")
-        result = sw_api_call.get_json_detailed(dev_id)
+        dev_id = sw_api_call.id_by_ip("172.30.28.246")
+        result = sw_api_call.json_detailed(dev_id)
 
         key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'ethernetInterfaces', 'ethernetInterface']
         interface_list_of_dicts = self.parse_json.value(result, key_list, logger)

@@ -17,8 +17,8 @@ class Find:
     def ip_client(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = api_call.get_id_by_ip(values_dict['address'])
-        result = api_call.get_json_detailed(dev_id)
+        dev_id = api_call.id_by_ip(values_dict['address'])
+        result = api_call.json_detailed(dev_id)
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
         neigh_name = self.parse_json.value(result, key_list, logger)
@@ -48,10 +48,10 @@ class Find:
 
         ap_api_call = AccessPoint(cpi_username, cpi_password, cpi_ipv4_address, logger)
         client_api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        client_id = client_api_call.get_id_by_ip(values_dict['address'])
-        ap_id = ap_api_call.get_id_by_ip(values_dict['address'])
-        ap_result = ap_api_call.get_json_detailed(ap_id)
-        client_result = client_api_call.get_json_detailed(client_id)
+        client_id = client_api_call.id_by_ip(values_dict['address'])
+        ap_id = ap_api_call.id_by_ip(values_dict['address'])
+        ap_result = ap_api_call.json_detailed(ap_id)
+        client_result = client_api_call.json_detailed(client_id)
 
         key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0, 'neighborName']
         neigh_name = self.parse_json.value(ap_result, key_list, logger)
@@ -77,8 +77,8 @@ class Find:
     def ip_phone(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = api_call.get_id_by_ip(values_dict['address'])
-        result = api_call.get_json_detailed(dev_id)
+        dev_id = api_call.id_by_ip(values_dict['address'])
+        result = api_call.json_detailed(dev_id)
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
         neigh_name = self.parse_json.value(result, key_list, logger)
@@ -107,8 +107,8 @@ class Find:
     def mac_client(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = api_call.get_id_by_mac(values_dict['address'])
-        result = api_call.get_json_detailed(dev_id)
+        dev_id = api_call.id_by_mac(values_dict['address'])
+        result = api_call.json_detailed(dev_id)
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
         neigh_name = self.parse_json.value(result, key_list, logger)
@@ -138,10 +138,10 @@ class Find:
 
         ap_api_call = AccessPoint(cpi_username, cpi_password, cpi_ipv4_address, logger)
         client_api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        client_id = client_api_call.get_id_by_mac(values_dict['address'])
-        ap_id = ap_api_call.get_id_by_mac(values_dict['address'])
-        ap_result = ap_api_call.get_json_detailed(ap_id)
-        client_result = client_api_call.get_json_detailed(client_id)
+        client_id = client_api_call.id_by_mac(values_dict['address'])
+        ap_id = ap_api_call.id_by_mac(values_dict['address'])
+        ap_result = ap_api_call.json_detailed(ap_id)
+        client_result = client_api_call.json_detailed(client_id)
 
         key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0, 'neighborName']
         neigh_name = self.parse_json.value(ap_result, key_list, logger)
@@ -167,8 +167,8 @@ class Find:
     def mac_phone(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = api_call.get_id_by_mac(values_dict['address'])
-        result = api_call.get_json_detailed(dev_id)
+        dev_id = api_call.id_by_mac(values_dict['address'])
+        result = api_call.json_detailed(dev_id)
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
         neigh_name = self.parse_json.value(result, key_list, logger)

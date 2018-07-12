@@ -35,7 +35,7 @@ class UpgradeCode:
         #      PRE_PROCESSING      #
         # --------------------------#
 
-        sw.id = sw_api_call.get_id_by_ip(sw.ipv4_address)
+        sw.id = sw_api_call.id_by_ip(sw.ipv4_address)
 
         # --------------------------#
         #   PRE_STATE_COLLECTION   #
@@ -58,7 +58,7 @@ class UpgradeCode:
 
         # 2. force sync of switch state
         logger.info("Synchronizing ...")
-        old_sync_time = sw_api_call.get_sync_time(sw.id)
+        old_sync_time = sw_api_call.sync_time(sw.id)
         sw_api_call.sync(sw.ipv4_address)  # force a sync!
         timeout = time.time() + 60 * 20  # 20 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(20))
@@ -71,7 +71,7 @@ class UpgradeCode:
                 logger.critical("Timed out. Sync failed.")
                 sys.exit(1)
 
-        new_sync_time = sw_api_call.get_sync_time(sw.id)
+        new_sync_time = sw_api_call.sync_time(sw.id)
         if old_sync_time == new_sync_time:  # KEEP CODE! needed for corner case issue where force sync fails (e.g. code 03.03.03)
             logger.critical("Before and after sync time is the same. Sync failed.")
             sys.exit(1)
@@ -80,12 +80,12 @@ class UpgradeCode:
         logger.info("Synchronized!")
 
         # 3. get current software version
-        sw.pre_software_version = sw_api_call.get_software_version(sw.id)
+        sw.pre_software_version = sw_api_call.software_version(sw.id)
         logger.info("Software version: {}".format(sw.pre_software_version))
 
         # 4. get stack members
         logger.info("Getting stack members ...")
-        sw.pre_stack_member = sw_api_call.get_stack_members(sw.id)
+        sw.pre_stack_member = sw_api_call.stack_members(sw.id)
         sw.pre_stack_member = sorted(sw.pre_stack_member, key=lambda k: k['name'])  # sort the list of dicts
 
         # the switch 'name' (e.g. 'Switch 1') is used to test switch existence (e.g. powered off, not detected at all)
@@ -101,7 +101,7 @@ class UpgradeCode:
 
         # 6. get CDP neighbour state
         logger.info("Getting CDP neighbours ...")
-        sw.pre_cdp_neighbour = sw_api_call.get_cdp_neighbours(sw.id)
+        sw.pre_cdp_neighbour = sw_api_call.cdp_neighbours(sw.id)
         sw.pre_cdp_neighbour = sorted(sw.pre_cdp_neighbour, key=lambda k: k['nearEndInterface'])  # sort the list of dicts
 
         # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
@@ -143,7 +143,7 @@ class UpgradeCode:
         for a in sw.access_points:
             a = a.split('.')[0]  # Prime returns either "xxxx" or "xxxx.subdomain.domain.tld" for name
             logger.debug("access point: {}".format(a))
-            if self.ping(ap_api_call.get_ip(ap_api_call.get_id_by_ip(a)), logger):
+            if self.ping(ap_api_call.ip_by_id(ap_api_call.id_by_ip(a)), logger):
                 sw.test_ap.append(a)
                 break  # access point is pingable, so only keep this one in the list
             else:
@@ -205,7 +205,7 @@ class UpgradeCode:
 
         # 2. force sync of switch state
         logger.info("Synchronizing ...")
-        old_sync_time = sw_api_call.get_sync_time(sw.id)
+        old_sync_time = sw_api_call.sync_time(sw.id)
         sw_api_call.sync(sw.ipv4_address)  # force a sync!
         timeout = time.time() + 60 * 20  # 20 minute timeout starting now
         logger.info("Timeout set to {} minutes.".format(20))
@@ -218,7 +218,7 @@ class UpgradeCode:
                 logger.critical("Timed out. Sync failed.")
                 sys.exit(1)
 
-        new_sync_time = sw_api_call.get_sync_time(sw.id)
+        new_sync_time = sw_api_call.sync_time(sw.id)
         if old_sync_time == new_sync_time:  # KEEP CODE! needed for corner case issue where force sync fails (e.g. code 03.03.03)
             logger.critical("Before and after sync time is the same. Sync failed.")
             sys.exit(1)
@@ -227,7 +227,7 @@ class UpgradeCode:
         logger.info("Synchronized!")
 
         # 3. get software version
-        sw.post_software_version = sw_api_call.get_software_version(sw.id)
+        sw.post_software_version = sw_api_call.software_version(sw.id)
         logger.info("Software version: {}".format(sw.post_software_version))
 
         # compare
@@ -241,7 +241,7 @@ class UpgradeCode:
 
         # 4. get stack members
         logger.info("Getting stack members ...")
-        sw.post_stack_member = sw_api_call.get_stack_members(sw.id)
+        sw.post_stack_member = sw_api_call.stack_members(sw.id)
         sw.post_stack_member = sorted(sw.post_stack_member, key=lambda k: k['name'])  # sort the list of dicts
 
         # the switch 'name' (e.g. 'Switch 1') is used to test switch existence (e.g. powered off, not detected at all)
@@ -279,7 +279,7 @@ class UpgradeCode:
 
         # 6. get CDP neighbour state
         logger.info("Getting CDP neighbours ...")
-        sw.post_cdp_neighbour = sw_api_call.get_cdp_neighbours(sw.id)
+        sw.post_cdp_neighbour = sw_api_call.cdp_neighbours(sw.id)
         sw.post_cdp_neighbour = sorted(sw.post_cdp_neighbour, key=lambda k: k['nearEndInterface'])  # sort the list of dicts
 
         # Using 'nearEndInterface' key. The 'phyInterface' number changes between code upgrade versions
@@ -323,7 +323,7 @@ class UpgradeCode:
         # test access point connectivity
         for a in sw.test_ap:
             logger.debug("access point: {}".format(a))
-            if not self.ping(ap_api_call.get_ip(ap_api_call.get_id_by_ip(a)), logger):
+            if not self.ping(ap_api_call.ip_by_id(ap_api_call.id_by_ip(a)), logger):
                 logger.error("{} is not pingable".format(a))
 
         logger.debug("CDP neighbour access points: {}".format(sw.test_ap))
@@ -354,22 +354,22 @@ class UpgradeCode:
         if not self.ping(sw.ipv4_address, logger):
             sw.reachability = "UNREACHABLE"
             return False
-        elif self.ping(sw.ipv4_address, logger) and sw_api_call.get_reachability(sw.id) == "REACHABLE":
+        elif self.ping(sw.ipv4_address, logger) and sw_api_call.reachability(sw.id) == "REACHABLE":
             sw.reachability = "REACHABLE"
             return True
         else:  # in-between condition where switch is pingable, but CPI device hasn't moved to REACHABLE
-            sw.reachability = sw_api_call.get_reachability(sw.id)
+            sw.reachability = sw_api_call.reachability(sw.id)
             return False
 
     def synchronized(self, sw, sw_api_call, logger):
-        if sw_api_call.get_sync_status(sw.id) == "COMPLETED":
+        if sw_api_call.sync_status(sw.id) == "COMPLETED":
             sw.sync_state = "COMPLETED"
             return True
-        elif sw_api_call.get_sync_status(sw.id) == "SYNCHRONIZING":
+        elif sw_api_call.sync_status(sw.id) == "SYNCHRONIZING":
             sw.sync_state = "SYNCHRONIZING"
             return False
         else:
-            sw.sync_state = sw_api_call.get_sync_status(sw.id)
+            sw.sync_state = sw_api_call.sync_status(sw.id)
             logger.warning("Unexpected sync state: {}".format(sw.sync_state))
             return False
 

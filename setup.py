@@ -28,7 +28,8 @@ VERSION = '0.1.7'
 # What packages are required for this module to be executed?
 REQUIRED = [
     'requests',
-    'argcomplete'
+    'argcomplete',
+    'urllib3'
 ]
 
 # What packages are optional?

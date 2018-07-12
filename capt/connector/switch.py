@@ -19,8 +19,6 @@ class Switch(Connector):
         payload = {"syncDevicesDTO": {"devices": {"device": [{"address": "{}".format(dev_ipv4_address)}]}}}
         result = self.error_handling(requests.post, 5, url, False, self.username, self.password, payload)
 
-    # --- end POST calls
-
     # --- PUT calls (usually requires templates built in Prime to execute)
 
     def reload(self, dev_id, timeout):
@@ -98,46 +96,44 @@ class Switch(Connector):
         key_list = ['mgmtResponse', 'cliTemplateCommandJobResult', 0, 'jobName']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
-    # --- end PUT calls
-
     # --- GET calls
 
-    def get_id_by_ip(self, dev_ipv4_address):
+    def id_by_ip(self, dev_ipv4_address):
         url = "https://{}/webacs/api/v3/data/Devices.json?ipAddress=\"{}\"".format(self.cpi_ipv4_address,
                                                                                    dev_ipv4_address)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entityId', 0, '$']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
-    def get_id_by_mac(self, address):
+    def id_by_mac(self, address):
 
         url = "https://{}/webacs/api/v3/data/Devices.json?macAddress=\"{}\"".format(self.cpi_ipv4_address, address)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entityId', 0, '$']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
-    def get_sync_status(self, dev_id):
+    def sync_status(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'collectionStatus']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
-    def get_sync_time(self, dev_id):
+    def sync_time(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'collectionTime']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
-    def get_reachability(self, dev_id):
+    def reachability(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'reachability']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
-    def get_software_version(self, dev_id):
+    def software_version(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
@@ -145,7 +141,7 @@ class Switch(Connector):
         return self.parse_json.value(result.json(), key_list, self.logger)
 
     # Switch chassis info
-    def get_stack_members(self, dev_id):
+    def stack_members(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
@@ -153,14 +149,14 @@ class Switch(Connector):
         return self.parse_json.value(result.json(), key_list, self.logger)
 
     # CDP neighbour info gets populated when the device syncs
-    def get_cdp_neighbours(self, dev_id):
+    def cdp_neighbours(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'cdpNeighbors', 'cdpNeighbor']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
-    def get_ports(self, dev_id):
+    def ports(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
@@ -179,8 +175,7 @@ class Switch(Connector):
                 if interface_dict[key] == interface_name:
                     return interface_dict
 
-
-    def get_json_detailed(self, dev_id):
+    def json_detailed(self, dev_id):
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         return result.json()

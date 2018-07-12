@@ -25,7 +25,7 @@ class Connector:
 
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-    #--- Prime job execution and handling
+    # --- Prime job execution and handling
 
     def job_complete(self, job_id):
 
@@ -54,7 +54,7 @@ class Connector:
         elif status == "FAILURE":
             return False
 
-    #--- end Prime job handling
+    # --- end Prime job handling
 
     # a decorator-like method for error handling
     def error_handling(self, api_call_method, base_case, *args):
