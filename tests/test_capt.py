@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-# Craig Tomkow
-# June 28, 2018
-#
-# Unit tests for capt.py
-
 # system imports
 import unittest
 import logging
@@ -12,10 +7,9 @@ from unittest.mock import patch
 
 # local imports
 from capt.capt import Capt
-# from package.module import class
 
-class test_capt(unittest.TestCase):
 
+class test_Capt(unittest.TestCase):
 
     def setUp(self):
 
@@ -39,7 +33,7 @@ class test_capt(unittest.TestCase):
 
     def test_valid_concurrent_num(self):
 
-        for i in range(-1,8):
+        for i in range(-1, 8):
             if i <= 0 or i >= 6:
                 self.assertFalse(Capt.valid_concurrent_num(self, i, self.test_logger))
             if i >= 1 and i <= 5:

@@ -6,10 +6,9 @@ import logging
 # local imports
 from capt.capt import Capt
 from procedure.upgrade_code import UpgradeCode
-# from package.module import class
 
 
-class test_upgrade_code(unittest.TestCase):
+class test_UpgradeCode(unittest.TestCase):
 
     def setUp(self):
 
