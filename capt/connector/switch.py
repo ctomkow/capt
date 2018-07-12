@@ -6,7 +6,6 @@ import json
 import requests
 
 # local imports
-from json_parser import JsonParser
 from connector.connector import Connector
 
 
@@ -46,7 +45,7 @@ class Switch(Connector):
             }
         result = self.error_handling(requests.put, 5, url, False, self.username, self.password, payload)
         key_list = ['mgmtResponse', 'cliTemplateCommandJobResult', 0, 'jobName']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     def conf_if_vlan(self, dev_id, interface, sw_port_type, access_vlan):
         url = "https://{}/webacs/api/v3/op/cliTemplateConfiguration/deployTemplateThroughJob.json".format(
@@ -97,7 +96,7 @@ class Switch(Connector):
             }
         result = self.error_handling(requests.put, 5, url, False, self.username, self.password, payload)
         key_list = ['mgmtResponse', 'cliTemplateCommandJobResult', 0, 'jobName']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     # --- end PUT calls
 
@@ -108,42 +107,42 @@ class Switch(Connector):
                                                                                    dev_ipv4_address)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entityId', 0, '$']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     def get_id_by_mac(self, address):
 
         url = "https://{}/webacs/api/v3/data/Devices.json?macAddress=\"{}\"".format(self.cpi_ipv4_address, address)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entityId', 0, '$']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     def get_sync_status(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'collectionStatus']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     def get_sync_time(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'collectionTime']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     def get_reachability(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'reachability']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     def get_software_version(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'softwareVersion']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     # Switch chassis info
     def get_stack_members(self, dev_id):
@@ -151,7 +150,7 @@ class Switch(Connector):
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'chassis', 'chassis']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     # CDP neighbour info gets populated when the device syncs
     def get_cdp_neighbours(self, dev_id):
@@ -159,21 +158,21 @@ class Switch(Connector):
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'cdpNeighbors', 'cdpNeighbor']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     def get_ports(self, dev_id):
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'ethernetInterfaces', 'ethernetInterface']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     def port_detail_dict(self, dev_id, interface_name):
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'ethernetInterfaces', 'ethernetInterface']
-        interface_list_of_dicts = JsonParser.get_value(JsonParser, result, key_list, self.logger)
+        interface_list_of_dicts = self.parse_json.value(result, key_list, self.logger)
 
         for interface_dict in interface_list_of_dicts:
             for key in interface_dict:  # iterating over dict's return keys only

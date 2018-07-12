@@ -21,43 +21,39 @@ class CliParser:
 
     def normalize_mac(self, address):
 
-        tmp = address.replace(':', '')  # remove all colons
-        tmp1 = tmp.replace('-', '')  # remove all dashes
-        tmp2 = tmp1.replace(' ', '')  # remove all blanks
-        tmp3 = tmp2.replace('.', '')  # remove all dots
+        tmp = address.replace(':', '')
+        tmp1 = tmp.replace('-', '')
+        tmp2 = tmp1.replace(' ', '')
+        tmp3 = tmp2.replace('.', '')
         return ':'.join(a + b for a, b in zip(tmp3[::2], tmp3[1::2]))  # insert colon every two chars
-
 
     def find_ip(self): # determine any flags and return all required values
 
         dict_of_values = {'address': self.args.address}
-
         if self.args.ap:
             return 'find_ip--ap', dict_of_values
         elif self.args.phone:
             return 'find_ip--phone', dict_of_values
-        else: # no flags
+        else:
             return 'find_ip', dict_of_values
 
     def find_mac(self): # determine any flags and return all required values
 
         dict_of_values = {'address': self.normalize_mac(self.args.address)}
-
         if self.args.ap:
             return 'find_mac--ap', dict_of_values
         elif self.args.phone:
             return 'find_mac--phone', dict_of_values
-        else:  # no flags
+        else:
             return 'find_mac', dict_of_values
 
     def change_mac(self): # determine any flags and return all required values
 
         dict_of_values = {'address': self.normalize_mac(self.args.address)}
-
         if self.args.vlan:
             dict_of_values['vlan'] = self.args.vlan # add vlan to dict
             return 'change_mac--vlan', dict_of_values
-        else:  # no flags (flags are required)
+        else:
             print('missing flags are required')
             sys.exit(1)
 

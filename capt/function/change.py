@@ -10,7 +10,6 @@ from connector.switch import Switch
 
 class Change:
 
-
     def __init__(self):
 
         pass

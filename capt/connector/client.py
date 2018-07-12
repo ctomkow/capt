@@ -6,8 +6,8 @@ import json
 import requests
 
 # local imports
-from json_parser import JsonParser
 from connector.connector import Connector
+
 
 class Client(Connector):
 
@@ -16,14 +16,14 @@ class Client(Connector):
         url = "https://{}/webacs/api/v3/data/Clients.json?ipAddress=\"{}\"".format(self.cpi_ipv4_address, address)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entityId', 0, '$']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     def get_id_by_mac(self, address):
 
         url = "https://{}/webacs/api/v3/data/Clients.json?macAddress=\"{}\"".format(self.cpi_ipv4_address, address)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entityId', 0, '$']
-        return JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        return self.parse_json.value(result.json(), key_list, self.logger)
 
     def get_json_basic(self, dev_id):
 

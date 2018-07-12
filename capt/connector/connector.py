@@ -21,6 +21,7 @@ class Connector:
         self.password = passwd
         self.cpi_ipv4_address = cpi_ipv4_addr
         self.logger = log
+        self.parse_json = JsonParser()
 
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -31,7 +32,7 @@ class Connector:
         url = "https://{}/webacs/api/v3/op/jobService/runhistory.json?jobName=\"{}\"".format(self.cpi_ipv4_address, job_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['mgmtResponse', 'job', 0, 'runInstances', 'runInstance', 0, 'runStatus']
-        status = JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        status = self.parse_json.value(result.json(), key_list, self.logger)
 
         if status == "COMPLETED": # job complete
             return True
@@ -47,7 +48,7 @@ class Connector:
         url = "https://{}/webacs/api/v3/op/jobService/runhistory.json?jobName=\"{}\"".format(self.cpi_ipv4_address, job_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['mgmtResponse', 'job', 0, 'runInstances', 'runInstance', 0, 'resultStatus']
-        status = JsonParser.get_value(JsonParser, result.json(), key_list, self.logger)
+        status = self.parse_json.value(result.json(), key_list, self.logger)
         if status == "SUCCESS":
             return True
         elif status == "FAILURE":
