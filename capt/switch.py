@@ -1,6 +1,5 @@
 
-# Instantiable (so it can be threaded) class to store state information (a Globals class pattern).
-# I liken this to a C struct (functionally speaking)
+# Class to store state information (a Globals class pattern), a C struct (functionally speaking)
 
 
 class Switch:

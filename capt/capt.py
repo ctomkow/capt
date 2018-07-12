@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # PYTHON_ARGCOMPLETE_OK
 
-# Used to compare switch state before and after code upgrades.
-# Pulls state info from Cisco Prime Infrastructure
-
 # system imports
 import threading
 import time
@@ -22,122 +19,105 @@ from function.find import Find
 from function.change import Change
 from function.test_api import TestApi
 from cli_crafter import CliCrafter
-from argument_parser import ArgumentParser
-
+from cli_parser import CliParser
 
 
 class Capt:
 
-
     def __init__(self):
 
         craft = CliCrafter()
-        subparsers = craft.subparsers
 
-        #  -----
-        # base sub-commands
-        find_sp = craft.find_subparser(subparsers)
-        mock_sp = craft.mock_subparser(subparsers)
-        change_sp = craft.change_subparser(subparsers)
-        #  -----
-        #  -----
-        # capt find ip x.x.x.x
+        # ----- base sub-commands
+        find_sp = craft.find_subparser(craft.subparsers)
+        mock_sp = craft.mock_subparser(craft.subparsers)
+        change_sp = craft.change_subparser(craft.subparsers)
+        # ----- capt find ip x.x.x.x
         find_ip = craft.ip_parser(find_sp)
         craft.addr_arg(find_ip)
-        find_ip.set_defaults(func=ArgumentParser.find_ip)
-        #  -----
-        # capt find ip x.x.x.x --ap
+        find_ip.set_defaults(func=CliParser.find_ip)
+        # ----- capt find ip x.x.x.x --ap
         craft.ap_arg(find_ip)
-        #  -----
-        # capt find ip x.x.x.x --phone
+        # ----- capt find ip x.x.x.x --phone
         craft.phone_arg(find_ip)
-        #  -----
-        # capt find mac xx:xx:xx:xx:xx:xx
+        # ----- capt find mac xx:xx:xx:xx:xx:xx
         find_mac = craft.mac_parser(find_sp)
         craft.addr_arg(find_mac)
-        find_mac.set_defaults(func=ArgumentParser.find_mac)
-        #  -----
-        # capt find mac xx:xx:xx:xx:xx:xx --ap
+        find_mac.set_defaults(func=CliParser.find_mac)
+        # ----- capt find mac xx:xx:xx:xx:xx:xx --ap
         craft.ap_arg(find_mac)
-        #  -----
-        # capt find mac xx:xx:xx:xx:xx:xx --phone
+        # ----- capt find mac xx:xx:xx:xx:xx:xx --phone
         craft.phone_arg(find_mac)
-        #  -----
-        # capt upgrade x.x.x.x
-        upgrade = craft.upgrade_parser(subparsers)
+        # ----- capt upgrade x.x.x.x
+        upgrade = craft.upgrade_parser(craft.subparsers)
         craft.addr_arg(upgrade)
-        upgrade.set_defaults(func=ArgumentParser.upgrade)
-        #  -----
-        # capt mock upgrade x.x.x.x
+        upgrade.set_defaults(func=CliParser.upgrade)
+        # ----- capt mock upgrade x.x.x.x
         mock_upgrade = craft.upgrade_parser(mock_sp)
         craft.addr_arg(mock_upgrade)
-        mock_upgrade.set_defaults(func=ArgumentParser.mock_upgrade)
-        #  -----
-        # capt change mac xx:xx:xx:xx:xx:xx --vlan yyyy
+        mock_upgrade.set_defaults(func=CliParser.mock_upgrade)
+        # ----- capt change mac xx:xx:xx:xx:xx:xx --vlan yyyy
         change_mac = craft.mac_parser(change_sp)
         craft.addr_arg(change_mac)
         craft.vlan_arg(change_mac)
-        change_mac.set_defaults(func=ArgumentParser.change_mac)
-        #  -----
-        # capt test_api
-        test_api_sp = craft.test_api_subparser(subparsers)
+        change_mac.set_defaults(func=CliParser.change_mac)
+        # ----- capt test_api
+        test_api_sp = craft.test_api_subparser(craft.subparsers)
         test_api_mac = craft.mac_parser(test_api_sp)
         craft.addr_arg(test_api_mac)
-        test_api_mac.set_defaults(func=ArgumentParser.test_api_mac)
+        test_api_mac.set_defaults(func=CliParser.test_api_mac)
 
-        parser = craft.parser
+        argcomplete.autocomplete(craft.parser)
+        args = craft.parser.parse_args()
 
-        argcomplete.autocomplete(parser)
-        args = parser.parse_args()
-
-        # determine choice of inputs
-        arg_parse = ArgumentParser(args)
+        cli_parse = CliParser(args)
 
         # if sub commands
-        if arg_parse.sub_cmd_exists():
-            command, values_dict = args.func(arg_parse) # execute argument_parser function
+        if cli_parse.sub_cmd_exists():
+            command, values_dict = args.func(cli_parse) # execute argument_parser function
 
-            # load base config
             config.load_base_conf()
 
-            # determine whether to log to file or not
-            if arg_parse.first_sub_cmd() == 'find' or arg_parse.first_sub_cmd() == 'change':
+            if cli_parse.first_sub_cmd() == 'find' or cli_parse.first_sub_cmd() == 'change':
                 log_file = False
-            if arg_parse.first_sub_cmd() == 'upgrade' or arg_parse.first_sub_cmd() == 'mock':
+            elif cli_parse.first_sub_cmd() == 'upgrade' or cli_parse.first_sub_cmd() == 'mock':
+                log_file = True
+            else:
                 log_file = True
 
-            # set up logger
             logger = self.set_logger(args.address, logging.INFO, log_file)
 
-            # execute function based on argument parsing
+            find = Find()
+            change = Change()
+
             if command == 'find_ip':
-                Find.find_ip_client(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+                find.ip_client(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'find_ip--ap':
-                Find.find_ip_ap(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+                find.ip_ap(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'find_ip--phone':
-                Find.find_ip_phone(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+                find.ip_phone(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'find_mac':
-                Find.find_mac_client(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+                find.mac_client(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'find_mac--ap':
-                Find.find_mac_ap(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+                find.mac_ap(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'find_mac--phone':
-                Find.find_mac_phone(Find, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+                find.mac_phone(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'change_mac--vlan':
-                Change.change_mac_vlan(Change, values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+                change.mac_vlan(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'upgrade':
                 UpgradeCode(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'mock_upgrade':
                 MockUpgradeCode(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'test_api_mac':
                 TestApi.test_method(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
-        else: # no sub commands, execute configuration file
-            config.load_configuration()
-            self.main(args.verbose)
+        else: # no sub commands
+            config.load_full_conf()
+            self.main(args.debug)
 
-    def main(self, verbose):
+    def main(self, debug):
 
-        # instantiate system logger (separate from device loggers)
-        if verbose:
+        # instantiate system logger (separate from per device loggers)
+        if debug:
             sys_logger = self.set_logger("system_log", logging.DEBUG)
         else:
             sys_logger = self.set_logger("system_log", logging.INFO)
@@ -174,31 +154,36 @@ class Capt:
         while len(switch_ipv4_address_list) > 0:
 
             # check if thread is alive, if not, remove from list
-            alive_threads = [t for t in threads if t.is_alive()] # DON'T MODIFY THE LIST YOUR ITERATING OVER!
+            alive_threads = [t for t in threads if t.is_alive()]
             threads = alive_threads
             t_count = len(threads)
             sys_logger.debug("Thread count before: {}".format(t_count))
 
-            # spawn thread if max concurrent number is not reached
             if t_count < max_threads:
 
                 # instantiate per-thread/device logger (separate from system logger)
-                if verbose:
+                if debug:
                     logger = self.set_logger(switch_ipv4_address_list[0], logging.DEBUG)
                 else:
                     logger = self.set_logger(switch_ipv4_address_list[0], logging.INFO)
 
                 try:
                     if 'code_upgrade' in proc_dict:
-                        t = threading.Thread(target=UpgradeCode, args=({'address': switch_ipv4_address_list[0]}, config.username,
-                                                                       config.password, config.cpi_ipv4_address, logger))
+                        t = threading.Thread(target=UpgradeCode,
+                                             args=({'address': switch_ipv4_address_list[0]}, config.username,
+                                                   config.password, config.cpi_ipv4_address, logger)
+                                             )
                     elif 'test_code_upgrade' in proc_dict:
-                        t = threading.Thread(target=MockUpgradeCode, args=({'address': switch_ipv4_address_list[0]}, config.username,
-                                                                           config.password, config.cpi_ipv4_address, logger))
+                        t = threading.Thread(target=MockUpgradeCode,
+                                             args=({'address': switch_ipv4_address_list[0]}, config.username,
+                                                   config.password, config.cpi_ipv4_address, logger)
+                                             )
                     elif 'push_command' in proc_dict:
-                        t = threading.Thread(target=self.push_command({'address': switch_ipv4_address_list[0]}, config.config_command, logger))
+                        t = threading.Thread(target=self.push_command({'address': switch_ipv4_address_list[0]},
+                                                                      config.config_command, logger))
                     elif 'push_configuration' in proc_dict:
-                        t = threading.Thread(target=self.push_configuration({'address': switch_ipv4_address_list[0]}, config.config_configuration, logger))
+                        t = threading.Thread(target=self.push_configuration({'address': switch_ipv4_address_list[0]},
+                                                                            config.config_configuration, logger))
                 except KeyError:
                     sys_logger.critical("Thread failed to execute function.")
                     sys.exit(1)
@@ -216,15 +201,14 @@ class Capt:
                     for t in threads:
                         t.join()
                 else:
-                    time.sleep(30) # give delay before creating the next thread.
+                    time.sleep(30) # delay before creating next thread.
             else:
-                time.sleep(5) # give delay before trying again
+                time.sleep(5) # delay before checking thread count
 
     def set_logger(self, nm, level, log_file=True):
 
         # remove colons from name if exists (e.g. mac address)
         name = nm.replace(":","")
-
         formatter = logging.Formatter(
             fmt='%(asctime)s : {} : %(levelname)-8s : %(message)s'.format(name),
             datefmt='%Y-%m-%d %H:%M:%S'
@@ -237,7 +221,6 @@ class Capt:
             handler.setFormatter(formatter)
         screen_handler = logging.StreamHandler(stream=sys.stdout)
         screen_handler.setFormatter(formatter)
-
         logger = logging.getLogger(name)
         logger.setLevel(level)
         if log_file:
@@ -272,7 +255,8 @@ class Capt:
             else:
                 return False
         elif 'test_code_upgrade' in proc_dict:
-            sys_logger.error("{} is selected. This procedure will test code upgrade procedure without a reload.".format(proc_dict))
+            sys_logger.error("{} is selected.".format(proc_dict))
+            sys_logger.error("This will NOT reload switches: {}".format(devices))
             time.sleep(3)
             user_choice = input("Continue (yes/no)? ")
             if user_choice == "yes":

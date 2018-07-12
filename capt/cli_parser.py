@@ -2,7 +2,7 @@
 # system imports
 import sys
 
-class ArgumentParser:
+class CliParser:
 
     def __init__(self, args):
 

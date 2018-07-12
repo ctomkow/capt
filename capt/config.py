@@ -9,7 +9,6 @@ def load_base_conf():
     config = configparser.ConfigParser()
     config.read("config.text")
 
-    # define global variables
     global username
     global password
 
@@ -23,12 +22,11 @@ def load_base_conf():
     cpi_ipv4_address = config['CPI']['ipv4_address']
 
 
-def load_configuration():
+def load_full_conf():
 
     config = configparser.ConfigParser()
     config.read("config.text")
 
-    # define global variables
     global username
     global password
 

@@ -15,11 +15,11 @@ class Change:
 
         pass
 
-    def change_mac_vlan(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def mac_vlan(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         # find and display
         neigh_name, neigh_ip, interface, description, old_vlan, old_vlan_name, addr = \
-            Find.find_mac_client(Find, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger)
+            Find.mac_client(Find, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger)
 
         # require 'yes' input to proceed
         logger.info('Change VLAN to: {}'.format(values_dict['vlan']))

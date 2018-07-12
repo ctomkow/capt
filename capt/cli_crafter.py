@@ -2,7 +2,7 @@
 # system imports
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
-import sys
+
 
 class CliCrafter:
 
@@ -13,7 +13,7 @@ class CliCrafter:
         self.parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, add_help=True,
                                 description="""Cisco APi Tool: a nettool built on Cisco Prime's API""")
 
-        self.parser.add_argument('-v', '--verbose', action='store_true', required=False, help="debug output")
+        self.parser.add_argument('-d', '--debug', action='store_true', required=False, help="debug output")
         self.subparsers = self.parser.add_subparsers(dest="sub_cmd")
 
 

@@ -16,7 +16,7 @@ class Find:
 
         pass
 
-    def find_ip_client(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def ip_client(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = api_call.get_id_by_ip(values_dict['address'])
@@ -46,7 +46,7 @@ class Find:
         logger.info("mac addr    :{}".format(mac_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, mac_addr
 
-    def find_ip_ap(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def ip_ap(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         ap_api_call = AccessPoint(cpi_username, cpi_password, cpi_ipv4_address, logger)
         client_api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
@@ -76,7 +76,7 @@ class Find:
         logger.info("ap mac addr :{}".format(mac_addr))
         return neigh_name, neigh_ip, interface, vlan, vlan_name, mac_addr
 
-    def find_ip_phone(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def ip_phone(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = api_call.get_id_by_ip(values_dict['address'])
@@ -106,7 +106,7 @@ class Find:
         logger.info("mac addr    :{}".format(mac_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, mac_addr
 
-    def find_mac_client(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def mac_client(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = api_call.get_id_by_mac(values_dict['address'])
@@ -136,7 +136,7 @@ class Find:
         logger.info("ip addr     :{}".format(ip_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, ip_addr
 
-    def find_mac_ap(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def mac_ap(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         ap_api_call = AccessPoint(cpi_username, cpi_password, cpi_ipv4_address, logger)
         client_api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
@@ -166,7 +166,7 @@ class Find:
         logger.info("ap ip addr :{}".format(ip_addr))
         return neigh_name, neigh_ip, interface, vlan, vlan_name, ip_addr
 
-    def find_mac_phone(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def mac_phone(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = api_call.get_id_by_mac(values_dict['address'])
