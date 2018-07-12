@@ -12,13 +12,13 @@ class Change:
 
     def __init__(self):
 
-        pass
+        self.find = Find()
 
     def mac_vlan(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
         # find and display
         neigh_name, neigh_ip, interface, description, old_vlan, old_vlan_name, addr = \
-            Find.mac_client(Find, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger)
+            self.find.mac_client(values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger)
 
         # require 'yes' input to proceed
         logger.info('Change VLAN to: {}'.format(values_dict['vlan']))
