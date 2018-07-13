@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 
+# Travis CI hack
+import sys
+import os
+print(os.path.abspath(''))
+sys.path.insert(0, os.path.dirname('/home/travis/virtualenv/python3.5.5/lib/python3.5/site-packages/capt/capt'))
+print(os.path.abspath(''))
+
 # system imports
 import unittest
 import logging
 from unittest.mock import patch
 
 # local imports
-import capt # import the package
 from capt.capt import Capt
 
 
