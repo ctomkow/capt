@@ -5,8 +5,8 @@ import sys
 import os
 print(os.path.abspath(''))
 print(os.path.dirname(__file__))
-print(os.path.join(os.path.dirname(__file__), "../capt"))
-sys.path.append(os.path.join(os.path.dirname(__file__), "../capt"))
+print(os.path.join(os.path.dirname(__file__), "..", "capt"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "capt"))
 print(os.path.abspath(''))
 
 # system imports
