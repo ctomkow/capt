@@ -19,5 +19,5 @@ setup(name=NAME,
       author=AUTHOR,
       author_email=EMAIL,
       license='MIT',
-      packages=["capt", "capt.connector", "capt.function", "capt.procedure"]
-    )
+      packages=find_packages("capt")
+      )
