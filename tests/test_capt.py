@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 # Travis CI hack
-import sys
-import os
-print(os.path.abspath(''))
-print(os.path.dirname(__file__))
-print(os.path.join(os.path.dirname(__file__), "..", "capt"))
-print('----')
-print(sys.path)
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'capt')))
-print(sys.path)
+# import sys
+# import os
+# print(os.path.abspath(''))
+# print(os.path.dirname(__file__))
+# print(os.path.join(os.path.dirname(__file__), "..", "capt"))
+# print('----')
+# print(sys.path)
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'capt')))
+# print(sys.path)
 
 
 # system imports
