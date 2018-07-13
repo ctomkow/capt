@@ -6,6 +6,7 @@ import logging
 from unittest.mock import patch
 
 # local imports
+import capt # import the package
 from capt.capt import Capt
 
 
