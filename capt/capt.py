@@ -12,7 +12,7 @@ import datetime
 import argcomplete
 
 # local imports
-from . import config
+import config
 from procedure.upgrade_code import UpgradeCode
 from procedure.mock_upgrade_code import MockUpgradeCode
 from function.find import Find
