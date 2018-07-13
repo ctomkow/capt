@@ -20,7 +20,6 @@ before_install:
 #   - pip install argcomplete
   
 script:
-   - python setup.py install
    - echo $PATH
-#   - python -m unittest discover -s tests
-   - python -m unittest test_capt.py
+   - python -m unittest discover -s tests
+#   - python -m unittest test_capt.py
