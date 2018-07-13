@@ -4,6 +4,8 @@
 import sys
 import os
 print(os.path.abspath(''))
+print(os.path.dirname(__file__))
+print(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(os.path.dirname(__file__), "capt/capt"))
 print(os.path.abspath(''))
 
