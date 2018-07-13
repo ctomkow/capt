@@ -1,5 +1,5 @@
 #  simple travis ci file
-language: generic
+language: python
 
 python:
   - "3.5"
@@ -10,15 +10,15 @@ sudo: required
 # modules fail to import
 before_install:
 #   - python setup.py install
-#   - echo $PATH
+   - echo $PATH
 #   - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
 #   - echo $PATH
 #   - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   
 #install:
-   - pip3 install urllib3
-   - pip3 install requests
-   - pip3 install argcomplete
+   - pip install urllib3
+   - pip install requests
+   - pip install argcomplete
   
 script:
 #   - echo $PATH
