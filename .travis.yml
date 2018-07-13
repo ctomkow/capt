@@ -9,14 +9,14 @@ python:
 # https://github.com/travis-ci/travis-ci/issues/5326
 # modules fail to import
 before_install:
-   - pip install git+git://github.com/ctomkow/capt
  #  - python setup.py install
 #   - echo $PATH
 #   - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
 #   - echo $PATH
 #   - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   
-#install:
+install:
+   - pip install git+git://github.com/ctomkow/capt
 #   - pip install urllib3
 #   - pip install requests
 #   - pip install argcomplete
