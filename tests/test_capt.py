@@ -4,7 +4,7 @@
 import sys
 import os
 print(os.path.abspath(''))
-sys.path.insert(0, os.path.dirname('/home/travis/virtualenv/python3.5.5/lib/python3.5/site-packages/capt/capt'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "capt"))
 print(os.path.abspath(''))
 
 # system imports
