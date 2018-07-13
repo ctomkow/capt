@@ -3,15 +3,11 @@
 
 ## Cisco APi Tool (capt): a nettool built on Cisco Prime's API
 
-Aye Aye Capt.
-
-I can't hear yoooouu!
-
 A network tool based on Cisco Prime Infrastructure's REST API. Capt contains a collection of network tools for simplified network management.
 
 The code_upgrade procedure pulls the 'before' state of a switch, reloads the switch to initiate the code upgrade, then pulls the 'after' state of the switch. Comparison of the two states is done to ensure nothing is broken. This upgrade procedure can be scaled up by having concurrent threads. Other cli commands exist as well as one-off executions.
 
-Note: the program does not push new code to the device. The code needs to be uploaded ahead for the code_upgrade procedure to work (it reloads the switch).
+Note: the program does not push new code to the device. Furthermore, it requires certain configuration templates to exist within Prime for certain actions (e.g. reloading a switch, configuring a VLAN).
 
 ### PROCEDURE SUPPORT
 
@@ -21,6 +17,7 @@ Note: the program does not push new code to the device. The code needs to be upl
 
 * find ip x.x.x.x [--phone | --ap]
 * find mac xx:xx:xx:xx:xx:xx [--phone | --ap]
+* change mac xx:xx:xx:xx:xx:xx --vlan yyyy
 * upgrade x.x.x.x
 * mock upgrade x.x.x.x (non-production impacting test)
 
@@ -41,7 +38,7 @@ Note: the program does not push new code to the device. The code needs to be upl
 The program can be configured with a conf file; `config.text`
 
 Once the conf file is made, simply run the program, `$python capt.py`
-For debug output, `$python capt.py -v`
+For debug output, `$python capt.py -d`
 
 <br><br>
 
