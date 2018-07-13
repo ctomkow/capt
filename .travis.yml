@@ -16,6 +16,7 @@ before_install:
 #   - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   
 install:
+   - pip install -r requirements.txt
    - pip install git+git://github.com/ctomkow/capt
 #   - pip install urllib3
 #   - pip install requests
