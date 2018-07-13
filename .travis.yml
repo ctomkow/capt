@@ -1,5 +1,5 @@
 #  simple travis ci file
-language: python
+language: generic
 
 python:
   - "3.5"
@@ -16,9 +16,9 @@ before_install:
 #   - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   
 #install:
-   - pip install urllib3
-   - pip install requests
-   - pip install argcomplete
+   - pip3 install urllib3
+   - pip3 install requests
+   - pip3 install argcomplete
   
 script:
 #   - echo $PATH
