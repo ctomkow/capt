@@ -9,10 +9,11 @@ python:
 before_install:
    - pip install -U pip
    - pip install -r requirements.txt
-   - python setup.py install
+   - pip install . # install with a local setup.py
 
 install:
 
   
 script:
-   - python -m unittest discover -s tests
+   - python -m tests.test_capt
+   - python -m tests.procedure.test_upgrade_code

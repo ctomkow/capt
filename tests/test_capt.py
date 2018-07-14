@@ -6,7 +6,8 @@ import logging
 from unittest.mock import patch
 
 # local imports
-from capt.capt import Capt
+from . import context
+from capt import Capt
 
 
 class test_Capt(unittest.TestCase):
@@ -61,4 +62,5 @@ class test_Capt(unittest.TestCase):
 
 
 if __name__ == '__main__':
+
     unittest.main()
