@@ -4,11 +4,11 @@ language: python
 python:
   - "3.5"
 
-# sudo: required
+sudo: required # needed for system call (ping)
 
 before_install:
    - pip install -U pip
-   - pip install -r requirements.txt
+#   - pip install -r requirements.txt # duplicate, "pip install ." takes care of this.
    - pip install . # install with a local setup.py
 
 install:
