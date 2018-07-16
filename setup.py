@@ -20,10 +20,14 @@ setup(name=NAME,
       author_email=EMAIL,
       license='MIT',
       packages=["capt", "capt.connector", "capt.function", "capt.procedure"],
-      scripts=['capt/capt.py'],
       install_requires=[
                   'urllib3>=1.13.1',
                   'requests>=2.9.1',
                   'argcomplete>=1.9.4',
-            ]
+            ],
+      entry_points={
+            'console_scripts': [
+                'capt=capt.capt:Capt',
+            ],
+        },
       )
