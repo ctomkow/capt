@@ -20,7 +20,5 @@ setup(name=NAME,
       author_email=EMAIL,
       license='MIT',
       packages=["capt", "capt.connector", "capt.function", "capt.procedure"],
-      entry_points={
-                  'console_scripts': ['capt=capt.capt']
-            },
+      scripts=['capt/capt/'],
       )
