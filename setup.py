@@ -10,7 +10,7 @@ URL = 'https://github.com/ctomkow/capt'
 EMAIL = 'ctomkow@gmail.com'
 AUTHOR = 'Craig Abt Tomkow'
 REQUIRES_PYTHON = '>=3.5.0'
-VERSION = '0.1.10'
+VERSION = '0.1.11'
 
 setup(name=NAME,
       version=VERSION,
@@ -19,5 +19,8 @@ setup(name=NAME,
       author=AUTHOR,
       author_email=EMAIL,
       license='MIT',
-      packages=["capt", "capt.connector", "capt.function", "capt.procedure"]
+      packages=["capt", "capt.connector", "capt.function", "capt.procedure"],
+      entry_points={
+                  'console_scripts': ['capt=capt.capt:__init__']
+            },
       )
