@@ -21,6 +21,6 @@ setup(name=NAME,
       license='MIT',
       packages=["capt", "capt.connector", "capt.function", "capt.procedure"],
       entry_points={
-                  'console_scripts': ['capt=capt.capt:__init__']
+                  'console_scripts': ['capt=capt.capt']
             },
       )
