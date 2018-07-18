@@ -9,7 +9,8 @@ sudo: required # needed for system call (ping)
 before_install:
    - pip install -U pip
 #   - pip install -r requirements.txt # duplicate, "pip install ." takes care of this.
-   - pip install . # install with a local setup.py
+#   - pip install . # install with a local setup.py
+   - pip install git+git://github.com/ctomkow/capt
 
 install:
 
