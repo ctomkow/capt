@@ -10,7 +10,7 @@ URL = 'https://github.com/ctomkow/capt'
 EMAIL = 'ctomkow@gmail.com'
 AUTHOR = 'Craig Abt Tomkow'
 REQUIRES_PYTHON = '>=3.5.0'
-VERSION = '0.1.11'
+VERSION = '0.1.12'
 
 setup(name=NAME,
       version=VERSION,
