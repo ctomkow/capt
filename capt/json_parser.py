@@ -22,3 +22,5 @@ class JsonParser:
                 return json_data[key] # found result
             except KeyError: # fails on last lookup
                 return ""
+
+  #  def searcher(self, json_data, key_list, logger):

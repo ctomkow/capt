@@ -201,38 +201,54 @@ class Find:
         api_call = Device(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id_list = api_call.ids_by_desc(values_dict['description'].strip())
 
-        logger.info("Occurrences of \"{}\" found: {}  ".format(values_dict['description'], len(dev_id_list)))
+        logger.info("Matching occurrences of \"{}\" found: {}  ".format(values_dict['description'], len(dev_id_list)))
         # exit out of loop if no matches
         if len(dev_id_list) < 1:
             sys.exit(1)
         for curr_id in dev_id_list:
             dev_result = api_call.json_basic(curr_id)  # Modify this to go through multiple
             result = api_call.json_detailed(curr_id)  # Modify this to go through multiple
-            logger.info("------- Occurrence #{}--------\n".format(dev_id_list.index(curr_id) + 1))
+            logger.info("------- Matching Switch #{}--------".format(dev_id_list.index(curr_id) + 1))
 
             key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'deviceName']
             neigh_name = self.parse_json.value(dev_result, key_list, logger)
-            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'deviceIpAddress', 'address']
-            tmp = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'ipAddress']
+            tmp = self.parse_json.value(dev_result, key_list, logger)
             neigh_ip = socket.gethostbyname(tmp)  # resolve fqdn to IP. Prime resolves IP if possible
-            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'clientInterface']
-            interface = self.parse_json.value(result, key_list, logger)
-            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'ifDescr']
-            description = self.parse_json.value(result, key_list, logger)
-            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'vlan']
-            vlan = self.parse_json.value(result, key_list, logger)
-            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'vlanName']
-            vlan_name = self.parse_json.value(result, key_list, logger)
-            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'macAddress']
-            mac_addr = self.parse_json.value(result, key_list, logger)
 
+           ###########currently working out how to grab items that match values[description]_dict.
+
+            dev_interfaces = result['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces']['ethernetInterface']
+            dev_found_interfaces =[]
+            for dev_int in dev_interfaces:
+                if 'description' in dev_int:
+                    if values_dict['description'] in dev_int['description']:
+                        dev_found_interfaces.append(dev_int)
+            ######
             logger.info("switch name :{}".format(neigh_name))
             logger.info("switch ip   :{}".format(neigh_ip))
-            logger.info("interface   :{}".format(interface))
-            logger.info("description :{}".format(description))
-            logger.info("vlan        :{};{}".format(vlan, vlan_name))
-            logger.info("mac addr    :{}".format(mac_addr))
-        return neigh_name, neigh_ip, interface, description, vlan, vlan_name, mac_addr
+            logger.info("---- found {} description match on switch ----".format(len(dev_found_interfaces)))
+            for dev_int in dev_found_interfaces:
+                logger.info("---- matching description #{} ----".format(dev_found_interfaces.index(dev_int) + 1))
+                self.desc_printer(dev_int,"interface      :",'name',logger)
+                self.desc_printer(dev_int,"description    :",'description',logger)
+                self.desc_printer(dev_int,"vlan           :",'accessVlan',logger)
+                self.desc_printer(dev_int,"mac address    :",'macAddress',logger)
+                self.desc_printer(dev_int,"status         :",'operationalStatus',logger)
+                self.desc_printer(dev_int,"port mode      :",'desiredVlanMode',logger)
+                self.desc_printer(dev_int,"allowed vlans  :",'allowedVlanIds',logger)
+                self.desc_printer(dev_int,"speed          :",'speed',logger)
+                self.desc_printer(dev_int,"duplex         :",'duplexMode',logger)
+
+
+        return dev_found_interfaces
+
+    def desc_printer(self, dev_int,log_str,key_val, logger):
+        if key_val in dev_int:
+            logger.info("{}{}".format(log_str,dev_int[key_val]))
+        else:
+            logger.info("{} N/A".format(log_str))
+        return
 
     def desc_active(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
