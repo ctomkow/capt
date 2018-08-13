@@ -48,6 +48,12 @@ class Capt:
         craft.ap_arg(find_mac)
         # ----- capt find mac xx:xx:xx:xx:xx:xx --phone
         craft.phone_arg(find_mac)
+        # ----- capt find desc xxxxxx
+        find_desc = craft.desc_parser(find_sp)
+        craft.desc_arg(find_desc)
+        find_desc.set_defaults(func=CliParser.find_desc)
+        # ----- capt find desc xxxxxx --active
+        craft.active_arg(find_desc)
         # ----- capt upgrade x.x.x.x
         upgrade = craft.upgrade_parser(craft.subparsers)
         craft.addr_arg(upgrade)
@@ -85,8 +91,17 @@ class Capt:
             else:
                 log_file = True
 
-            logger = self.set_logger(args.address, logging.INFO, log_file)
-
+            #Revisit this line of code
+            try:
+                logger = self.set_logger(args.address, logging.INFO, log_file)
+            except AttributeError:
+                #address does not exist
+                try:
+                    logger = self.set_logger(args.description, logging.INFO, log_file)
+                except AttributeError:
+                    #do something here
+                    sys_logger.critical("Address and description not found.")
+                    sys.exit(1)
             find = Find()
             change = Change()
 
@@ -104,6 +119,10 @@ class Capt:
                 find.mac_phone(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'change_mac--vlan':
                 change.mac_vlan(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'find_desc':
+                find.desc(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'find_desc--active':
+                find.desc_active(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'upgrade':
                 UpgradeCode(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'mock_upgrade':

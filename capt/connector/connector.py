@@ -3,6 +3,7 @@
 import urllib3
 import time
 import sys
+import os
 import random
 import json
 
@@ -94,6 +95,10 @@ class Connector:
                 self.logger.critical("Bad authentication. Check credentials.")
                 self.logger.critical(error)
                 sys.exit(1)
+            elif req.status_code == 400:  # added call to quit out if the API call fails
+                self.logger.critical("API call failed. Exiting program.")
+                self.logger.critical(error)
+                os._exit(1)
             else:
                 self.logger.critical("API call failed.")
                 self.logger.critical(error)

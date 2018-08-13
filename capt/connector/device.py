@@ -1,4 +1,3 @@
-
 # system imports
 import json
 
@@ -12,22 +11,7 @@ import re
 from connector.connector import Connector
 
 
-class Client(Connector):
-
-    def id_by_ip(self, address):
-
-        url = "https://{}/webacs/api/v3/data/Clients.json?ipAddress=\"{}\"".format(self.cpi_ipv4_address, address)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        key_list = ['queryResponse', 'entityId', 0, '$']
-        return self.parse_json.value(result.json(), key_list, self.logger)
-
-    def id_by_mac(self, address):
-
-        url = "https://{}/webacs/api/v3/data/Clients.json?macAddress=\"{}\"".format(self.cpi_ipv4_address, address)
-        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        key_list = ['queryResponse', 'entityId', 0, '$']
-        return self.parse_json.value(result.json(), key_list, self.logger)
-
+class Device(Connector):
     def ids_by_desc(self, desc):
         # Split the description string if it is comma seperated
         desc_list = desc.split(",")
@@ -35,10 +19,10 @@ class Client(Connector):
         # Iterate through descriptions to remove characters that cause issues
         for desc_iterator in desc_list:
             stripped_desc = re.sub(r'(\(|\))', r"", desc_iterator)
-            modified_desc_list = modified_desc_list + "&ifDescr=contains(" + stripped_desc + ")"
+            modified_desc_list = modified_desc_list + "&ethernetInterface.description=contains(" + stripped_desc + ")"
 
 
-        url = "https://{}/webacs/api/v3/data/ClientDetails.json?.and_filter=true{}&.case_sensitive=false".format(self.cpi_ipv4_address, modified_desc_list)
+        url = "https://{}/webacs/api/v3/data/InventoryDetails.json?.and_filter=true{}&.case_sensitive=false".format(self.cpi_ipv4_address, modified_desc_list)
         id_list = []
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         # create a
@@ -53,14 +37,14 @@ class Client(Connector):
     def json_basic(self, dev_id):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
-        url = "https://{}/webacs/api/v3/data/Clients/{}.json".format(self.cpi_ipv4_address, dev_id)
+        url = "https://{}/webacs/api/v3/data/Devices/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         return result.json()
 
     def json_detailed(self, dev_id):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded
-        url = "https://{}/webacs/api/v3/data/ClientDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         return result.json()
 
@@ -68,8 +52,6 @@ class Client(Connector):
 
     def print_client_basic(self, dev_id):
 
-        url = "https://{}/webacs/api/v3/data/Clients/{}.json".format(self.cpi_ipv4_address, dev_id)
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         print(json.dumps(result.json(), indent=4))
-
-    # --- end print API calls, mainly for testing

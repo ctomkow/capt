@@ -58,6 +58,15 @@ class CliParser:
             print('missing flags are required')
             sys.exit(1)
 
+    def find_desc(self):  # determine any flags and return all required values
+
+        dict_of_values = {'description': self.args.description}
+        if self.args.active:
+            return 'find_desc--active', dict_of_values
+        #elif self.args.phone:
+            #return 'find_desc--phone', dict_of_values
+        else:
+            return 'find_desc', dict_of_values
     def upgrade(self): # determine any flags and return all required values
 
         dict_of_values = {'address': self.args.address}

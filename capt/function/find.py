@@ -1,8 +1,10 @@
 
 # system imports
 import socket
+import sys
 
 # local imports
+from connector.device import Device
 from connector.client import Client
 from connector.access_point import AccessPoint
 from json_parser import JsonParser
@@ -193,3 +195,77 @@ class Find:
         logger.info("vlan        :{};{}".format(vlan, vlan_name))
         logger.info("ip addr    :{}".format(ip_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, ip_addr
+
+    def desc(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+
+        api_call = Device(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        dev_id_list = api_call.ids_by_desc(values_dict['description'].strip())
+
+        logger.info("Occurrences of \"{}\" found: {}  ".format(values_dict['description'], len(dev_id_list)))
+        # exit out of loop if no matches
+        if len(dev_id_list) < 1:
+            sys.exit(1)
+        for curr_id in dev_id_list:
+            dev_result = api_call.json_basic(curr_id)  # Modify this to go through multiple
+            result = api_call.json_detailed(curr_id)  # Modify this to go through multiple
+            logger.info("------- Occurrence #{}--------\n".format(dev_id_list.index(curr_id) + 1))
+
+            key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'deviceName']
+            neigh_name = self.parse_json.value(dev_result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'deviceIpAddress', 'address']
+            tmp = self.parse_json.value(result, key_list, logger)
+            neigh_ip = socket.gethostbyname(tmp)  # resolve fqdn to IP. Prime resolves IP if possible
+            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'clientInterface']
+            interface = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'ifDescr']
+            description = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'vlan']
+            vlan = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'vlanName']
+            vlan_name = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'InventoryDetailsDTO', 'macAddress']
+            mac_addr = self.parse_json.value(result, key_list, logger)
+
+            logger.info("switch name :{}".format(neigh_name))
+            logger.info("switch ip   :{}".format(neigh_ip))
+            logger.info("interface   :{}".format(interface))
+            logger.info("description :{}".format(description))
+            logger.info("vlan        :{};{}".format(vlan, vlan_name))
+            logger.info("mac addr    :{}".format(mac_addr))
+        return neigh_name, neigh_ip, interface, description, vlan, vlan_name, mac_addr
+
+    def desc_active(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+        api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        dev_id_list = api_call.ids_by_desc(values_dict['description'].strip())
+
+        logger.info("Occurrences of \"{}\" found: {}  ".format(values_dict['description'], len(dev_id_list)))
+        # exit out of loop if no matches
+        if len(dev_id_list) < 1:
+            sys.exit(1)
+        for curr_id in dev_id_list:
+            result = api_call.json_detailed(curr_id)  # Modify this to go through multiple
+            logger.info("------- Occurrence #{}--------\n".format(dev_id_list.index(curr_id)+1))
+
+            key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
+            neigh_name = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceIpAddress', 'address']
+            tmp = self.parse_json.value(result, key_list, logger)
+            neigh_ip = socket.gethostbyname(tmp)  # resolve fqdn to IP. Prime resolves IP if possible
+            key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'clientInterface']
+            interface = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'ifDescr']
+            description = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'vlan']
+            vlan = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'vlanName']
+            vlan_name = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'macAddress']
+            mac_addr = self.parse_json.value(result, key_list, logger)
+
+            logger.info("switch name :{}".format(neigh_name))
+            logger.info("switch ip   :{}".format(neigh_ip))
+            logger.info("interface   :{}".format(interface))
+            logger.info("description :{}".format(description))
+            logger.info("vlan        :{};{}".format(vlan, vlan_name))
+            logger.info("mac addr    :{}".format(mac_addr))
+        return neigh_name, neigh_ip, interface, description, vlan, vlan_name, mac_addr

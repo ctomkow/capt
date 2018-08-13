@@ -60,6 +60,9 @@ class CliCrafter:
 
         return sp.add_parser('mac', help="mac address of client device")
 
+    def desc_parser(self, sp):
+        return sp.add_parser('desc', help="port description / label on wall port")
+
     def vlan_subparser(self, sp):
 
         vlan = sp.add_parser('vlan', help="new vlan for client device")
@@ -102,3 +105,10 @@ class CliCrafter:
     def phone_arg(self, p):
 
         p.add_argument('-p', '--phone', help="VoIP phone", action="store_true")
+
+    def desc_arg(self, p):
+        p.add_argument('description', help="specify the description to search. \n "
+           "Enclose in brackets if including spaces and seperate multiple criteria with commas")
+
+    def active_arg(self, p):
+        p.add_argument('-a','--active', help="connection is active / has something connected", action="store_true")
