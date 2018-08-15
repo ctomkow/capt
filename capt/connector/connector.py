@@ -12,6 +12,7 @@ import requests
 
 # local imports
 from json_parser import JsonParser
+from utils.var_parser import VarParser
 
 
 class Connector:
@@ -23,6 +24,7 @@ class Connector:
         self.cpi_ipv4_address = cpi_ipv4_addr
         self.logger = log
         self.parse_json = JsonParser()
+        self.parse_desc = VarParser()
 
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 

@@ -13,14 +13,14 @@ from connector.connector import Connector
 
 class Device(Connector):
     def ids_by_desc(self, desc):
-        # Split the description string if it is comma seperated
-        desc_list = desc.split(",")
-        modified_desc_list = ""
-        # Iterate through descriptions to remove characters that cause issues
-        for desc_iterator in desc_list:
-            stripped_desc = re.sub(r'(\(|\))', r"", desc_iterator)
-            modified_desc_list = modified_desc_list + "&ethernetInterface.description=contains(" + stripped_desc + ")"
-
+#        # Split the description string if it is comma seperated
+#        desc_list = desc.split(",")
+#        modified_desc_list = ""
+#        # Iterate through descriptions to remove characters that cause issues
+#        for desc_iterator in desc_list:
+#            stripped_desc = re.sub(r'(\(|\))', r"", desc_iterator)
+#            modified_desc_list = modified_desc_list + "&ethernetInterface.description=contains(" + stripped_desc + ")"
+        modified_desc_list = self.parse_desc.desc_id_split(desc)
 
         url = "https://{}/webacs/api/v3/data/InventoryDetails.json?.and_filter=true{}&.case_sensitive=false".format(self.cpi_ipv4_address, modified_desc_list)
         id_list = []

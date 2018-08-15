@@ -10,11 +10,13 @@ from connector.access_point import AccessPoint
 from json_parser import JsonParser
 
 
+
 class Find:
 
     def __init__(self):
 
         self.parse_json = JsonParser()
+
 
     def ip_client(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
 
@@ -197,7 +199,7 @@ class Find:
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, ip_addr
 
     def desc(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
-
+# 400 critical error is thrown if description is not found
         api_call = Device(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id_list = api_call.ids_by_desc(values_dict['description'].strip())
 
@@ -222,7 +224,12 @@ class Find:
             dev_found_interfaces =[]
             for dev_int in dev_interfaces:
                 if 'description' in dev_int:
-                    if values_dict['description'] in dev_int['description']:
+                #currently not working with comma seperated values. Check if each value in
+                #similar to device/ids_by_desc split and remove brackets. abstract function?
+                    desc_list=values_dict['description'].split(",")
+
+#                    if values_dict['description'] in dev_int['description']:
+                    if all (x in dev_int['description'] for x in desc_list):
                         dev_found_interfaces.append(dev_int)
             ######
             logger.info("switch name :{}".format(neigh_name))
