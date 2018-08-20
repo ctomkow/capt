@@ -15,3 +15,4 @@ class VarParser:
             stripped_desc = re.sub(r'(\(|\))', r"", desc_iterator)
             modified_desc_list = modified_desc_list + "&ethernetInterface.description=contains(" + stripped_desc + ")"
         return modified_desc_list
+

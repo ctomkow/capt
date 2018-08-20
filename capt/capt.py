@@ -51,9 +51,15 @@ class Capt:
         # ----- capt find desc xxxxxx
         find_desc = craft.desc_parser(find_sp)
         craft.desc_arg(find_desc)
+        craft.device_name_arg(find_desc)
         find_desc.set_defaults(func=CliParser.find_desc)
         # ----- capt find desc xxxxxx --active
         craft.active_arg(find_desc)
+        # ----- capt find core -vlan
+        find_core = craft.core_parser(find_sp)
+        craft.addr_arg(find_core)  # adds address field
+        craft.core_search_arg(find_core)
+        find_core.set_defaults(func=CliParser.find_core)
         # ----- capt upgrade x.x.x.x
         upgrade = craft.upgrade_parser(craft.subparsers)
         craft.addr_arg(upgrade)
@@ -120,9 +126,11 @@ class Capt:
             if command == 'change_mac--vlan':
                 change.mac_vlan(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'find_desc':
-                find.desc(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+                find.desc(values_dict, config.username, config.password, config.cpi_ipv4_address, cli_parse.args.name, logger)
             if command == 'find_desc--active':
                 find.desc_active(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'find_core':
+                find.core(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'upgrade':
                 UpgradeCode(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'mock_upgrade':

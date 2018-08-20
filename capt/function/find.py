@@ -198,12 +198,12 @@ class Find:
         logger.info("ip addr    :{}".format(ip_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, ip_addr
 
-    def desc(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
-# 400 critical error is thrown if description is not found
+    def desc(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address,sw_name, logger):
+    # 400 critical error is thrown if description is not found
         api_call = Device(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id_list = api_call.ids_by_desc(values_dict['description'].strip())
+        dev_id_list = api_call.ids_by_desc(values_dict['description'].strip(),sw_name)
 
-        logger.info("Matching occurrences of \"{}\" found: {}  ".format(values_dict['description'], len(dev_id_list)))
+        logger.info(" # of switches with Matching occurrences of \"{}\" found: {}  ".format(values_dict['description'], len(dev_id_list)))
         # exit out of loop if no matches
         if len(dev_id_list) < 1:
             sys.exit(1)
@@ -250,13 +250,6 @@ class Find:
 
         return dev_found_interfaces
 
-    def desc_printer(self, dev_int,log_str,key_val, logger):
-        if key_val in dev_int:
-            logger.info("{}{}".format(log_str,dev_int[key_val]))
-        else:
-            logger.info("{} N/A".format(log_str))
-        return
-
     def desc_active(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
         api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id_list = api_call.ids_by_desc(values_dict['description'].strip())
@@ -292,3 +285,111 @@ class Find:
             logger.info("vlan        :{};{}".format(vlan, vlan_name))
             logger.info("mac addr    :{}".format(mac_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, mac_addr
+
+    def core(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    # 400 critical error is thrown if description is not found
+        api_call = Device(cpi_username, cpi_password, cpi_ipv4_address, logger)
+
+        # check address to see if hostname or IP
+        if "-" in values_dict['address']:
+            dev_id = api_call.id_by_hostname(values_dict['address'].strip())
+        else:
+            dev_id = api_call.id_by_ip(values_dict['address'].strip())
+
+
+        dev_result = api_call.json_basic(dev_id)
+        result = api_call.json_detailed(dev_id)
+
+        #create list of vlan interfaces (L3 & vlan database)
+        dev_ip_interfaces = result['queryResponse']['entity'][0]['inventoryDetailsDTO']['ipInterfaces']['ipInterface']
+        dev_vlan_interfaces = result['queryResponse']['entity'][0]['inventoryDetailsDTO']['vlanInterfaces']['vlanInterface']
+        dev_modules = result['queryResponse']['entity'][0]['inventoryDetailsDTO']['modules']['module']
+
+        key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'deviceName']
+        neigh_name = self.parse_json.value(dev_result, key_list, logger)
+        key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'ipAddress']
+        tmp = self.parse_json.value(dev_result, key_list, logger)
+        neigh_ip = socket.gethostbyname(tmp)  # resolve fqdn to IP. Prime resolves IP if possible
+
+#####if looking for a port add logic here( search for '/')
+        if "/" in  values_dict['search_crit']:
+            dev_interfaces = result['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces']['ethernetInterface']
+            dev_found_interfaces =[]
+            for dev_int in dev_interfaces:
+                #if values_dict['search_crit'] in dev_int['name']:
+                if dev_int['name'].endswith(values_dict['search_crit']):
+                    dev_found_interfaces.append(dev_int)
+            ######
+            logger.info("switch name :{}".format(neigh_name))
+            logger.info("switch ip   :{}".format(neigh_ip))
+            dev_module = self.list_parse_ends(values_dict['search_crit'], 'description', dev_modules, logger)
+            self.desc_printer(dev_module, "Transciever info   :", 'description', logger)
+            #logger.info("---- found {} description match on switch ----".format(len(dev_found_interfaces)))
+            for dev_int in dev_found_interfaces:
+                self.desc_printer(dev_int,"Admin Status       :",'adminStatus',logger)
+                self.desc_printer(dev_int,"Operational Status :",'operationalStatus',logger)
+                self.desc_printer(dev_int,"Port               :",'name',logger)
+                self.desc_printer(dev_int,"speed              :",'speed',logger)
+                if 'description' in dev_int:
+                    self.desc_printer(dev_int,"description        :",'description',logger)
+                if 'desiredVlanMode' in dev_int:
+                    if dev_int['desiredVlanMode'] == "ACCESS":
+                        self.desc_printer(dev_int,"Switchport Mode     :",'desiredVlanMode',logger)
+                        self.desc_printer(dev_int,"Access Vlan         :", 'accessVlan', logger)
+                        self.vlan(str(dev_int['accessVlan']), dev_vlan_interfaces, dev_ip_interfaces, logger)
+                    elif dev_int['desiredVlanMode'] == "TRUNK":
+                        self.desc_printer(dev_int,"Switchport Mode     :",'desiredVlanMode',logger)
+                        self.desc_printer(dev_int, "Allowed Vlans       :", 'allowedVlanIds', logger)
+                elif 'desiredVlanMode' not in dev_int and dev_int['operationalStatus'] == 'UP':
+                    logger.info("This is a routed interface -- future functionality")
+                    #dev_vlan = self.vlan_parse(values_dict['search_crit'], dev_vlan_interfaces, dev_ip_interfaces,logger)
+
+        else:
+            #dev_vlan = self.vlan_parse(values_dict['search_crit'],dev_vlan_interfaces,dev_ip_interfaces,logger)
+            self.vlan(values_dict['search_crit'],dev_vlan_interfaces,dev_ip_interfaces,logger)
+            #
+
+
+        return result
+    def vlan (self,vlan_id,dev_vlan_interfaces,dev_ip_interfaces,logger):
+        dev_vlan = self.list_parse_exact(int(vlan_id), 'vlanId', dev_vlan_interfaces, logger)
+        dev_vlan = self.list_parse_exact(("Vlan" + vlan_id), 'name', dev_ip_interfaces, logger)
+        ####Create a function to run through a list of dict [title:name]. then iterate through the
+        #### list to print out the required things, so the 'if name in dev_int' is not required each time?
+        self.desc_printer(dev_vlan, "Vlan ID            :", 'name', logger)
+        self.desc_printer(dev_vlan, "Admin Status       :", 'adminStatus', logger)
+        self.desc_printer(dev_vlan, "Operational Status :", 'operationalStatus', logger)
+        self.desc_printer(dev_vlan, "ip address         :", 'ipAddress', logger)
+        return
+    def list_parse_exact(self,find_match,find_str, dev_result,logger):
+        for dev_item in dev_result:
+            if dev_item[find_str] == find_match:
+                found_match = dev_item
+        return found_match
+
+    def list_parse_ends(self,find_match,find_str, dev_result,logger):
+        for dev_item in dev_result:
+            if dev_item[find_str].endswith(find_match):
+                found_match = dev_item
+        return found_match
+
+    def vlan_parse(self, vlan_id, dev_vlan_interfaces, dev_ip_interfaces, logger):
+        #iterate through vlan interfaces (relevant if no L3 IP)
+        if "/" not in vlan_id:  # if this is not an interface (routed link) -- Not functional yet as not all routed interfaces show up
+            for dev_vlan in dev_vlan_interfaces:
+                if dev_vlan['vlanId'] == int(vlan_id):
+                    found_vlan = dev_vlan
+        # iterate through ip interfaces (will overwrite found_vlan if L3 IP)
+        for dev_vlan in dev_ip_interfaces:
+                if dev_vlan['name'].endswith(vlan_id):
+                    found_vlan = dev_vlan
+
+        return found_vlan
+
+
+    def desc_printer(self, dev_int,log_str,key_val, logger):
+        if key_val in dev_int:
+            logger.info("{}{}".format(log_str,dev_int[key_val]))
+        else:
+            logger.info("{} N/A".format(log_str))
+        return

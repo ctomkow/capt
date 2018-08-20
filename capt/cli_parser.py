@@ -67,6 +67,16 @@ class CliParser:
             #return 'find_desc--phone', dict_of_values
         else:
             return 'find_desc', dict_of_values
+    def find_core(self):  # determine any flags and return all required values
+
+        dict_of_values = {'address':self.args.address, 'search_crit': self.args.search_crit}
+      #  if self.args.port:
+      #      return 'find_core--port', dict_of_values
+      #  elif self.args.vlan:
+      #      return 'find_core--vlan', dict_of_values
+      #  else:
+      #      return 'find_core', dict_of_values
+        return 'find_core', dict_of_values
     def upgrade(self): # determine any flags and return all required values
 
         dict_of_values = {'address': self.args.address}

@@ -12,17 +12,14 @@ from connector.connector import Connector
 
 
 class Device(Connector):
-    def ids_by_desc(self, desc):
-#        # Split the description string if it is comma seperated
-#        desc_list = desc.split(",")
-#        modified_desc_list = ""
-#        # Iterate through descriptions to remove characters that cause issues
-#        for desc_iterator in desc_list:
-#            stripped_desc = re.sub(r'(\(|\))', r"", desc_iterator)
-#            modified_desc_list = modified_desc_list + "&ethernetInterface.description=contains(" + stripped_desc + ")"
+    def ids_by_desc(self, desc, sw_name):
         modified_desc_list = self.parse_desc.desc_id_split(desc)
 
-        url = "https://{}/webacs/api/v3/data/InventoryDetails.json?.and_filter=true{}&.case_sensitive=false".format(self.cpi_ipv4_address, modified_desc_list)
+        if sw_name is not None:
+            url = "https://{}/webacs/api/v3/data/InventoryDetails.json?.and_filter=true&summary.deviceName=contains({}){}&.case_sensitive=false".format(
+                self.cpi_ipv4_address,sw_name, modified_desc_list)
+        else:
+            url = "https://{}/webacs/api/v3/data/InventoryDetails.json?.and_filter=true{}&.case_sensitive=false".format(self.cpi_ipv4_address, modified_desc_list)
         id_list = []
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         # create a
@@ -33,6 +30,24 @@ class Device(Connector):
             id_list.append(self.parse_json.value(result.json(),key_list, self.logger))
 
         return id_list
+
+    def id_by_ip(self, dev_ip_address):
+
+        url = "https://{}/webacs/api/v3/data/Devices.json?ipAddress={}&.case_sensitive=false".format(
+            self.cpi_ipv4_address, dev_ip_address)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['queryResponse', 'entityId', 0, '$']
+        dev_id = self.parse_json.value(result.json(), key_list, self.logger)
+        return dev_id
+
+    def id_by_hostname(self, dev_hostname):
+
+        url = "https://{}/webacs/api/v3/data/Devices.json?deviceName=contains({})&.case_sensitive=false".format(
+            self.cpi_ipv4_address, dev_hostname)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['queryResponse', 'entityId', 0, '$']
+        dev_id = self.parse_json.value(result.json(), key_list, self.logger)
+        return dev_id
 
     def json_basic(self, dev_id):
 

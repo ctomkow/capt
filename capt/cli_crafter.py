@@ -63,6 +63,15 @@ class CliCrafter:
     def desc_parser(self, sp):
         return sp.add_parser('desc', help="port description / label on wall port")
 
+    def core_parser(self, sp):
+        return sp.add_parser('core', help="find info on core devices")
+
+    def core_vlan_parser(self, sp):
+        return sp.add_parser('vlan', help="find vlan info on core devices")
+
+    def core_port_parser(self, sp):
+        return sp.add_parser('port', help="find port info on core devices")
+
     def vlan_subparser(self, sp):
 
         vlan = sp.add_parser('vlan', help="new vlan for client device")
@@ -112,3 +121,9 @@ class CliCrafter:
 
     def active_arg(self, p):
         p.add_argument('-a','--active', help="connection is active / has something connected", action="store_true")
+
+    def device_name_arg(self, p):
+        p.add_argument('-n','--name', help="name of switch to search (can be partial) ")
+
+    def core_search_arg(self, p):
+        p.add_argument('search_crit', help="port/vlan to find info on" )
