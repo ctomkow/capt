@@ -322,8 +322,9 @@ class Find:
             ######
             logger.info("switch name :{}".format(neigh_name))
             logger.info("switch ip   :{}".format(neigh_ip))
-            dev_module = self.list_parse_ends(values_dict['search_crit'], 'description', dev_modules, logger)
-            self.desc_printer(dev_module, "Transciever info   :", 'description', logger)
+            #dev_module is not working with BA switches
+            #dev_module = self.list_parse_ends(values_dict['search_crit'], 'description', dev_modules, logger)
+            #self.desc_printer(dev_module, "Transciever info   :", 'description', logger)
             #logger.info("---- found {} description match on switch ----".format(len(dev_found_interfaces)))
             for dev_int in dev_found_interfaces:
                 self.desc_printer(dev_int,"Admin Status       :",'adminStatus',logger)
@@ -351,6 +352,44 @@ class Find:
 
 
         return result
+
+    def int(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, interface, logger):
+        # 400 critical error is thrown if description is not found
+        api_call = Device(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        dev_id = api_call.id_by_ip(values_dict['address'].strip())
+        dev_result = api_call.json_basic(dev_id)
+        result = api_call.json_detailed(dev_id)
+
+        key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'deviceName']
+        neigh_name = self.parse_json.value(dev_result, key_list, logger)
+        key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'ipAddress']
+        tmp = self.parse_json.value(dev_result, key_list, logger)
+        neigh_ip = socket.gethostbyname(tmp)  # resolve fqdn to IP. Prime resolves IP if possible
+
+        dev_interfaces = result['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces'][
+            'ethernetInterface']
+        found_match = []
+        for dev_int in dev_interfaces:
+            if dev_int['name'].endswith(interface):
+                found_match = dev_int
+        ######
+        logger.info("switch name :{}".format(neigh_name))
+        logger.info("switch ip   :{}".format(neigh_ip))
+        self.desc_printer(found_match, "interface      :", 'name', logger)
+        self.desc_printer(found_match, "description    :", 'description', logger)
+        self.desc_printer(found_match, "vlan           :", 'accessVlan', logger)
+        self.desc_printer(found_match, "voice vlan     :", 'voiceVlan', logger)
+        self.desc_printer(found_match, "mac address    :", 'macAddress', logger)
+        self.desc_printer(found_match, "status         :", 'operationalStatus', logger)
+        self.desc_printer(found_match, "port mode      :", 'desiredVlanMode', logger)
+        self.desc_printer(found_match, "allowed vlans  :", 'allowedVlanIds', logger)
+        self.desc_printer(found_match, "speed          :", 'speed', logger)
+        self.desc_printer(found_match, "duplex         :", 'duplexMode', logger)
+
+
+        return dev_id,found_match
+
+
     def vlan (self,vlan_id,dev_vlan_interfaces,dev_ip_interfaces,logger):
         dev_vlan = self.list_parse_exact(int(vlan_id), 'vlanId', dev_vlan_interfaces, logger)
         dev_vlan = self.list_parse_exact(("Vlan" + vlan_id), 'name', dev_ip_interfaces, logger)

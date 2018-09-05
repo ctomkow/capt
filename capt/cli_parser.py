@@ -58,6 +58,15 @@ class CliParser:
             print('missing flags are required')
             sys.exit(1)
 
+    def push_bas(self): # determine any flags and return all required values
+
+        dict_of_values = {'address': self.args.address,'interface':self.args.interface,'vlan':self.args.vlan,'desc':self.args.description}
+        if self.args.vlan:
+            return 'push_bas', dict_of_values
+        else:
+            print('missing flags are required')
+            sys.exit(1)
+
     def find_desc(self):  # determine any flags and return all required values
 
         dict_of_values = {'description': self.args.description}

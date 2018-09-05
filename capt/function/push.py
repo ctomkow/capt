@@ -7,21 +7,19 @@ import time
 from function.find import Find
 from connector.switch import Switch
 
-
-class Change:
+class Push:
 
     def __init__(self):
 
         self.find = Find()
 
-    def mac_vlan(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
-
-        # find and display
-        neigh_name, neigh_ip, interface, description, old_vlan, old_vlan_name, addr = \
-            self.find.mac_client(values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger)
+    def bas(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+        # find and display (update this call to work)
+        dev_id, found_int = \
+            self.find.int(values_dict, cpi_username, cpi_password, cpi_ipv4_address, values_dict['interface'], logger)
 
         # require 'yes' input to proceed
-        logger.info('Change VLAN to: {}'.format(values_dict['vlan']))
+        logger.info('Activate BAS on switch  INTERFACE {} using VLAN: {}'.format(found_int['name'], values_dict['vlan']))
         response = input("Confirm action of changing VLAN ('yes'):")
         if not response == 'yes':
             logger.info('Did not proceed with change.')
@@ -29,8 +27,7 @@ class Change:
 
         # invoke API call to change VLAN
         sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = sw_api_call.id_by_ip(neigh_ip)
-        job_id = sw_api_call.conf_if_vlan(dev_id, interface, "Access", values_dict['vlan'])
+        job_id = sw_api_call.conf_if_bas(dev_id, found_int['name'], values_dict['desc'], values_dict['vlan'])
 
         timeout = time.time() + 30  # 30 second timeout starting now
         while not sw_api_call.job_complete(job_id):
@@ -43,4 +40,7 @@ class Change:
             sys.exit(1)
 
         logger.info('Change VLAN complete.')
+        #logger.info('Showing new port info:')  # update this to account for sync time of prime DB
+#       dev_id, found_int = \
+#            self.find.int(values_dict, cpi_username, cpi_password, cpi_ipv4_address, values_dict['interface'], logger)
 

@@ -96,6 +96,37 @@ class Switch(Connector):
         key_list = ['mgmtResponse', 'cliTemplateCommandJobResult', 0, 'jobName']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
+    def conf_if_bas(self, dev_id, interface, description, access_vlan):
+        url = "https://{}/webacs/api/v3/op/cliTemplateConfiguration/deployTemplateThroughJob.json".format(
+            self.cpi_ipv4_address)
+        payload = \
+            {
+                "cliTemplateCommand": {
+                    "targetDevices": {
+                        "targetDevice": [{
+                            "targetDeviceID": "{}".format(dev_id),
+                            "variableValues": {
+                                "variableValue": [{
+                                    "name": "InterfaceName",
+                                    "value": "{}".format(interface)
+                                }, {
+                                    "name": "Description",
+                                    "value": "{}".format(description)
+                                }, {
+                                    "name": "StaticAccessVLan",
+                                    "value": "{}".format(access_vlan)
+                                }]
+                            }
+                        }]
+                    },
+                    "templateName": "API_CALL_conf_if_bas"
+                }
+            }
+        result = self.error_handling(requests.put, 5, url, False, self.username, self.password, payload)
+        key_list = ['mgmtResponse', 'cliTemplateCommandJobResult', 0, 'jobName']
+        return self.parse_json.value(result.json(), key_list, self.logger)
+
+
     # --- GET calls
 
     def id_by_ip(self, dev_ipv4_address):

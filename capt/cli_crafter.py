@@ -59,6 +59,9 @@ class CliCrafter:
     def mac_parser(self, sp):
 
         return sp.add_parser('mac', help="mac address of client device")
+    def bas_parser(self, sp):
+
+        return sp.add_parser('bas', help="Enable a BAS port")
 
     def desc_parser(self, sp):
         return sp.add_parser('desc', help="port description / label on wall port")
@@ -86,6 +89,10 @@ class CliCrafter:
         change = sp.add_parser('change', help="change switch configuration")
         return change.add_subparsers(dest="change")
 
+    def push_subparser(self, sp):
+        push = sp.add_parser('push', help="push edge templates")
+        return push.add_subparsers(dest="push")
+
     def change_parser(self, sp):
 
         return sp.add_parser('change', help="change switch configuration")
@@ -103,9 +110,15 @@ class CliCrafter:
 
         p.add_argument('address', help="specify the device address")
 
+    def int_arg(self, p):
+        p.add_argument('-i','--interface', help="specify the device interface")
+
     def vlan_arg(self, p):
 
         p.add_argument('-v', '--vlan', help="specify the new client VLAN ID")
+    def desc_flag_arg(self, p):
+        p.add_argument('-d','--description', help="specify the description to search. \n "
+           "Enclose in brackets if including spaces and seperate multiple criteria with commas")
 
     def ap_arg(self, p):
 

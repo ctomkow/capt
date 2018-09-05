@@ -17,6 +17,7 @@ from procedure.upgrade_code import UpgradeCode
 from procedure.mock_upgrade_code import MockUpgradeCode
 from function.find import Find
 from function.change import Change
+from function.push import Push
 from function.test_api import TestApi
 from cli_crafter import CliCrafter
 from cli_parser import CliParser
@@ -32,6 +33,7 @@ class Capt:
         find_sp = craft.find_subparser(craft.subparsers)
         mock_sp = craft.mock_subparser(craft.subparsers)
         change_sp = craft.change_subparser(craft.subparsers)
+        push_sp = craft.push_subparser(craft.subparsers)
         # ----- capt find ip x.x.x.x
         find_ip = craft.ip_parser(find_sp)
         craft.addr_arg(find_ip)
@@ -73,6 +75,13 @@ class Capt:
         craft.addr_arg(change_mac)
         craft.vlan_arg(change_mac)
         change_mac.set_defaults(func=CliParser.change_mac)
+        # ----- capt push bas -a W.W.W.W -p X/X/X -v YYYY -d "ZZZZZZ"
+        push_bas = craft.bas_parser(push_sp)
+        craft.addr_arg(push_bas)
+        craft.int_arg(push_bas)
+        craft.vlan_arg(push_bas)
+        craft.desc_flag_arg(push_bas)
+        push_bas.set_defaults(func=CliParser.push_bas)
         # ----- capt test_api
         test_api_sp = craft.test_api_subparser(craft.subparsers)
         test_api_mac = craft.mac_parser(test_api_sp)
@@ -110,6 +119,7 @@ class Capt:
                     sys.exit(1)
             find = Find()
             change = Change()
+            push = Push()
 
             if command == 'find_ip':
                 find.ip_client(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
@@ -125,6 +135,8 @@ class Capt:
                 find.mac_phone(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'change_mac--vlan':
                 change.mac_vlan(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'push_bas':
+                push.bas(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'find_desc':
                 find.desc(values_dict, config.username, config.password, config.cpi_ipv4_address, cli_parse.args.name, logger)
             if command == 'find_desc--active':
