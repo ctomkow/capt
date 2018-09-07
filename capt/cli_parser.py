@@ -58,6 +58,34 @@ class CliParser:
             print('missing flags are required')
             sys.exit(1)
 
+    def push_bas(self): # determine any flags and return all required values
+
+        dict_of_values = {'address': self.args.address,'interface':self.args.interface,'vlan':self.args.vlan,'desc':self.args.description}
+        if self.args.vlan:
+            return 'push_bas', dict_of_values
+        else:
+            print('missing flags are required')
+            sys.exit(1)
+
+    def find_desc(self):  # determine any flags and return all required values
+
+        dict_of_values = {'description': self.args.description}
+        if self.args.active:
+            return 'find_desc--active', dict_of_values
+        #elif self.args.phone:
+            #return 'find_desc--phone', dict_of_values
+        else:
+            return 'find_desc', dict_of_values
+    def find_core(self):  # determine any flags and return all required values
+
+        dict_of_values = {'address':self.args.address, 'search_crit': self.args.search_crit}
+      #  if self.args.port:
+      #      return 'find_core--port', dict_of_values
+      #  elif self.args.vlan:
+      #      return 'find_core--vlan', dict_of_values
+      #  else:
+      #      return 'find_core', dict_of_values
+        return 'find_core', dict_of_values
     def upgrade(self): # determine any flags and return all required values
 
         dict_of_values = {'address': self.args.address}

@@ -59,6 +59,21 @@ class CliCrafter:
     def mac_parser(self, sp):
 
         return sp.add_parser('mac', help="mac address of client device")
+    def bas_parser(self, sp):
+
+        return sp.add_parser('bas', help="Enable a BAS port")
+
+    def desc_parser(self, sp):
+        return sp.add_parser('desc', help="port description / label on wall port")
+
+    def core_parser(self, sp):
+        return sp.add_parser('core', help="find info on core devices")
+
+    def core_vlan_parser(self, sp):
+        return sp.add_parser('vlan', help="find vlan info on core devices")
+
+    def core_port_parser(self, sp):
+        return sp.add_parser('port', help="find port info on core devices")
 
     def vlan_subparser(self, sp):
 
@@ -73,6 +88,10 @@ class CliCrafter:
 
         change = sp.add_parser('change', help="change switch configuration")
         return change.add_subparsers(dest="change")
+
+    def push_subparser(self, sp):
+        push = sp.add_parser('push', help="push edge templates")
+        return push.add_subparsers(dest="push")
 
     def change_parser(self, sp):
 
@@ -91,9 +110,15 @@ class CliCrafter:
 
         p.add_argument('address', help="specify the device address")
 
+    def int_arg(self, p):
+        p.add_argument('-i','--interface', help="specify the device interface")
+
     def vlan_arg(self, p):
 
         p.add_argument('-v', '--vlan', help="specify the new client VLAN ID")
+    def desc_flag_arg(self, p):
+        p.add_argument('-d','--description', help="specify the description to search. \n "
+           "Enclose in brackets if including spaces and seperate multiple criteria with commas")
 
     def ap_arg(self, p):
 
@@ -102,3 +127,16 @@ class CliCrafter:
     def phone_arg(self, p):
 
         p.add_argument('-p', '--phone', help="VoIP phone", action="store_true")
+
+    def desc_arg(self, p):
+        p.add_argument('description', help="specify the description to search. \n "
+           "Enclose in brackets if including spaces and seperate multiple criteria with commas")
+
+    def active_arg(self, p):
+        p.add_argument('-a','--active', help="connection is active / has something connected", action="store_true")
+
+    def device_name_arg(self, p):
+        p.add_argument('-n','--name', help="name of switch to search (can be partial) ")
+
+    def core_search_arg(self, p):
+        p.add_argument('search_crit', help="port/vlan to find info on" )
