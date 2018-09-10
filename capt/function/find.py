@@ -4,7 +4,7 @@ import socket
 import sys
 
 # local imports
-from connector.device import Device
+from connector.switch import Switch
 from connector.client import Client
 from connector.access_point import AccessPoint
 from json_parser import JsonParser
@@ -200,7 +200,7 @@ class Find:
 
     def desc(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address,sw_name, logger):
     # 400 critical error is thrown if description is not found
-        api_call = Device(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id_list = api_call.ids_by_desc(values_dict['description'].strip(),sw_name)
 
         logger.info(" # of switches with Matching occurrences of \"{}\" found: {}  ".format(values_dict['description'], len(dev_id_list)))
@@ -288,7 +288,7 @@ class Find:
 
     def core(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
     # 400 critical error is thrown if description is not found
-        api_call = Device(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
 
         # check address to see if hostname or IP
         if "-" in values_dict['address']:
@@ -355,7 +355,7 @@ class Find:
 
     def int(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, interface, logger):
         # 400 critical error is thrown if description is not found
-        api_call = Device(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
         dev_id = api_call.id_by_ip(values_dict['address'].strip())
         dev_result = api_call.json_basic(dev_id)
         result = api_call.json_detailed(dev_id)
