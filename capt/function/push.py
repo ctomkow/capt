@@ -26,7 +26,9 @@ class Push:
             sys.exit(1)
 
         # invoke API call to change VLAN
-        sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger) # create API switch call object
+
+        # push API_CALL_conf_if_bas template out. Update this to use a shared template, the same as change vlan?
         job_id = sw_api_call.conf_if_bas(dev_id, found_int['name'], values_dict['desc'], values_dict['vlan'])
 
         timeout = time.time() + 30  # 30 second timeout starting now
