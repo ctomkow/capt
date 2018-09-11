@@ -1,11 +1,12 @@
 import re
 
+
 class VarParser:
 
     def __init__(self):
         pass
 
-    def desc_id_split(self, desc):
+    def desc_id_split(self, desc, appender):
         # Split the description string if it is comma seperated
         desc_list = desc.split(",")
         modified_desc_list = ""
@@ -13,6 +14,10 @@ class VarParser:
         for desc_iterator in desc_list:
             # currently does not support brackets
             stripped_desc = re.sub(r'(\(|\))', r"", desc_iterator)
-            modified_desc_list = modified_desc_list + "&ethernetInterface.description=contains(" + stripped_desc + ")"
+            #modified_desc_list = modified_desc_list + "&ethernetInterface.description=contains(" + stripped_desc + ")"
+            #modified_desc_list = modified_desc_list + "&ifDescr=contains(" + stripped_desc + ")"
+            modified_desc_list = modified_desc_list + appender + stripped_desc + ")"
         return modified_desc_list
+
+
 

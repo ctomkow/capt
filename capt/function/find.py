@@ -201,7 +201,7 @@ class Find:
     def desc(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address,sw_name, logger):
     # 400 critical error is thrown if description is not found
         api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id_list = api_call.ids_by_desc(values_dict['description'].strip(),sw_name)
+        dev_id_list = api_call.ids_by_desc(values_dict['description'].strip('"'),sw_name)
 
         logger.info(" # of switches with Matching occurrences of \"{}\" found: {}  ".format(values_dict['description'], len(dev_id_list)))
         # exit out of loop if no matches

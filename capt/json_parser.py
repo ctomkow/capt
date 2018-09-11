@@ -23,4 +23,10 @@ class JsonParser:
             except KeyError: # fails on last lookup
                 return ""
 
+    def ids_list(self, list_json):
+
+        id_list = []
+        for id in list_json:
+            id_list.append(id['$'])
+        return id_list
   #  def searcher(self, json_data, key_list, logger):

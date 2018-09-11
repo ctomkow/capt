@@ -24,7 +24,8 @@ class Connector:
         self.cpi_ipv4_address = cpi_ipv4_addr
         self.logger = log
         self.parse_json = JsonParser()
-        self.parse_desc = VarParser()
+        self.parse_var = VarParser()
+
 
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
