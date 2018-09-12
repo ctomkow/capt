@@ -2,8 +2,11 @@
 # system imports
 import json
 
+
 # 3rd part imports
 import requests
+import re
+
 
 # local imports
 from connector.connector import Connector
@@ -24,6 +27,20 @@ class Client(Connector):
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entityId', 0, '$']
         return self.parse_json.value(result.json(), key_list, self.logger)
+
+    def ids_by_desc(self, desc):
+        id_list = []
+        # Call var_parser functions to parse the description string
+        modified_desc_list = self.parse_var.desc_id_split(desc, "&ifDescr=contains(")
+
+        url = "https://{}/webacs/api/v3/data/ClientDetails.json?.and_filter=true{}&.case_sensitive=false".format(self.cpi_ipv4_address, modified_desc_list)
+
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        # create a list of the returned ids
+        list_json = self.parse_json.value(result.json(),['queryResponse', 'entityId'], self.logger)
+        id_list = self.parse_json.ids_list(list_json)
+
+        return id_list
 
     def json_basic(self, dev_id):
 

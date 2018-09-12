@@ -43,3 +43,4 @@ class Change:
             sys.exit(1)
 
         logger.info('Change VLAN complete.')
+
