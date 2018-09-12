@@ -137,21 +137,19 @@ class Switch(Connector):
         return self.parse_json.value(result.json(), key_list, self.logger)
 
     def ids_by_desc(self, desc, sw_name):
-        modified_desc_list = self.parse_desc.desc_id_split(desc)
+        modified_desc_list = self.parse_var.desc_id_split(desc,"&ethernetInterface.description=contains(")
 
         if sw_name is not None:
             url = "https://{}/webacs/api/v3/data/InventoryDetails.json?.and_filter=true&summary.deviceName=contains({}){}&.case_sensitive=false".format(
                 self.cpi_ipv4_address,sw_name, modified_desc_list)
         else:
             url = "https://{}/webacs/api/v3/data/InventoryDetails.json?.and_filter=true{}&.case_sensitive=false".format(self.cpi_ipv4_address, modified_desc_list)
-        id_list = []
+
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        # create a
-        key_list = ['queryResponse', '@count']
-        occurance_count = self.parse_json.value(result.json(),key_list,self.logger)
-        for i in range(occurance_count):
-            key_list = ['queryResponse', 'entityId', i, '$']
-            id_list.append(self.parse_json.value(result.json(),key_list, self.logger))
+
+        list_json = self.parse_json.value(result.json(),['queryResponse', 'entityId'], self.logger)
+        id_list = self.parse_json.ids_list(list_json)
+
 
         return id_list
 

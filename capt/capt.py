@@ -27,6 +27,7 @@ class Capt:
 
     def __init__(self):
 
+        # create CLICrafter object to parse CLI input. sub parsers may be added to this
         craft = CliCrafter()
 
         # ----- base sub-commands
@@ -139,7 +140,7 @@ class Capt:
                 push.bas(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'find_desc':
                 find.desc(values_dict, config.username, config.password, config.cpi_ipv4_address, cli_parse.args.name, logger)
-            if command == 'find_desc--active':
+            if command == 'find_desc--active': # currently does not take into account the -n flag
                 find.desc_active(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'find_core':
                 find.core(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
