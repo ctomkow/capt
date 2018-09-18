@@ -356,7 +356,11 @@ class Find:
     def int(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, interface, logger):
         # 400 critical error is thrown if description is not found
         api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = api_call.id_by_ip(values_dict['address'].strip())
+           # check address to see if hostname or IP
+        if "-" in values_dict['address']:
+            dev_id = api_call.id_by_hostname(values_dict['address'].strip())
+        else:
+            dev_id = api_call.id_by_ip(values_dict['address'].strip())
         dev_result = api_call.json_basic(dev_id)
         result = api_call.json_detailed(dev_id)
 
@@ -387,7 +391,7 @@ class Find:
         self.desc_printer(found_match, "duplex         :", 'duplexMode', logger)
 
 
-        return dev_id,found_match
+        return dev_id,found_match,neigh_ip
 
 
     def vlan (self,vlan_id,dev_vlan_interfaces,dev_ip_interfaces,logger):
@@ -400,10 +404,15 @@ class Find:
         self.desc_printer(dev_vlan, "Operational Status :", 'operationalStatus', logger)
         self.desc_printer(dev_vlan, "ip address         :", 'ipAddress', logger)
         return
+
     def list_parse_exact(self,find_match,find_str, dev_result,logger):
+        match = False
         for dev_item in dev_result:
             if dev_item[find_str] == find_match:
                 found_match = dev_item
+                match = True
+        if match == False:
+            found_match = {1:'nomatch'}
         return found_match
 
     def list_parse_ends(self,find_match,find_str, dev_result,logger):
