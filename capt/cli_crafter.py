@@ -69,11 +69,16 @@ class CliCrafter:
     def core_parser(self, sp):
         return sp.add_parser('core', help="find info on core devices")
 
+
+
     def core_vlan_parser(self, sp):
         return sp.add_parser('vlan', help="find vlan info on core devices")
 
     def core_port_parser(self, sp):
         return sp.add_parser('port', help="find port info on core devices")
+
+    def port_parser(self, sp):
+        return sp.add_parser('port', help="find individual port info ")
 
     def vlan_subparser(self, sp):
 
@@ -88,6 +93,10 @@ class CliCrafter:
 
         change = sp.add_parser('change', help="change switch configuration")
         return change.add_subparsers(dest="change")
+
+    def poke_subparser(self, sp):
+        poke = sp.add_parser('poke', help="get specific device information")
+        return poke.add_subparsers(dest="poke")
 
     def push_subparser(self, sp):
         push = sp.add_parser('push', help="push edge templates")
@@ -111,7 +120,7 @@ class CliCrafter:
         p.add_argument('address', help="specify the device address")
 
     def int_arg(self, p):
-        p.add_argument('-i','--interface', help="specify the device interface")
+        p.add_argument('interface', help="specify the device interface")
 
     def vlan_arg(self, p):
 

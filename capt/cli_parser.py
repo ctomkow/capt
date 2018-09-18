@@ -64,7 +64,8 @@ class CliParser:
         if self.args.vlan:
             return 'push_bas', dict_of_values
         else:
-            print('missing flags are required')
+           # print('missing flags are required: syntax example-> capt push bas X.X.X.X -i S/0/P -v VVV -d \“DESCRIPTION\” ')
+            print('missing flags are required: syntax example-> capt push bas X.X.X.X  S/0/P -v VVV -d "DESCRIPTION" ')
             sys.exit(1)
 
     def find_desc(self):  # determine any flags and return all required values
@@ -86,6 +87,17 @@ class CliParser:
       #  else:
       #      return 'find_core', dict_of_values
         return 'find_core', dict_of_values
+
+    def poke_port(self):  # determine any flags and return all required values
+
+        if self.args.address and self.args.interface :
+            dict_of_values = {'address': self.args.address, 'interface': self.args.interface}
+        else:
+            print('proper syntax: capt poke port <address/hostname> <interface X/Y/Z> ')
+            sys.exit(1)
+
+        return 'poke_port', dict_of_values
+
     def upgrade(self): # determine any flags and return all required values
 
         dict_of_values = {'address': self.args.address}

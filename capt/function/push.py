@@ -7,15 +7,18 @@ import time
 from function.find import Find
 from connector.switch import Switch
 
+
 class Push:
 
     def __init__(self):
 
         self.find = Find()
 
+
+
     def bas(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
         # find and display (update this call to work)
-        dev_id, found_int = \
+        dev_id, found_int, dev_ip = \
             self.find.int(values_dict, cpi_username, cpi_password, cpi_ipv4_address, values_dict['interface'], logger)
 
         # require 'yes' input to proceed
@@ -32,6 +35,7 @@ class Push:
         job_id = sw_api_call.conf_if_bas(dev_id, found_int['name'], values_dict['desc'], values_dict['vlan'])
 
         timeout = time.time() + 30  # 30 second timeout starting now
+        time.sleep(1) # without the sleep the job_complete can balk, not finding the job_id yet
         while not sw_api_call.job_complete(job_id):
             time.sleep(5)
             if time.time() > timeout:
@@ -42,7 +46,42 @@ class Push:
             sys.exit(1)
 
         logger.info('Change VLAN complete.')
-        #logger.info('Showing new port info:')  # update this to account for sync time of prime DB
-#       dev_id, found_int = \
-#            self.find.int(values_dict, cpi_username, cpi_password, cpi_ipv4_address, values_dict['interface'], logger)
 
+        ########################################################
+        #add a verification flag to sync and display after, instead of default?
+        ########################################################
+        logger.info("Synchronizing ...")
+
+        self.force_sync(dev_id,dev_ip, sw_api_call, 20, logger)  # 20 minute timeout
+        logger.info("Synchronized!")
+        dev_id, found_int, dev_ip = self.find.int(values_dict, cpi_username, cpi_password, cpi_ipv4_address, values_dict['interface'], logger)
+
+        return values_dict
+
+    # Copies of synchronized and force_sync from upgrade_code.py That uses a constant to hold values though
+    def force_sync(self, sw_id,sw_ip, sw_api_call, timeout, logger):
+        old_sync_time = sw_api_call.sync_time(sw_id)
+        sw_api_call.sync(sw_ip)  # force a sync!
+        end_time = time.time() + 60 * timeout
+        logger.info("Timeout set to {} minutes.".format(timeout))
+        time.sleep(20)  # don't test for sync status too soon (CPI delay and all that)
+        while not self.synchronized(sw_id, sw_api_call, logger):
+            time.sleep(10)
+            if time.time() > end_time:
+                logger.critical("Timed out. Sync failed.")
+                sys.exit(1)
+        new_sync_time = sw_api_call.sync_time(sw_id)
+        if old_sync_time == new_sync_time:  # KEEP CODE! needed for corner case where force sync fails (code 03.03.03)
+            logger.critical("Before and after sync time is the same. Sync failed.")
+            sys.exit(1)
+
+    def synchronized(self, sw_id, sw_api_call, logger):
+        if sw_api_call.sync_status(sw_id) == "COMPLETED":
+            logger.info("Synchronization Complete!")
+            return True
+        elif sw_api_call.sync_status(sw_id) == "SYNCHRONIZING":
+            return False
+        else:
+            #sw.sync_state = sw_api_call.sync_status(sw_id)
+            logger.warning("Unexpected sync state:")
+            return False
