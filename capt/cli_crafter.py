@@ -59,6 +59,7 @@ class CliCrafter:
     def mac_parser(self, sp):
 
         return sp.add_parser('mac', help="mac address of client device")
+
     def bas_parser(self, sp):
 
         return sp.add_parser('bas', help="Enable a BAS port")
@@ -68,8 +69,6 @@ class CliCrafter:
 
     def core_parser(self, sp):
         return sp.add_parser('core', help="find info on core devices")
-
-
 
     def core_vlan_parser(self, sp):
         return sp.add_parser('vlan', help="find vlan info on core devices")
@@ -102,6 +101,15 @@ class CliCrafter:
         push = sp.add_parser('push', help="push edge templates")
         return push.add_subparsers(dest="push")
 
+    def tools_subparser(self, sp):
+        return sp.add_parser("tools", help= "various tools without a subcategory").add_subparsers(dest="tools")
+
+    def apcheck_subparser(self, sp):
+        return sp.add_parser('apcheck', help="go through list of disassociated ap alarms").add_subparsers(dest="apcheck")
+
+    def alarms_parser(self, sp):
+        return sp.add_parser('alarms', help="go through ap alarms")
+
     def change_parser(self, sp):
 
         return sp.add_parser('change', help="change switch configuration")
@@ -123,8 +131,14 @@ class CliCrafter:
         p.add_argument('interface', help="specify the device interface")
 
     def vlan_arg(self, p):
-
         p.add_argument('-v', '--vlan', help="specify the new client VLAN ID")
+
+    def days_arg(self, p):
+        p.add_argument('-d', '--days', help="specify how many days ago to search")
+
+    def toggle_arg(self, p):
+        p.add_argument('-t', '--toggle', help="toggle port up and down", action="store_true")
+
     def desc_flag_arg(self, p):
         p.add_argument('-d','--description', help="specify the description to search. \n "
            "Enclose in brackets if including spaces and seperate multiple criteria with commas")

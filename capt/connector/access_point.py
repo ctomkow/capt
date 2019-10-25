@@ -43,6 +43,15 @@ class AccessPoint(Connector):
         key_list = ['queryResponse', 'entityId', 0, '$']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
+    def id_by_alarm_mac_detailed(self,mac):
+        url = "https://{}/webacs/api/v3/data/AccessPointDetails.json?macAddress=\"{}\"".format(self.cpi_ipv4_address, mac)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['queryResponse', 'entityId', 0, '$']
+        return self.parse_json.value(result.json(), key_list, self.logger)
+        #apmac = self.parse_json.value(result.json(), key_list, self.logger)[:16]
+
+        return apmac
+
     def json_basic(self, dev_id):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded

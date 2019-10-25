@@ -68,6 +68,19 @@ class CliParser:
             print('missing flags are required: syntax example-> capt push bas X.X.X.X  S/0/P -v VVV -d "DESCRIPTION" ')
             sys.exit(1)
 
+    def ap_alarms(self): # determine any flags and return all required values
+        if 'days' in self.args and self.args.days is not None:
+            dict_of_values = {'days':self.args.days}
+        else:
+            dict_of_values = {'days': "all"}
+
+        dict_of_values['toggle'] = self.args.toggle
+
+
+        return 'ap_alarms', dict_of_values
+
+
+
     def find_desc(self):  # determine any flags and return all required values
 
         dict_of_values = {'description': self.args.description}

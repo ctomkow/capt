@@ -19,6 +19,7 @@ from function.find import Find
 from function.change import Change
 from function.push import Push
 from function.poke import Poke
+from function.tools import Tools
 from function.test_api import TestApi
 from cli_crafter import CliCrafter
 from cli_parser import CliParser
@@ -37,6 +38,7 @@ class Capt:
         change_sp = craft.change_subparser(craft.subparsers)
         poke_sp = craft.poke_subparser(craft.subparsers)
         push_sp = craft.push_subparser(craft.subparsers)
+        tools_sp = craft.tools_subparser(craft.subparsers)
         # ----- capt find ip x.x.x.x
         find_ip = craft.ip_parser(find_sp)
         craft.addr_arg(find_ip)
@@ -90,11 +92,23 @@ class Capt:
         craft.vlan_arg(push_bas)
         craft.desc_flag_arg(push_bas)
         push_bas.set_defaults(func=CliParser.push_bas)
+
+        # ----- capt tools apcheck alarms
+        tools_ap = craft.apcheck_subparser(tools_sp)
+        ap_alarms = craft.alarms_parser(tools_ap)
+        craft.days_arg(ap_alarms)
+        craft.toggle_arg(ap_alarms)
+        ap_alarms.set_defaults(func=CliParser.ap_alarms)
+
+        # ----- capt tools apcheck slowports
+
         # ----- capt test_api
         test_api_sp = craft.test_api_subparser(craft.subparsers)
         test_api_mac = craft.mac_parser(test_api_sp)
         craft.addr_arg(test_api_mac)
         test_api_mac.set_defaults(func=CliParser.test_api_mac)
+
+
 
         argcomplete.autocomplete(craft.parser)
         args = craft.parser.parse_args()
@@ -106,10 +120,10 @@ class Capt:
             command, values_dict = args.func(cli_parse) # execute argument_parser function
 
             config.load_base_conf()
-
-            if cli_parse.first_sub_cmd() == 'find' or cli_parse.first_sub_cmd() == 'change':
+            subber = cli_parse.first_sub_cmd()
+            if subber == 'find' or subber == 'change' or subber == 'tools' or subber == 'poke' or subber == 'push':
                 log_file = False
-            elif cli_parse.first_sub_cmd() == 'upgrade' or cli_parse.first_sub_cmd() == 'mock':
+            elif subber == 'upgrade' or subber == 'mock':
                 log_file = True
             else:
                 log_file = True
@@ -122,13 +136,17 @@ class Capt:
                 try:
                     logger = self.set_logger(args.description, logging.INFO, log_file)
                 except AttributeError:
-                    #do something here
-                    sys_logger.critical("Address and description not found.")
-                    sys.exit(1)
+                    try:
+                        logger = self.set_logger(args.tools, logging.INFO, log_file)
+                    except AttributeError:
+                        #do something here
+                        sys_logger.critical("Address and description not found.")
+                        sys.exit(1)
             find = Find()
             change = Change()
             push = Push()
             poke = Poke()
+            tools = Tools()
 
             if command == 'find_ip':
                 find.ip_client(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
@@ -158,6 +176,8 @@ class Capt:
                 UpgradeCode(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
             if command == 'mock_upgrade':
                 MockUpgradeCode(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
+            if command == 'ap_alarms':
+                tools.checkAlarms(values_dict, config.username, config.password,config.cpi_ipv4_address, logger)
             if command == 'test_api_mac':
                 TestApi.test_method(values_dict, config.username, config.password, config.cpi_ipv4_address, logger)
         else: # no sub commands

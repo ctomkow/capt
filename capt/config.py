@@ -3,11 +3,13 @@
 
 # system imports
 import configparser
+import os
 
 
 def load_base_conf():
     config = configparser.ConfigParser()
-    config.read("config.text")
+    #config.read("config.text")
+    config.read(os.path.join(os.path.expanduser('~'), "config.text"))
 
     global username
     global password
@@ -25,7 +27,8 @@ def load_base_conf():
 def load_full_conf():
 
     config = configparser.ConfigParser()
-    config.read("config.text")
+    config.read(os.path.join(os.path.expanduser('~'), "config.text"))
+    #config.read("config.text")
 
     global username
     global password
