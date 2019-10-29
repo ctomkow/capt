@@ -1,4 +1,8 @@
 
+
+# 3rd party imports
+import argcomplete
+
 # system imports
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
@@ -14,6 +18,106 @@ class CliCrafter:
                                      description="""Cisco APi Tool: a nettool built on Cisco Prime's API""")
         self.parser.add_argument('-d', '--debug', action='store_true', required=False, help="debug output")
         self.subparsers = self.parser.add_subparsers(dest="sub_cmd")
+
+
+        ###############NEW
+        find_sp = self.subparsers.add_parser('find', help="get client device information").add_subparsers(dest="find")
+        mock_sp = self.mock_subparser(self.subparsers)
+        change_sp = self.change_subparser(self.subparsers)
+        poke_sp = self.poke_subparser(self.subparsers)
+        push_sp = self.push_subparser(self.subparsers)
+        tools_sp = self.tools_subparser(self.subparsers)
+        # ----- Completed create base sub-commands
+
+        # ----- capt find sub-commands -----
+        # ----- capt find ip x.x.x.x
+        # find_ip = self.ip_parser(find_sp)
+        find_ip = find_sp.add_parser('ip', help="IPv4 address of client device")
+        self.addr_arg(find_ip)
+        # defaults are used to determine which function should be called, allows interactive style prompt with
+        #find_ip.set_defaults(func=CliParser.find_ip)
+        # ----- capt find ip x.x.x.x --ap
+        self.ap_arg(find_ip)
+        # ----- capt find ip x.x.x.x --phone
+        self.phone_arg(find_ip)
+        # ----- capt find mac xx:xx:xx:xx:xx:xx
+        find_mac = self.mac_parser(find_sp)
+        self.addr_arg(find_mac)
+        #find_mac.set_defaults(func=CliParser.find_mac)
+        # ----- capt find mac xx:xx:xx:xx:xx:xx --ap
+        self.ap_arg(find_mac)
+        # ----- capt find mac xx:xx:xx:xx:xx:xx --phone
+        self.phone_arg(find_mac)
+        # ----- capt find desc xxxxxx
+        find_desc = self.desc_parser(find_sp)
+        self.desc_arg(find_desc)
+        self.device_name_arg(find_desc)
+        #find_desc.set_defaults(func=CliParser.find_desc)
+        # ----- capt find desc xxxxxx --active
+        self.active_arg(find_desc)
+        # ----- capt find core -vlan
+        find_core = self.core_parser(find_sp)
+        self.addr_arg(find_core)  # adds address field
+        self.core_search_arg(find_core)
+      #  find_core.set_defaults(func=CliParser.find_core)
+
+        # ----- capt poke sub-commands -----
+        # ----- capt poke port XXX.XXX.XXX.XXX Y/Y/Y
+        poke_port = self.port_parser(poke_sp)
+        self.addr_arg(poke_port)  # adds address field
+        self.int_arg(poke_port)  # adds interface field
+        #self.sync_arg(poke_port) <TODO implement sync functionality>
+       # poke_port.set_defaults(func=CliParser.poke_port)
+
+        # ----- capt upgrade sub-commands (deprecated?) -----
+        # ----- capt upgrade x.x.x.x
+        upgrade = self.upgrade_parser(self.subparsers)
+        self.addr_arg(upgrade)
+       # upgrade.set_defaults(func=CliParser.upgrade)
+        # ----- capt mock upgrade x.x.x.x
+        mock_upgrade = self.upgrade_parser(mock_sp)
+        self.addr_arg(mock_upgrade)
+       # mock_upgrade.set_defaults(func=CliParser.mock_upgrade)
+
+        # ----- capt change sub-commands -----
+        # ----- capt change mac xx:xx:xx:xx:xx:xx --vlan yyyy
+        change_mac = self.mac_parser(change_sp)
+        self.addr_arg(change_mac)
+        self.vlan_arg(change_mac)
+     #   change_mac.set_defaults(func=CliParser.change_mac)
+
+        # ----- capt push sub-commands -----
+        # ----- capt push bas -a W.W.W.W -p X/X/X -v YYYY -d "ZZZZZZ"
+        push_bas = self.bas_parser(push_sp)
+        self.addr_arg(push_bas)
+        self.int_arg(push_bas)
+        self.vlan_arg(push_bas)
+        self.desc_flag_arg(push_bas)
+      #  push_bas.set_defaults(func=CliParser.push_bas)
+
+        # ----- capt tools sub-commands -----
+        # ----- capt tools apcheck alarms
+        tools_ap = self.apcheck_subparser(tools_sp)
+        ap_alarms = self.alarms_parser(tools_ap)
+        self.days_arg(ap_alarms)
+        self.toggle_arg(ap_alarms)
+     #   ap_alarms.set_defaults(func=CliParser.ap_alarms)
+
+        # ----- capt tools apcheck slowports
+
+        # ----- capt test sub-commands -----
+        # ----- capt test_api
+        test_api_sp = self.test_api_subparser(self.subparsers)
+        test_api_mac = self.mac_parser(test_api_sp)
+        self.addr_arg(test_api_mac)
+      #  test_api_mac.set_defaults(func=CliParser.test_api_mac)
+
+        argcomplete.autocomplete(self.parser)
+        ################NEW DONE
+
+
+
+
 
     def find_subparser(self, sp):
 
@@ -131,7 +235,7 @@ class CliCrafter:
         p.add_argument('interface', help="specify the device interface")
 
     def vlan_arg(self, p):
-        p.add_argument('-v', '--vlan', help="specify the new client VLAN ID")
+        p.add_argument('-v', '--vlan', help="specify the new client VLAN ID", required=True)
 
     def days_arg(self, p):
         p.add_argument('-d', '--days', help="specify how many days ago to search")
@@ -150,6 +254,9 @@ class CliCrafter:
     def phone_arg(self, p):
 
         p.add_argument('-p', '--phone', help="VoIP phone", action="store_true")
+
+    def sync_arg(self, p):
+        p.add_argument('-s', '--sync', help="Sync data first", action="store_true")
 
     def desc_arg(self, p):
         p.add_argument('description', help="specify the description to search. \n "
