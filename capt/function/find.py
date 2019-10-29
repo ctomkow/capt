@@ -8,6 +8,7 @@ from connector.switch import Switch
 from connector.client import Client
 from connector.access_point import AccessPoint
 from json_parser import JsonParser
+#from function.push import Push #temp to sync poke <TODO move sync to general area>
 
 
 
@@ -18,10 +19,12 @@ class Find:
         self.parse_json = JsonParser()
 
 
-    def ip_client(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    #def ip_client(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def ip_client(self, args, config, logger):
 
-        api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = api_call.id_by_ip(values_dict['address'])
+
+        api_call = Client(config, logger)
+        dev_id = api_call.id_by_ip(args.address)
         result = api_call.json_detailed(dev_id)
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
@@ -48,12 +51,12 @@ class Find:
         logger.info("mac addr    :{}".format(mac_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, mac_addr
 
-    def ip_ap(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def ip_ap(self, args, config, logger):
 
-        ap_api_call = AccessPoint(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        client_api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        client_id = client_api_call.id_by_ip(values_dict['address'])
-        ap_id = ap_api_call.id_by_ip(values_dict['address'])
+        ap_api_call = AccessPoint(config, logger)
+        client_api_call = Client(config, logger)
+        client_id = client_api_call.id_by_ip(args.address)
+        ap_id = ap_api_call.id_by_ip(args.address)
         ap_result = ap_api_call.json_detailed(ap_id)
         client_result = client_api_call.json_detailed(client_id)
 
@@ -78,10 +81,10 @@ class Find:
         logger.info("ap mac addr :{}".format(mac_addr))
         return neigh_name, neigh_ip, interface, vlan, vlan_name, mac_addr
 
-    def ip_phone(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def ip_phone(self, args, config, logger):
 
-        api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = api_call.id_by_ip(values_dict['address'])
+        api_call = Client(config, logger)
+        dev_id = api_call.id_by_ip(args.address)
         result = api_call.json_detailed(dev_id)
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
@@ -108,10 +111,10 @@ class Find:
         logger.info("mac addr    :{}".format(mac_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, mac_addr
 
-    def mac_client(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def mac_client(self, args, config, logger):
 
-        api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = api_call.id_by_mac(values_dict['address'])
+        api_call = Client(config, logger)
+        dev_id = api_call.id_by_mac(args.address)
         result = api_call.json_detailed(dev_id)
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
@@ -138,12 +141,12 @@ class Find:
         logger.info("ip addr     :{}".format(ip_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, ip_addr
 
-    def mac_ap(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def mac_ap(self, args, config, logger):
 
-        ap_api_call = AccessPoint(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        client_api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        client_id = client_api_call.id_by_mac(values_dict['address'])
-        ap_id = ap_api_call.id_by_mac(values_dict['address'])
+        ap_api_call = AccessPoint(config, logger)
+        client_api_call = Client(config, logger)
+        client_id = client_api_call.id_by_mac(args.address)
+        ap_id = ap_api_call.id_by_mac(args.address)
         ap_result = ap_api_call.json_detailed(ap_id)
         client_result = client_api_call.json_detailed(client_id)
 
@@ -168,10 +171,10 @@ class Find:
         logger.info("ap ip addr :{}".format(ip_addr))
         return neigh_name, neigh_ip, interface, vlan, vlan_name, ip_addr
 
-    def mac_phone(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def mac_phone(self, args, config, logger):
 
-        api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id = api_call.id_by_mac(values_dict['address'])
+        api_call = Client(config, logger)
+        dev_id = api_call.id_by_mac(args.address)
         result = api_call.json_detailed(dev_id)
 
         key_list = ['queryResponse', 'entity', 0, 'clientDetailsDTO', 'deviceName']
@@ -198,12 +201,12 @@ class Find:
         logger.info("ip addr    :{}".format(ip_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, ip_addr
 
-    def desc(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address,sw_name, logger):
+    def desc(self, args, config, logger):
     # 400 critical error is thrown if description is not found
-        api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id_list = api_call.ids_by_desc(values_dict['description'].strip('"'),sw_name)
+        api_call = Switch(config, logger)
+        dev_id_list = api_call.ids_by_desc(args.description.strip('"'),args.name)
 
-        logger.info(" # of switches with Matching occurrences of \"{}\" found: {}  ".format(values_dict['description'], len(dev_id_list)))
+        logger.info(" # of switches with Matching occurrences of \"{}\" found: {}  ".format(args.description, len(dev_id_list)))
         # exit out of loop if no matches
         if len(dev_id_list) < 1:
             sys.exit(1)
@@ -226,7 +229,7 @@ class Find:
                 if 'description' in dev_int:
                 #currently not working with comma seperated values. Check if each value in
                 #similar to device/ids_by_desc split and remove brackets. abstract function?
-                    desc_list=values_dict['description'].split(",")
+                    desc_list=args.description.split(",")
 
 #                    if values_dict['description'] in dev_int['description']:
                     if all (x in dev_int['description'] for x in desc_list):
@@ -250,11 +253,11 @@ class Find:
 
         return dev_found_interfaces
 
-    def desc_active(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
-        api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        dev_id_list = api_call.ids_by_desc(values_dict['description'].strip())
+    def desc_active(self, args, config, logger):
+        api_call = Client(config, logger)
+        dev_id_list = api_call.ids_by_desc(args.description.strip())
 
-        logger.info("Occurrences of \"{}\" found: {}  ".format(values_dict['description'], len(dev_id_list)))
+        logger.info("Occurrences of \"{}\" found: {}  ".format(args.description, len(dev_id_list)))
         # exit out of loop if no matches
         if len(dev_id_list) < 1:
             sys.exit(1)
@@ -286,15 +289,15 @@ class Find:
             logger.info("mac addr    :{}".format(mac_addr))
         return neigh_name, neigh_ip, interface, description, vlan, vlan_name, mac_addr
 
-    def core(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def core(self, args, config, logger):
     # 400 critical error is thrown if description is not found
-        api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        api_call = Switch(config, logger)
 
         # check address to see if hostname or IP
-        if "-" in values_dict['address']:
-            dev_id = api_call.id_by_hostname(values_dict['address'].strip())
+        if "-" in args.address:
+            dev_id = api_call.id_by_hostname(args.address.strip())
         else:
-            dev_id = api_call.id_by_ip(values_dict['address'].strip())
+            dev_id = api_call.id_by_ip(args.address.strip())
 
 
         dev_result = api_call.json_basic(dev_id)
@@ -312,12 +315,12 @@ class Find:
         neigh_ip = socket.gethostbyname(tmp)  # resolve fqdn to IP. Prime resolves IP if possible
 
 #####if looking for a port add logic here( search for '/')
-        if "/" in  values_dict['search_crit']:
+        if "/" in  args.search_crit:
             dev_interfaces = result['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces']['ethernetInterface']
             dev_found_interfaces =[]
             for dev_int in dev_interfaces:
                 #if values_dict['search_crit'] in dev_int['name']:
-                if dev_int['name'].endswith(values_dict['search_crit']):
+                if dev_int['name'].endswith(args.search_crit):
                     dev_found_interfaces.append(dev_int)
             ######
             logger.info("switch name :{}".format(neigh_name))
@@ -347,22 +350,23 @@ class Find:
 
         else:
             #dev_vlan = self.vlan_parse(values_dict['search_crit'],dev_vlan_interfaces,dev_ip_interfaces,logger)
-            self.vlan(values_dict['search_crit'],dev_vlan_interfaces,dev_ip_interfaces,logger)
+            self.vlan(args.search_crit,dev_vlan_interfaces,dev_ip_interfaces,logger)
             #
 
 
         return result
 
-    def int(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, interface, logger):
+    def int(self, args, config, interface, logger):
         # 400 critical error is thrown if description is not found
-        api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        api_call = Switch(config, logger)
            # check address to see if hostname or IP
-        if "-" in values_dict['address']:
-            dev_id = api_call.id_by_hostname(values_dict['address'].strip())
+        if "-" in args.address:
+            dev_id = api_call.id_by_hostname(args.address.strip())
         else:
-            dev_id = api_call.id_by_ip(values_dict['address'].strip())
+            dev_id = api_call.id_by_ip(args.address.strip())
         dev_result = api_call.json_basic(dev_id)
         result = api_call.json_detailed(dev_id)
+
 
         key_list = ['queryResponse', 'entity', 0, 'devicesDTO', 'deviceName']
         neigh_name = self.parse_json.value(dev_result, key_list, logger)

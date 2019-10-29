@@ -14,10 +14,10 @@ class TestApi:
 
         self.parse_json = JsonParser()
 
-    def test_method(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def test_method(self, args, config, logger):
 
-        api_call = Client(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        api_call = Client(config, logger)
+        sw_api_call = Switch(config, logger)
 
         dev_id = sw_api_call.id_by_ip("172.30.28.246")
         result = sw_api_call.json_detailed(dev_id)

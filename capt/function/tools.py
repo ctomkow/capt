@@ -21,9 +21,9 @@ class Tools:
         self.find = Find()
         self.parse_json = JsonParser()
 
-    def checkAlarms(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
-        alarm_api_call = Alarms(cpi_username, cpi_password, cpi_ipv4_address, logger)
-        device_api_call = AccessPoint(cpi_username, cpi_password, cpi_ipv4_address, logger)
+    def checkAlarms(self, args, config, logger):
+        alarm_api_call = Alarms(config, logger)
+        device_api_call = AccessPoint(config, logger)
         crit_list = alarm_api_call.get_critical_alarm_ids()
 
         for alarm_id in crit_list:
@@ -53,7 +53,7 @@ class Tools:
                 "AP:#{}-{}:{}\n Neighbor:{}/{}:{}".format(dev_dict['name'], dev_dict['model'], dev_dict['status'],
                                                             dev_dict['nb_name'], dev_dict['nb_ip'],
                                                             dev_dict['nb_port']))
-            if values_dict['toggle']:
+            if args.toggle:
                 #modify this to use SNMP?
                 logger.info("Performing Shut/No Shut on {}({}): {}".format(dev_dict['nb_name'], dev_dict['nb_ip'],
                                                                                dev_dict['nb_port']))
