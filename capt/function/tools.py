@@ -58,10 +58,11 @@ class Tools:
                 logger.info("Performing Shut/No Shut on {}({}): {}".format(dev_dict['nb_name'], dev_dict['nb_ip'],
                                                                                dev_dict['nb_port']))
 
-                #net_connect =
-                Answer = input('Do you want to reset the port: (y/n)?')
-                if "y" in Answer.lower():
-                    print("do the reload")
+                time.sleep(1)  # don't test for sync status too soon (CPI delay and all that)
+                # Answer = input('Do you want to reset the port: (y/n)?')
+                # if "y" in Answer.lower():
+                   ####Do the reload, then acknowledge if successfully reloaded.
+                   # alarm_api_call.acknowledge_by_alarm_id(dev_id)
 
 
 
