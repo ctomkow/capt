@@ -80,7 +80,7 @@ class Tools:
                     email_string += "Shut/No Shut on {}({}): {} Successful".format(dev_dict['nb_name'],
                                                                                    dev_dict['nb_ip'],
                                                                                    dev_dict['nb_port'])
-                    alarm_api_call.acknowledge_by_alarm_id(dev_id)
+                    alarm_api_call.acknowledge_by_alarm_id(alarm_id)
                 else:
                     logger.info(
                         "Shut/No Shut on {}({}): {} NOT Successful".format(dev_dict['nb_name'], dev_dict['nb_ip'],
