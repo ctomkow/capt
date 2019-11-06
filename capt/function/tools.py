@@ -23,6 +23,7 @@ class Tools:
         self.parse_json = JsonParser()
 
     def checkAlarms(self, args, config, logger):
+        email_string = ""
         alarm_api_call = Alarms(config, logger)
         device_api_call = AccessPoint(config, logger)
         crit_list = alarm_api_call.get_critical_alarm_ids()
@@ -63,9 +64,9 @@ class Tools:
                 time.sleep(1)  # don't test for sync status too soon (CPI delay and all that)
 
                 Return = 1; #preset return to be false
-                arg_run_list = ["dnmt direct tools AP_Poke", dev_dict["nb_ip"], dev_dict["nb_port"]]
+                arg_run_list = "dnmt direct tools AP_Poke {} {} ".format(dev_dict["nb_ip"], dev_dict["nb_port"])
                 if args.batch:
-                    arg_run_list.append("-s")
+                    arg_run_list += "-s"
                 # else: #checking is done in DNMT as well
                 #     Answer = input('Do you want to reset the port: (y/n)?')
                 #     if "y" not in Answer.lower():
@@ -75,11 +76,18 @@ class Tools:
                     logger.info(
                         "Shut/No Shut on {}({}): {} Successful".format(dev_dict['nb_name'], dev_dict['nb_ip'],
                                                                        dev_dict['nb_port']))
+                    email_string += "Shut/No Shut on {}({}): {} Successful".format(dev_dict['nb_name'],
+                                                                                   dev_dict['nb_ip'],
+                                                                                   dev_dict['nb_port'])
                     alarm_api_call.acknowledge_by_alarm_id(dev_id)
                 else:
                     logger.info(
                         "Shut/No Shut on {}({}): {} NOT Successful".format(dev_dict['nb_name'], dev_dict['nb_ip'],
                                                                            dev_dict['nb_port']))
+                    email_string += "Shut/No Shut on {}({}): {} Not Successful".format(dev_dict['nb_name'],
+                                                                                   dev_dict['nb_ip'],
+                                                                                   dev_dict['nb_port'])
+                logger.debug(email_string)
 
 
 

@@ -161,7 +161,7 @@ class Capt:
         handler = SMTPHandler(config.email_host,config.email_from,email,"test-subject")
 
         handler.setFormatter(formatter)
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.DEBUG)
         logger.addHandler(handler)
 
         return logger
