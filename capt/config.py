@@ -20,6 +20,9 @@ def load_base_conf():
     global email_host
     global email_from
 
+    #This is for running DNMT programs, change to import?
+    global dnmt_path
+
     username = config['DEFAULT']['username']
     password = config['DEFAULT']['password']
 
@@ -28,6 +31,8 @@ def load_base_conf():
 
     email_host = config['SMTP']['host']
     email_from = config['SMTP']['from']
+
+    dnmt_path = config['PATH']['dnmtpath']
 
 
 def load_full_conf():
