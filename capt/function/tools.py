@@ -64,15 +64,18 @@ class Tools:
                 time.sleep(1)  # don't test for sync status too soon (CPI delay and all that)
 
                 Return = 1; #preset return to be false
-                arg_run_list = "{}dnmt direct tools AP_Poke {} {} ".format(config.dnmt_path,dev_dict["nb_ip"], dev_dict["nb_port"])
+                #arg_run_list = "{}dnmt direct tools AP_Poke {} {} ".format(config.dnmt_path,dev_dict["nb_ip"], dev_dict["nb_port"])
+                arg_run_list = "dnmt direct tools AP_Poke {} {} ".format(dev_dict["nb_ip"],
+                                                                           dev_dict["nb_port"])
                 if args.batch:
                     arg_run_list += "-s"
                 # else: #checking is done in DNMT as well
                 #     Answer = input('Do you want to reset the port: (y/n)?')
                 #     if "y" not in Answer.lower():
-                Return = subprocess.run(arg_run_list) ###<TODO> EXTERNAL CALL to DNMT
+                #Return = subprocess.run(arg_run_list) ###<TODO> EXTERNAL CALL to DNMT
+                Return = subprocess.run(arg_run_list, shell=True)  ###<TODO> EXTERNAL CALL to DNMT
 
-                if Return == 0:
+                if Return.returncode == 0:
                     logger.info(
                         "Shut/No Shut on {}({}): {} Successful".format(dev_dict['nb_name'], dev_dict['nb_ip'],
                                                                        dev_dict['nb_port']))
