@@ -84,11 +84,11 @@ class Tools:
                                                                        dev_dict['nb_port'])
 
                 if Return.returncode == 0:
-                    success_string += "Successful"
+                    success_string += " Successful"
                     num_successful += 1
                     alarm_api_call.acknowledge_by_alarm_id(alarm_id) #acknowledge alarm
                 else:
-                    success_string += "NOT Successful"
+                    success_string += " NOT Successful"
                     num_failed += 1
                 logger.info(success_string)
                 email_string += success_string + "\n"
