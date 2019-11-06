@@ -6,6 +6,7 @@ import threading
 import time
 import sys
 import logging
+from logging.handlers import SMTPHandler
 import datetime
 
 
@@ -156,7 +157,8 @@ class Capt:
             datefmt='%Y-%m-%d %H:%M:%S'
         )
 
-        handler = logging.SMTPHandler("127.0.0.1","capt-admin",email,"test-subject")
+
+        handler = SMTPHandler("127.0.0.1","capt-admin",email,"test-subject")
 
         handler.setFormatter(formatter)
         logger.setLevel(logging.INFO)
