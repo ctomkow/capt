@@ -119,7 +119,7 @@ class Capt:
                 if cli_parse.args.tools == 'apcheck':
                     if cli_parse.args.apcheck == "alarms":
                         tools.checkAlarms(args, config, logger)
-                    elif cli_parse.apcheck == "unack":
+                    elif cli_parse.args.apcheck == "unack":
                         tools.un_ack_alarms(args,config,logger)
 
                     # if 'days' in self.args and self.args.days is not None:
