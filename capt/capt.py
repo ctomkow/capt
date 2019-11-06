@@ -69,8 +69,8 @@ class Capt:
                         #do something here
                         sys_logger.critical("Address and description not found.")
                         sys.exit(1)
-            if'email' in args and args.email is not None:
-                self.set_logger_email(config, args.email,logger)
+            # if'email' in args and args.email is not None:
+            #     self.set_logger_email(config, args.email,logger)
 
 
             if cli_parse.args.sub_cmd == 'find':
@@ -117,11 +117,16 @@ class Capt:
             elif cli_parse.args.sub_cmd == 'tools':
                 tools = Tools()
                 if cli_parse.args.tools == 'apcheck':
+                    if cli_parse.args.apcheck == "alarms":
+                        tools.checkAlarms(args, config, logger)
+                    elif cli_parse.apcheck == "unack":
+                        tools.un_ack_alarms(args,config,logger)
+
                     # if 'days' in self.args and self.args.days is not None:
                     #     dict_of_values = {'days': self.args.days}
                     # else:
                     #     dict_of_values = {'days': "all"}
-                    tools.checkAlarms(args, config, logger)
+
             elif cli_parse.args.sub_cmd == 'test_api':
                 TestApi.test_method(args, config, logger)
 
@@ -159,8 +164,8 @@ class Capt:
 
 
         handler = SMTPHandler(config.email_host,config.email_from,email,"test-subject")
-
         handler.setFormatter(formatter)
+
         logger.setLevel(logging.DEBUG)
         logger.addHandler(handler)
 

@@ -25,6 +25,18 @@ class Alarms(Connector):
         #key_list = ['queryResponse', 'entityId', 0, '$']
         #return self.parse_json.value(result.json(), key_list, self.logger)
 
+    def get_acked_critical_alarm_ids(self):
+        # API v3 call is deprecated, need to change when Cisco Prime is upgraded
+        url = "https://{}/webacs/api/v3/data/Alarms.json?.and_filter=true&condition.value=AP_DISASSOCIATED&severity=ne(CLEARED)&acknowledgementStatus=true".format(
+            self.cpi_ipv4_address)  #This will work for minor and Critical Alarms
+        # url = "https://{}/webacs/api/v3/data/Alarms.json?.and_filter=true&condition.value=AP_DISASSOCIATED&severity=eq(CRITICAL)&acknowledgementStatus=false".format(
+        #     self.cpi_ipv4_address) # this misses minor alarms. Prime is setting some disassociated alarms as minor for some reason
+
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        list_json = self.parse_json.value(result.json(), ['queryResponse', 'entityId'], self.logger)
+        id_list = self.parse_json.ids_list(list_json)
+        return id_list
+
     def devname_by_alarm_id(self,alarm_id):
         url = "https://{}/webacs/api/v3/data/Alarms/{}.json".format(self.cpi_ipv4_address,alarm_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)

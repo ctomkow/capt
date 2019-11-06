@@ -3,6 +3,7 @@
 import sys
 import time
 import subprocess
+import smtplib
 
 # local imports
 from function.find import Find
@@ -24,9 +25,15 @@ class Tools:
 
     def checkAlarms(self, args, config, logger):
         email_string = ""
+        num_successful=0
+        num_failed=0
         alarm_api_call = Alarms(config, logger)
         device_api_call = AccessPoint(config, logger)
         crit_list = alarm_api_call.get_critical_alarm_ids()
+
+
+
+
 
         for alarm_id in crit_list:
             time.sleep(0.3)
@@ -73,23 +80,37 @@ class Tools:
                 #Return = subprocess.run(arg_run_list) ###<TODO> EXTERNAL CALL to DNMT
                 Return = subprocess.run(arg_run_list, shell=True)  ###<TODO> EXTERNAL CALL to DNMT
 
-                if Return.returncode == 0:
-                    logger.info(
-                        "Shut/No Shut on {}({}): {} Successful".format(dev_dict['nb_name'], dev_dict['nb_ip'],
-                                                                       dev_dict['nb_port']))
-                    email_string += "Shut/No Shut on {}({}): {} Successful".format(dev_dict['nb_name'],
-                                                                                   dev_dict['nb_ip'],
-                                                                                   dev_dict['nb_port'])
-                    alarm_api_call.acknowledge_by_alarm_id(alarm_id)
-                else:
-                    logger.info(
-                        "Shut/No Shut on {}({}): {} NOT Successful".format(dev_dict['nb_name'], dev_dict['nb_ip'],
-                                                                           dev_dict['nb_port']))
-                    email_string += "Shut/No Shut on {}({}): {} Not Successful".format(dev_dict['nb_name'],
-                                                                                   dev_dict['nb_ip'],
-                                                                                   dev_dict['nb_port'])
-                logger.debug(email_string)
+                success_string = "Shut/No Shut on {}({}): {}".format(dev_dict['nb_name'], dev_dict['nb_ip'],
+                                                                       dev_dict['nb_port'])
 
+                if Return.returncode == 0:
+                    success_string += "Successful"
+                    num_successful += 1
+                    alarm_api_call.acknowledge_by_alarm_id(alarm_id) #acknowledge alarm
+                else:
+                    success_string += "NOT Successful"
+                    num_failed += 1
+                logger.info(success_string)
+                email_string += success_string + "\n"
+        #logger.debug(email_string)
+        email_string += "Total {} Alarms \n{} ports successfully reloaded \n{} ports failed to reload".format(len(crit_list),num_successful, num_failed)
+        if 'email' in args and args.email is not None:
+            try:
+                smtpObj = smtplib.SMTP(config.email_host)
+                smtpObj.sendmail(config.email_from, [args.email], email_string )
+                logger.info("successfully sent Email")
+            except smtplib.SMTPException:
+                logger.info("Failed to send Email")
+            except Exception as e:
+                logger.info(e)
+
+    def un_ack_alarms(self, args, config, logger):
+
+        alarm_api_call = Alarms(config, logger)
+        crit_list = alarm_api_call.get_acked_critical_alarm_ids()
+
+        for alarm_id in crit_list:
+            alarm_api_call.unacknowledge_by_alarm_id(alarm_id) #acknowledge alarm
 
 
 

@@ -99,6 +99,7 @@ class CliCrafter:
         # ----- capt tools sub-commands -----
         # ----- capt tools apcheck alarms
         tools_ap = self.apcheck_subparser(tools_sp)
+        ap_unack = self.unack_parser(tools_ap)
         ap_alarms = self.alarms_parser(tools_ap)
         self.days_arg(ap_alarms)
         self.toggle_arg(ap_alarms)
@@ -216,6 +217,9 @@ class CliCrafter:
     def alarms_parser(self, sp):
         return sp.add_parser('alarms', help="go through ap alarms")
 
+    def unack_parser(self, sp):
+        return sp.add_parser('unack', help="unacknowledge AP alarms")
+
     def change_parser(self, sp):
 
         return sp.add_parser('change', help="change switch configuration")
@@ -278,3 +282,4 @@ class CliCrafter:
 
     def email_arg(self, p):
         p.add_argument('-e', '--email', help="email to log to ")
+
