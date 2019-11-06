@@ -17,11 +17,17 @@ def load_base_conf():
     global cpi_version
     global cpi_ipv4_address
 
+    global email_host
+    global email_from
+
     username = config['DEFAULT']['username']
     password = config['DEFAULT']['password']
 
     cpi_version = config['CPI']['version']
     cpi_ipv4_address = config['CPI']['ipv4_address']
+
+    email_host = config['SMTP']['host']
+    email_from = config['SMTP']['from']
 
 
 def load_full_conf():

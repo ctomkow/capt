@@ -70,7 +70,7 @@ class Capt:
                         sys_logger.critical("Address and description not found.")
                         sys.exit(1)
             if'email' in args and args.email is not None:
-                self.set_logger_email(args.email,logger)
+                self.set_logger_email(config, args.email,logger)
 
 
             if cli_parse.args.sub_cmd == 'find':
@@ -150,7 +150,7 @@ class Capt:
         return logger
 
 
-    def set_logger_email(self, email,logger):
+    def set_logger_email(self,config, email,logger):
 
         formatter = logging.Formatter(
             fmt='%(asctime)s  : %(levelname)-8s : %(message)s',
@@ -158,7 +158,7 @@ class Capt:
         )
 
 
-        handler = SMTPHandler("127.0.0.1","capt-admin",email,"test-subject")
+        handler = SMTPHandler(config.email_host,config.email_from,email,"test-subject")
 
         handler.setFormatter(formatter)
         logger.setLevel(logging.INFO)
