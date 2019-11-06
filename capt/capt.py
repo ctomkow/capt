@@ -50,8 +50,11 @@ class Capt:
             # else:
             #     log_file = True
 
-            #Revisit this line of code
+            #Revisit logging code
             log_file = True;
+
+
+
             try:
                 logger = self.set_logger(args.address, logging.INFO, log_file)
             except AttributeError:
@@ -65,6 +68,8 @@ class Capt:
                         #do something here
                         sys_logger.critical("Address and description not found.")
                         sys.exit(1)
+            if'email' in args and args.email is not None:
+                self.set_logger_email(args.email,logger)
 
 
             if cli_parse.args.sub_cmd == 'find':
@@ -141,6 +146,22 @@ class Capt:
         if log_file:
             logger.addHandler(handler)
         logger.addHandler(screen_handler)
+        return logger
+
+
+    def set_logger_email(self, email,logger):
+
+        formatter = logging.Formatter(
+            fmt='%(asctime)s  : %(levelname)-8s : %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+
+        handler = logging.SMTPHandler("127.0.0.1","capt-admin",email,"test-subject")
+
+        handler.setFormatter(formatter)
+        logger.setLevel(logging.INFO)
+        logger.addHandler(handler)
+
         return logger
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@
 # system imports
 import sys
 import time
+import subprocess
 
 # local imports
 from function.find import Find
@@ -53,16 +54,33 @@ class Tools:
                 "AP:#{}-{}:{}\n Neighbor:{}/{}:{}".format(dev_dict['name'], dev_dict['model'], dev_dict['status'],
                                                             dev_dict['nb_name'], dev_dict['nb_ip'],
                                                             dev_dict['nb_port']))
+            time.sleep(1)  # don't test for sync status too soon (CPI delay and all that)
             if args.toggle:
                 #modify this to use SNMP?
                 logger.info("Performing Shut/No Shut on {}({}): {}".format(dev_dict['nb_name'], dev_dict['nb_ip'],
                                                                                dev_dict['nb_port']))
 
                 time.sleep(1)  # don't test for sync status too soon (CPI delay and all that)
-                # Answer = input('Do you want to reset the port: (y/n)?')
-                # if "y" in Answer.lower():
-                   ####Do the reload, then acknowledge if successfully reloaded.
-                   # alarm_api_call.acknowledge_by_alarm_id(dev_id)
+
+                Return = 1; #preset return to be false
+                arg_run_list = ["dnmt direct tools AP_Poke", dev_dict["nb_ip"], dev_dict["nb_port"]]
+                if args.batch:
+                    arg_run_list.append("-s")
+                # else: #checking is done in DNMT as well
+                #     Answer = input('Do you want to reset the port: (y/n)?')
+                #     if "y" not in Answer.lower():
+                Return = subprocess.run(arg_run_list) ###<TODO> EXTERNAL CALL to DNMT
+
+                if Return == 0:
+                    logger.info(
+                        "Shut/No Shut on {}({}): {} Successful".format(dev_dict['nb_name'], dev_dict['nb_ip'],
+                                                                       dev_dict['nb_port']))
+                    alarm_api_call.acknowledge_by_alarm_id(dev_id)
+                else:
+                    logger.info(
+                        "Shut/No Shut on {}({}): {} NOT Successful".format(dev_dict['nb_name'], dev_dict['nb_ip'],
+                                                                           dev_dict['nb_port']))
+
 
 
 

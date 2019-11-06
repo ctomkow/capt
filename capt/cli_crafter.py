@@ -17,6 +17,7 @@ class CliCrafter:
                                      add_help=True,
                                      description="""Cisco APi Tool: a nettool built on Cisco Prime's API""")
         self.parser.add_argument('-d', '--debug', action='store_true', required=False, help="debug output")
+        self.parser.add_argument('-e', '--email', required=False, help="email to log to")
         self.subparsers = self.parser.add_subparsers(dest="sub_cmd")
 
 
@@ -101,6 +102,7 @@ class CliCrafter:
         ap_alarms = self.alarms_parser(tools_ap)
         self.days_arg(ap_alarms)
         self.toggle_arg(ap_alarms)
+        self.batch_arg(ap_alarms)
      #   ap_alarms.set_defaults(func=CliParser.ap_alarms)
 
         # ----- capt tools apcheck slowports
@@ -258,6 +260,9 @@ class CliCrafter:
     def sync_arg(self, p):
         p.add_argument('-s', '--sync', help="Sync data first", action="store_true")
 
+    def batch_arg(self, p):
+        p.add_argument('-b', '--batch', help="skip verification, for batch files", action="store_true")
+
     def desc_arg(self, p):
         p.add_argument('description', help="specify the description to search. \n "
            "Enclose in brackets if including spaces and seperate multiple criteria with commas")
@@ -270,3 +275,6 @@ class CliCrafter:
 
     def core_search_arg(self, p):
         p.add_argument('search_crit', help="port/vlan to find info on" )
+
+    def email_arg(self, p):
+        p.add_argument('-e', '--email', help="email to log to ")
