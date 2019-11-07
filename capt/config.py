@@ -10,7 +10,7 @@ def load_base_conf():
     config = configparser.ConfigParser()
     #config.read("config.text")
     #config.read(os.path.join(os.path.expanduser('~'), "config.text"))
-    config.read(os.path.join("usr/lib/capt"), "config.text")
+    config.read(os.path.join("/usr/lib/capt"), "config.text")
 
     global username
     global password
