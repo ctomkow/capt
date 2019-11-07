@@ -58,6 +58,7 @@ class Tools:
             key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
                         'neighborIpAddress']
             dev_dict['nb_ip'] = self.parse_json.value(dev_result, key_list, logger)
+            logger.info("Processing Alarm {} / {} ID: {} ".format(num_successful+num_failed+1,len(crit_list),alarm_id))
             logger.info(
                 "AP:#{}-{}:{}\n Neighbor:{}/{}:{}".format(dev_dict['name'], dev_dict['model'], dev_dict['status'],
                                                             dev_dict['nb_name'], dev_dict['nb_ip'],
