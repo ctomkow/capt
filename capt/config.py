@@ -22,6 +22,8 @@ def load_base_conf():
     global email_host
     global email_from
 
+    global logpath
+
     username = config['DEFAULT']['username']
     password = config['DEFAULT']['password']
 
@@ -30,6 +32,8 @@ def load_base_conf():
 
     email_host = config['SMTP']['host']
     email_from = config['SMTP']['from']
+
+    logpath = config['PATH']['logpath']
 
 
 

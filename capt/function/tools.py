@@ -58,16 +58,14 @@ class Tools:
             key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
                         'neighborIpAddress']
             dev_dict['nb_ip'] = self.parse_json.value(dev_result, key_list, logger)
-            logger.info("Processing Alarm {} / {} ID: {} ".format(num_successful+num_failed+1,len(crit_list),alarm_id))
-            logger.info(
-                "AP:#{}-{}:{}\n Neighbor:{}/{}:{}".format(dev_dict['name'], dev_dict['model'], dev_dict['status'],
-                                                            dev_dict['nb_name'], dev_dict['nb_ip'],
-                                                            dev_dict['nb_port']))
+            logger.info("Processing Alarm {} / {} ID: {} ".format(crit_list.index(alarm_id)+1,len(crit_list),alarm_id))
+            logger.info("AP: {} Model:{} Status:{}".format(dev_dict['name'], dev_dict['model'], dev_dict['status']))
+            logger.info("Neighbor:{}({}):{}".format(dev_dict['nb_name'], dev_dict['nb_ip'], dev_dict['nb_port']))
             time.sleep(1)  # don't test for sync status too soon (CPI delay and all that)
             if args.toggle:
-                #modify this to use SNMP?
-                logger.info("Performing Shut/No Shut on {}({}): {}".format(dev_dict['nb_name'], dev_dict['nb_ip'],
-                                                                               dev_dict['nb_port']))
+                #unecessary log
+                # logger.info("Performing Shut/No Shut on {}({}): {}".format(dev_dict['nb_name'], dev_dict['nb_ip'],
+                #                                                                dev_dict['nb_port']))
 
                 time.sleep(1)  # don't test for sync status too soon (CPI delay and all that)
 
@@ -96,9 +94,15 @@ class Tools:
         #logger.debug(email_string)
         email_string += "Total {} Alarms \n{} ports successfully reloaded \n{} ports failed to reload".format(len(crit_list),num_successful, num_failed)
         if 'email' in args and args.email is not None:
+
+            with open(config.logpath, 'r') as file:
+                #data = file.read().replace('\n', '')
+                data = file.read()
+
             try:
                 smtpObj = smtplib.SMTP(config.email_host)
-                smtpObj.sendmail(config.email_from, [args.email], email_string )
+                smtpObj.sendmail(config.email_from, [args.email], data)
+                #smtpObj.sendmail(config.email_from, [args.email], email_string )
                 logger.info("successfully sent Email")
             except smtplib.SMTPException:
                 logger.info("Failed to send Email")

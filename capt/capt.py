@@ -2,6 +2,7 @@
 # PYTHON_ARGCOMPLETE_OK
 
 # system imports
+import os #for logging file
 import threading
 import time
 import sys
@@ -140,10 +141,15 @@ class Capt:
             datefmt='%Y-%m-%d %H:%M:%S'
         )
         if log_file:
-            handler = logging.FileHandler(
-                "{}-{}".format(datetime.datetime.now().strftime("%Y%m%d"), name),
-                mode='a'
-            )
+
+            config.logpath = os.path.abspath(os.path.join(os.sep, 'usr', 'lib', 'capt',"{}-{}".format(datetime.datetime.now().strftime("%Y%m%d"), name)))
+            handler = logging.FileHandler(config.logpath,mode='a')
+                #"{}-{}".format(datetime.datetime.now().strftime("%Y%m%d"), name),
+                #mode='a')
+            #os.path.abspath(os.path.join(os.sep, 'usr', 'lib', 'capt'))
+            # handler = logging.FileHandler(
+            #     "{}-{}".format(datetime.datetime.now().strftime("%Y%m%d"), name),
+            #     mode='a')
             handler.setFormatter(formatter)
         screen_handler = logging.StreamHandler(stream=sys.stdout)
         screen_handler.setFormatter(formatter)
