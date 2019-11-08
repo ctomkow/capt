@@ -142,7 +142,7 @@ class Capt:
         )
         if log_file:
 
-            config.logpath = os.path.abspath(os.path.join(os.sep, 'usr', 'lib', 'capt',"{}-{}".format(datetime.datetime.now().strftime("%Y%m%d"), name)))
+            config.logpath = os.path.abspath(os.path.join(os.sep, 'var', 'log', 'capt',"{}-{}".format(datetime.datetime.now().strftime("%Y%m%d"), name)))
             handler = logging.FileHandler(config.logpath,mode='a')
                 #"{}-{}".format(datetime.datetime.now().strftime("%Y%m%d"), name),
                 #mode='a')
