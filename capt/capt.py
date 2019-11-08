@@ -3,6 +3,7 @@
 
 # system imports
 import os #for logging file
+import smtplib
 import threading
 import time
 import sys
@@ -130,6 +131,24 @@ class Capt:
 
             elif cli_parse.args.sub_cmd == 'test_api':
                 TestApi.test_method(args, config, logger)
+
+            if 'email' in args and args.email is not None:
+
+                with open(config.logpath, 'r') as file:
+                    #data = file.read().replace('\n', '')
+                    data = file.read()
+
+                try:
+                    smtpObj = smtplib.SMTP(config.email_host)
+                    smtpObj.sendmail(config.email_from, [args.email], data)
+                    #smtpObj.sendmail(config.email_from, [args.email], email_string )
+                    logger.info("successfully sent Email")
+                except smtplib.SMTPException:
+                    logger.info("Failed to send Email")
+                except Exception as e:
+                    logger.info(e)
+
+
 
 
     def set_logger(self, nm, level, log_file=True):
