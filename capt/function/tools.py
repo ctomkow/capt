@@ -92,22 +92,11 @@ class Tools:
                 logger.info(success_string)
                 # email_string += success_string + "\n"
         #logger.debug(email_string)
-        # email_string += "Total {} Alarms \n{} ports successfully reloaded \n{} ports failed to reload".format(len(crit_list),num_successful, num_failed)
-        # if 'email' in args and args.email is not None:
-        #
-        #     with open(config.logpath, 'r') as file:
-        #         #data = file.read().replace('\n', '')
-        #         data = file.read()
-        #
-        #     try:
-        #         smtpObj = smtplib.SMTP(config.email_host)
-        #         smtpObj.sendmail(config.email_from, [args.email], data)
-        #         #smtpObj.sendmail(config.email_from, [args.email], email_string )
-        #         logger.info("successfully sent Email")
-        #     except smtplib.SMTPException:
-        #         logger.info("Failed to send Email")
-        #     except Exception as e:
-        #         logger.info(e)
+
+        logger.info("Total {} Alarms".format(len(crit_list)))
+        logger.info("{} ports successfully reloaded ".format(num_successful))
+        logger.info("{} ports failed to reload".format(num_failed))
+
 
     def un_ack_alarms(self, args, config, logger):
 
