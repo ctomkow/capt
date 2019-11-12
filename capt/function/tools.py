@@ -87,7 +87,7 @@ class Tools:
                     num_successful += 1
                     alarm_api_call.acknowledge_by_alarm_id(alarm_id) #acknowledge alarm
                 else:
-                    success_string += " NOT Successful"
+                    success_string += " FAILED"
                     num_failed += 1
                 logger.info(success_string)
                 # email_string += success_string + "\n"
