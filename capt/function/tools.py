@@ -143,39 +143,38 @@ class Tools:
                 else:
                     success_string += " FAILED"
                 logger.info(success_string)
-                time.sleep(60)  # Give the AP some time to start up
 
-
-                #<TODO move this and previous into a function to reuse>
-                result = api_call.json_detailed(curr_id)
-                logger.info("------- Occurrence #{} POST RELOAD--------\n".format(dev_id_list.index(curr_id) + 1))
-
-                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
-                            'neighborName']
-                neigh_name = self.parse_json.value(result, key_list, logger)
-                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
-                            'neighborIpAddress']
-                neigh_ip = self.parse_json.value(result, key_list, logger)
-                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
-                            'neighborPort']
-                interface = self.parse_json.value(result, key_list, logger)
-                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
-                            'interfaceSpeed']
-                speed = self.parse_json.value(result, key_list, logger)
-                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'name']
-                name = self.parse_json.value(result, key_list, logger)
-                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'model']
-                model = self.parse_json.value(result, key_list, logger)
-                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'locationHierarchy']
-                map_location = self.parse_json.value(result, key_list, logger)
+                #<TODO move this and previous into a function to reuse, add a sync before>
+                # time.sleep(60)  # Give the AP some time to start up
+                # result = api_call.json_detailed(curr_id)
+                # logger.info("------- Occurrence #{} POST RELOAD--------\n".format(dev_id_list.index(curr_id) + 1))
                 #
-                logger.info("ap name :{}".format(name))
-                logger.info("ap model :{}".format(model))
-                logger.info("switch name :{}".format(neigh_name))
-                logger.info("switch ip   :{}".format(neigh_ip))
-                logger.info("interface   :{}".format(interface))
-                logger.info("speed :{}".format(speed))
-                logger.info("map location :{}".format(map_location))
+                # key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
+                #             'neighborName']
+                # neigh_name = self.parse_json.value(result, key_list, logger)
+                # key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
+                #             'neighborIpAddress']
+                # neigh_ip = self.parse_json.value(result, key_list, logger)
+                # key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
+                #             'neighborPort']
+                # interface = self.parse_json.value(result, key_list, logger)
+                # key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
+                #             'interfaceSpeed']
+                # speed = self.parse_json.value(result, key_list, logger)
+                # key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'name']
+                # name = self.parse_json.value(result, key_list, logger)
+                # key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'model']
+                # model = self.parse_json.value(result, key_list, logger)
+                # key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'locationHierarchy']
+                # map_location = self.parse_json.value(result, key_list, logger)
+                # #
+                # logger.info("ap name :{}".format(name))
+                # logger.info("ap model :{}".format(model))
+                # logger.info("switch name :{}".format(neigh_name))
+                # logger.info("switch ip   :{}".format(neigh_ip))
+                # logger.info("interface   :{}".format(interface))
+                # logger.info("speed :{}".format(speed))
+                # logger.info("map location :{}".format(map_location))
                 # End reload
             else:
                 time.sleep(1)  # sleep at the end of each to prevent overruns when running without toggle
