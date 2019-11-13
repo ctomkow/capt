@@ -17,11 +17,15 @@ from utils.var_parser import VarParser
 
 class Connector:
 
-    def __init__(self, uname, passwd, cpi_ipv4_addr, log):
+    def __init__(self, config, log):
 
-        self.username = uname
-        self.password = passwd
-        self.cpi_ipv4_address = cpi_ipv4_addr
+
+        self.username = config.username
+        self.password = config.password
+        self.cpi_ipv4_address = config.cpi_ipv4_address
+        # self.username = uname
+        # self.password = passwd
+        # self.cpi_ipv4_address = cpi_ipv4_addr
         self.logger = log
         self.parse_json = JsonParser()
         self.parse_var = VarParser()

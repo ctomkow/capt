@@ -3,11 +3,15 @@
 
 # system imports
 import configparser
+import os
 
 
 def load_base_conf():
     config = configparser.ConfigParser()
-    config.read("config.text")
+    #config.read("config.text")
+    #config.read(os.path.join(os.path.expanduser('~'), "config.text"))
+
+    config.read(os.path.abspath(os.path.join(os.sep, 'usr','lib','capt', 'config.text')))
 
     global username
     global password
@@ -15,17 +19,30 @@ def load_base_conf():
     global cpi_version
     global cpi_ipv4_address
 
+    global email_host
+    global email_from
+
+    global logpath
+
     username = config['DEFAULT']['username']
     password = config['DEFAULT']['password']
 
     cpi_version = config['CPI']['version']
     cpi_ipv4_address = config['CPI']['ipv4_address']
 
+    email_host = config['SMTP']['host']
+    email_from = config['SMTP']['from']
+
+    logpath = config['PATH']['logpath']
+
+
+
 
 def load_full_conf():
 
     config = configparser.ConfigParser()
-    config.read("config.text")
+    config.read(os.path.join(os.path.expanduser('~'), "config.text"))
+    #config.read("config.text")
 
     global username
     global password

@@ -8,6 +8,7 @@ from function.find import Find
 from connector.switch import Switch
 
 
+
 class Push:
 
     def __init__(self):
@@ -16,23 +17,22 @@ class Push:
 
 
 
-    def bas(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def bas(self, args, config, logger):
         # find and display (update this call to work)
-        dev_id, found_int, dev_ip = \
-            self.find.int(values_dict, cpi_username, cpi_password, cpi_ipv4_address, values_dict['interface'], logger)
+        dev_id, found_int, dev_ip = self.find.int(args, config, args.interface, logger)
 
         # require 'yes' input to proceed
-        logger.info('Activate BAS on switch  INTERFACE {} using VLAN: {}'.format(found_int['name'], values_dict['vlan']))
+        logger.info('Activate BAS on switch  INTERFACE {} using VLAN: {}'.format(found_int['name'], args.vlan))
         response = input("Confirm action of changing VLAN ('yes'):")
         if not response == 'yes':
             logger.info('Did not proceed with change.')
             sys.exit(1)
 
         # invoke API call to change VLAN
-        sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger) # create API switch call object
+        sw_api_call = Switch(config.username, config.password, config.cpi_ipv4_address, logger) # create API switch call object
 
         # push API_CALL_conf_if_bas template out. Update this to use a shared template, the same as change vlan?
-        job_id = sw_api_call.conf_if_bas(dev_id, found_int['name'], values_dict['desc'], values_dict['vlan'])
+        job_id = sw_api_call.conf_if_bas(dev_id, found_int['name'], args.description, args.vlan)
 
         timeout = time.time() + 30  # 30 second timeout starting now
         time.sleep(1) # without the sleep the job_complete can balk, not finding the job_id yet
@@ -54,9 +54,9 @@ class Push:
 
         self.force_sync(dev_id,dev_ip, sw_api_call, 20, logger)  # 20 minute timeout
         logger.info("Synchronized!")
-        dev_id, found_int, dev_ip = self.find.int(values_dict, cpi_username, cpi_password, cpi_ipv4_address, values_dict['interface'], logger)
+        dev_id, found_int, dev_ip = self.find.int(args, config, args.interface, logger)
 
-        return values_dict
+        return args
 
     # Copies of synchronized and force_sync from upgrade_code.py That uses a constant to hold values though
     def force_sync(self, sw_id,sw_ip, sw_api_call, timeout, logger):

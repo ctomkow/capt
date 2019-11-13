@@ -14,23 +14,24 @@ class Change:
 
         self.find = Find()
 
-    def mac_vlan(self, values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger):
+    def mac_vlan(self, args, config, logger):
+
 
         # find and display
         neigh_name, neigh_ip, interface, description, old_vlan, old_vlan_name, addr = \
-            self.find.mac_client(values_dict, cpi_username, cpi_password, cpi_ipv4_address, logger)
+            self.find.mac_client(args, config, logger)
 
         # require 'yes' input to proceed
-        logger.info('Change VLAN to: {}'.format(values_dict['vlan']))
+        logger.info('Change VLAN to: {}'.format(args.vlan))
         response = input("Confirm action of changing VLAN ('yes'):")
         if not response == 'yes':
             logger.info('Did not proceed with change.')
             sys.exit(1)
 
         # invoke API call to change VLAN
-        sw_api_call = Switch(cpi_username, cpi_password, cpi_ipv4_address, logger)
+        sw_api_call = Switch(config, logger)
         dev_id = sw_api_call.id_by_ip(neigh_ip)
-        job_id = sw_api_call.conf_if_vlan(dev_id, interface, "Access", values_dict['vlan'])
+        job_id = sw_api_call.conf_if_vlan(dev_id, interface, "Access", args.vlan)
 
         timeout = time.time() + 30  # 30 second timeout starting now
         while not sw_api_call.job_complete(job_id):
@@ -43,4 +44,5 @@ class Change:
             sys.exit(1)
 
         logger.info('Change VLAN complete.')
+
 
