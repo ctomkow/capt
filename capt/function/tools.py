@@ -176,8 +176,9 @@ class Tools:
                 logger.info("interface   :{}".format(interface))
                 logger.info("speed :{}".format(speed))
                 logger.info("map location :{}".format(map_location))
-
-                #End reload
+                # End reload
+            else:
+                time.sleep(1)  # sleep at the end of each to prevent overruns when running without toggle
 
 
 
