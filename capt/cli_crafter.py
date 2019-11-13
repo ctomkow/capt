@@ -1,5 +1,3 @@
-
-
 # 3rd party imports
 import argcomplete
 
@@ -7,10 +5,18 @@ import argcomplete
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 
+########################################
+# Class: CliCrafter
+# Description: Class creates the structure of command line arguments
+#               all possible command options are defined in this file
+########################################
 
 class CliCrafter:
 
     def __init__(self):
+        #############################################################################
+        # Create parsers and assign arguments
+        #############################################################################
 
         # arg parsing
         self.parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter,
@@ -21,18 +27,18 @@ class CliCrafter:
         self.subparsers = self.parser.add_subparsers(dest="sub_cmd")
 
 
-        ###############NEW
+        # ----- Create base sub-commands
         find_sp = self.subparsers.add_parser('find', help="get client device information").add_subparsers(dest="find")
         mock_sp = self.mock_subparser(self.subparsers)
         change_sp = self.change_subparser(self.subparsers)
         poke_sp = self.poke_subparser(self.subparsers)
         push_sp = self.push_subparser(self.subparsers)
         tools_sp = self.tools_subparser(self.subparsers)
+        reports_sp = self.reports_subparser(self.subparsers)
         # ----- Completed create base sub-commands
 
         # ----- capt find sub-commands -----
         # ----- capt find ip x.x.x.x
-        # find_ip = self.ip_parser(find_sp)
         find_ip = find_sp.add_parser('ip', help="IPv4 address of client device")
         self.addr_arg(find_ip)
         # defaults are used to determine which function should be called, allows interactive style prompt with
@@ -61,6 +67,7 @@ class CliCrafter:
         self.addr_arg(find_core)  # adds address field
         self.core_search_arg(find_core)
       #  find_core.set_defaults(func=CliParser.find_core)
+        # ----- Completed capt find sub-commands -----
 
         # ----- capt poke sub-commands -----
         # ----- capt poke port XXX.XXX.XXX.XXX Y/Y/Y
@@ -97,9 +104,17 @@ class CliCrafter:
       #  push_bas.set_defaults(func=CliParser.push_bas)
 
         # ----- capt tools sub-commands -----
-        # ----- capt tools apcheck alarms
+        # ----- capt tools apcheck
         tools_ap = self.apcheck_subparser(tools_sp)
+
+        # ----- capt tools apcheck slowports
+        ap_slow_ports = self.slow_ports_parser(tools_ap)
+        self.toggle_arg(ap_slow_ports)
+        self.batch_arg(ap_slow_ports)
+        # ----- capt tools apcheck unack
         ap_unack = self.unack_parser(tools_ap)
+
+        # ----- capt tools apcheck alarms
         ap_alarms = self.alarms_parser(tools_ap)
         self.days_arg(ap_alarms)
         self.toggle_arg(ap_alarms)
@@ -107,6 +122,7 @@ class CliCrafter:
      #   ap_alarms.set_defaults(func=CliParser.ap_alarms)
 
         # ----- capt tools apcheck slowports
+
 
         # ----- capt test sub-commands -----
         # ----- capt test_api
@@ -118,87 +134,92 @@ class CliCrafter:
         argcomplete.autocomplete(self.parser)
         ################NEW DONE
 
-
-
-
-
-    def find_subparser(self, sp):
-
-        find = sp.add_parser('find', help="get client device information")
-        return find.add_subparsers(dest="find")
-
-    def find_parser(self, sp):
-
-        return sp.add_parser('find', help="get client device information")
-
-    def upgrade_subparser(self, sp):
-
-        upgrade = sp.add_parser('upgrade', help="initiate code upgrade on switch")
-        return upgrade.add_subparsers(dest="upgrade")
-
-    def upgrade_parser(self, sp):
-
-        return sp.add_parser('upgrade', help="initiate code upgrade on switch")
-
-    def mock_subparser(self, sp):
-
-        mock = sp.add_parser('mock', help="initiate test procedure (non prod impacting)")
-        return mock.add_subparsers(dest="mock")
-
-    def mock_parser(self, sp):
-
-        return sp.add_parser('mock', help="initiate test procedure (non prod impacting)")
-
-    def ip_subparser(self, sp):
-
-        ip = sp.add_parser('ip', help="IPv4 address of client device")
-        return ip.add_subparsers(dest="ip")
-
-    def ip_parser(self, sp):
-
-        return sp.add_parser('ip', help="IPv4 address of client device")
-
-    def mac_subparser(self, sp):
-
-        mac = sp.add_parser('mac', help="mac address of client device")
-        return mac.add_subparsers(dest="mac")
-
-    def mac_parser(self, sp):
-
-        return sp.add_parser('mac', help="mac address of client device")
+#############################################################################
+    # Define possible CLI Options below
+    # (subcategoried and Alphanumeric for viewing pleasure)
+#############################################################################
+        # Define parsers to add
+        # (parsers have arguments applied to them)
+#############################################################################
+    def alarms_parser(self, sp):
+        return sp.add_parser('alarms', help="go through ap alarms")
 
     def bas_parser(self, sp):
-
         return sp.add_parser('bas', help="Enable a BAS port")
 
-    def desc_parser(self, sp):
-        return sp.add_parser('desc', help="port description / label on wall port")
+    def change_parser(self, sp):
+        return sp.add_parser('change', help="change switch configuration")
 
     def core_parser(self, sp):
         return sp.add_parser('core', help="find info on core devices")
 
+    def core_port_parser(self, sp):
+        return sp.add_parser('port', help="find port info on core devices")
+
     def core_vlan_parser(self, sp):
         return sp.add_parser('vlan', help="find vlan info on core devices")
 
-    def core_port_parser(self, sp):
-        return sp.add_parser('port', help="find port info on core devices")
+    def desc_parser(self, sp):
+        return sp.add_parser('desc', help="port description / label on wall port")
+
+    def find_parser(self, sp):
+        return sp.add_parser('find', help="get client device information")
+
+    def ip_parser(self, sp):
+        return sp.add_parser('ip', help="IPv4 address of client device")
+
+    def mac_parser(self, sp):
+        return sp.add_parser('mac', help="mac address of client device")
+
+    def mock_parser(self, sp):
+        return sp.add_parser('mock', help="initiate test procedure (non prod impacting)")
 
     def port_parser(self, sp):
         return sp.add_parser('port', help="find individual port info ")
 
-    def vlan_subparser(self, sp):
+    def slow_ports_parser(self, sp):
+        return sp.add_parser('slow_ports', help="get list of gig ports negotiating to 100Mbps")
 
-        vlan = sp.add_parser('vlan', help="new vlan for client device")
-        return vlan.add_subparsers(dest="vlan")
+    def test_api_parser(self, sp):
+        return sp.add_parser('test_api', help="test api calls")
+
+    def unack_parser(self, sp):
+        return sp.add_parser('unack', help="unacknowledge AP alarms")
+
+    def upgrade_parser(self, sp):
+        return sp.add_parser('upgrade', help="initiate code upgrade on switch")
 
     def vlan_parser(self, sp):
-
         return sp.add_parser('vlan', help="new vlan for client device")
 
-    def change_subparser(self, sp):
 
+#############################################################################
+        # Define sub-parsers to add
+        # (sub-parsers can have further pre defined options applied to them, not arguments)
+#############################################################################
+    def apcheck_subparser(self, sp):
+        return sp.add_parser('apcheck', help="go through list of disassociated ap alarms").add_subparsers(
+            dest="apcheck")
+
+    def change_subparser(self, sp):
         change = sp.add_parser('change', help="change switch configuration")
         return change.add_subparsers(dest="change")
+
+    def find_subparser(self, sp):
+        find = sp.add_parser('find', help="get client device information")
+        return find.add_subparsers(dest="find")
+
+    def ip_subparser(self, sp):
+        ip = sp.add_parser('ip', help="IPv4 address of client device")
+        return ip.add_subparsers(dest="ip")
+
+    def mac_subparser(self, sp):
+        mac = sp.add_parser('mac', help="mac address of client device")
+        return mac.add_subparsers(dest="mac")
+
+    def mock_subparser(self, sp):
+        mock = sp.add_parser('mock', help="initiate test procedure (non prod impacting)")
+        return mock.add_subparsers(dest="mock")
 
     def poke_subparser(self, sp):
         poke = sp.add_parser('poke', help="get specific device information")
@@ -208,34 +229,51 @@ class CliCrafter:
         push = sp.add_parser('push', help="push edge templates")
         return push.add_subparsers(dest="push")
 
-    def tools_subparser(self, sp):
-        return sp.add_parser("tools", help= "various tools without a subcategory").add_subparsers(dest="tools")
-
-    def apcheck_subparser(self, sp):
-        return sp.add_parser('apcheck', help="go through list of disassociated ap alarms").add_subparsers(dest="apcheck")
-
-    def alarms_parser(self, sp):
-        return sp.add_parser('alarms', help="go through ap alarms")
-
-    def unack_parser(self, sp):
-        return sp.add_parser('unack', help="unacknowledge AP alarms")
-
-    def change_parser(self, sp):
-
-        return sp.add_parser('change', help="change switch configuration")
+    def reports_subparser(self, sp):
+        return sp.add_parser("reports", help="various reports").add_subparsers(dest="reports")
 
     def test_api_subparser(self, sp):
-
         test_api = sp.add_parser('test_api', help="test api calls")
         return test_api.add_subparsers(dest="test_api")
 
-    def test_api_parser(self, sp):
+    def tools_subparser(self, sp):
+        return sp.add_parser("tools", help="various tools without a subcategory").add_subparsers(dest="tools")
 
-        return sp.add_parser('test_api', help="test api calls")
+    def upgrade_subparser(self, sp):
+        upgrade = sp.add_parser('upgrade', help="initiate code upgrade on switch")
+        return upgrade.add_subparsers(dest="upgrade")
+
+    def vlan_subparser(self, sp):
+        vlan = sp.add_parser('vlan', help="new vlan for client device")
+        return vlan.add_subparsers(dest="vlan")
+
+#############################################################################
+    # Define arguments to add
+    # (arguments that take direct input)
+#############################################################################
 
     def addr_arg(self, p):
-
         p.add_argument('address', help="specify the device address")
+
+    def core_search_arg(self, p):
+        p.add_argument('search_crit', help="port/vlan to find info on" )
+
+    def days_arg(self, p):
+        p.add_argument('-d', '--days', help="specify how many days ago to search")
+
+    def desc_arg(self, p):
+        p.add_argument('description', help="specify the description to search. \n "
+           "Enclose in brackets if including spaces and seperate multiple criteria with commas")
+
+    def desc_flag_arg(self, p):
+        p.add_argument('-d','--description', help="specify the description to search. \n "
+           "Enclose in brackets if including spaces and seperate multiple criteria with commas")
+
+    def device_name_arg(self, p):
+        p.add_argument('-n','--name', help="name of switch to search (can be partial) ")
+
+    def email_arg(self, p):
+        p.add_argument('-e', '--email', help="email to log to ")
 
     def int_arg(self, p):
         p.add_argument('interface', help="specify the device interface")
@@ -243,43 +281,32 @@ class CliCrafter:
     def vlan_arg(self, p):
         p.add_argument('-v', '--vlan', help="specify the new client VLAN ID", required=True)
 
-    def days_arg(self, p):
-        p.add_argument('-d', '--days', help="specify how many days ago to search")
+#############################################################################
+    # Define flags / arguments that take no additional info
+    # ()
+#############################################################################
 
-    def toggle_arg(self, p):
-        p.add_argument('-t', '--toggle', help="toggle port up and down", action="store_true")
-
-    def desc_flag_arg(self, p):
-        p.add_argument('-d','--description', help="specify the description to search. \n "
-           "Enclose in brackets if including spaces and seperate multiple criteria with commas")
+    def active_arg(self, p):
+        p.add_argument('-a','--active', help="connection is active / has something connected", action="store_true")
 
     def ap_arg(self, p):
-
         p.add_argument('-a', '--ap', help="access point", action="store_true")
 
-    def phone_arg(self, p):
+    def batch_arg(self, p):
+        p.add_argument('-b', '--batch', help="skip verification, for batch files", action="store_true")
 
+    def phone_arg(self, p):
         p.add_argument('-p', '--phone', help="VoIP phone", action="store_true")
 
     def sync_arg(self, p):
         p.add_argument('-s', '--sync', help="Sync data first", action="store_true")
 
-    def batch_arg(self, p):
-        p.add_argument('-b', '--batch', help="skip verification, for batch files", action="store_true")
+    def toggle_arg(self, p):
+        p.add_argument('-t', '--toggle', help="toggle port up and down", action="store_true")
 
-    def desc_arg(self, p):
-        p.add_argument('description', help="specify the description to search. \n "
-           "Enclose in brackets if including spaces and seperate multiple criteria with commas")
 
-    def active_arg(self, p):
-        p.add_argument('-a','--active', help="connection is active / has something connected", action="store_true")
 
-    def device_name_arg(self, p):
-        p.add_argument('-n','--name', help="name of switch to search (can be partial) ")
 
-    def core_search_arg(self, p):
-        p.add_argument('search_crit', help="port/vlan to find info on" )
 
-    def email_arg(self, p):
-        p.add_argument('-e', '--email', help="email to log to ")
+
 

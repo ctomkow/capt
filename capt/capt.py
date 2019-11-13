@@ -21,6 +21,7 @@ from function.change import Change
 from function.push import Push
 from function.poke import Poke
 from function.tools import Tools
+from function.reports import Reports
 from function.test_api import TestApi
 from cli_crafter import CliCrafter
 from cli_parser import CliParser
@@ -36,6 +37,7 @@ class Capt:
         #argcomplete.autocomplete(craft.parser)
 
         # create a namespace object of the arguments. If using a -h, the code will exit here
+        # after this point the program has all of the chosen command line arguments
         args = craft.parser.parse_args()
 
         #arg_dict = vars(args);# this could turn the args into a dictionary to pass, is it necessary though?
@@ -43,7 +45,7 @@ class Capt:
 
         if args.sub_cmd is not None:
 
-            config.load_base_conf()
+            config.load_base_conf()  # should config use globals?
 
             # subber = cli_parse.first_sub_cmd()
             # if subber == 'find' or subber == 'change' or subber == 'tools' or subber == 'poke' or subber == 'push':
@@ -111,6 +113,9 @@ class Capt:
                 poke = Poke()
                 if cli_parse.args.poke == 'port':
                     poke.port(args,config,logger)
+            elif cli_parse.args.sub_cmd == 'reports':
+                reports = Reports()
+                pass #placeholder <TODO Add reports functionality>
             elif cli_parse.args.sub_cmd == 'mock':
                 if cli_parse.args.mock =='upgrade':
                     MockUpgradeCode(args, config, logger)
@@ -121,6 +126,8 @@ class Capt:
                 if cli_parse.args.tools == 'apcheck':
                     if cli_parse.args.apcheck == "alarms":
                         tools.checkAlarms(args, config, logger)
+                    elif cli_parse.args.apcheck == "slow_ports":
+                        tools.slow_aps(args,config,logger)
                     elif cli_parse.args.apcheck == "unack":
                         tools.un_ack_alarms(args,config,logger)
 

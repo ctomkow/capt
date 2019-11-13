@@ -31,10 +31,6 @@ class Tools:
         device_api_call = AccessPoint(config, logger)
         crit_list = alarm_api_call.get_critical_alarm_ids()
 
-
-
-
-
         for alarm_id in crit_list:
             time.sleep(0.3)
             mac = alarm_api_call.devname_by_alarm_id(alarm_id)
@@ -63,22 +59,7 @@ class Tools:
             logger.info("Neighbor:{}({}):{}".format(dev_dict['nb_name'], dev_dict['nb_ip'], dev_dict['nb_port']))
             time.sleep(1)  # don't test for sync status too soon (CPI delay and all that)
             if args.toggle:
-                #unecessary log
-                # logger.info("Performing Shut/No Shut on {}({}): {}".format(dev_dict['nb_name'], dev_dict['nb_ip'],
-                #                                                                dev_dict['nb_port']))
-
-                time.sleep(1)  # don't test for sync status too soon (CPI delay and all that)
-
-                arg_run_list = "dnmt direct tools AP_Poke {} {} ".format(dev_dict["nb_ip"],
-                                                                           dev_dict["nb_port"])
-                if args.batch:
-                    arg_run_list += "-s"
-                # else: #checking is done in DNMT as well
-                #     Answer = input('Do you want to reset the port: (y/n)?')
-                #     if "y" not in Answer.lower():
-                #Return = subprocess.run(arg_run_list) ###<TODO> EXTERNAL CALL to DNMT
-                Return = subprocess.run(arg_run_list, shell=True)  ###<TODO> EXTERNAL CALL to DNMT
-
+                Return = self.ap_reload(args,dev_dict["nb_ip"],dev_dict["nb_port"])
                 success_string = "Shut/No Shut on {}({}): {}".format(dev_dict['nb_name'], dev_dict['nb_ip'],
                                                                        dev_dict['nb_port'])
 
@@ -97,6 +78,17 @@ class Tools:
         logger.info("{} ports successfully reloaded ".format(num_successful))
         logger.info("{} ports failed to reload".format(num_failed))
 
+    def ap_reload (self,args, ip,port):
+        time.sleep(1)  # don't test for sync status too soon (CPI delay and all that)
+
+        arg_run_list = "dnmt direct tools AP_Poke {} {} ".format(ip, port)
+        if args.batch:
+            arg_run_list += "-s"
+
+        Return_val = subprocess.run(arg_run_list, shell=True)  ###<TODO> EXTERNAL CALL to DNMT
+
+        return Return_val
+
 
     def un_ack_alarms(self, args, config, logger):
 
@@ -105,6 +97,88 @@ class Tools:
 
         for alarm_id in crit_list:
             alarm_api_call.unacknowledge_by_alarm_id(alarm_id) #acknowledge alarm
+
+
+    def slow_aps(self, args, config, logger):
+
+        api_call = AccessPoint(config, logger)
+        device_api_call = AccessPoint(config, logger)
+        dev_id_list = device_api_call.get_slow_ports()
+
+        if len(dev_id_list) < 1:
+            sys.exit(1)
+        for curr_id in dev_id_list:
+            result = api_call.json_detailed(curr_id)
+            logger.info("------- Occurrence #{}--------\n".format(dev_id_list.index(curr_id) + 1))
+
+            key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor',0,'neighborName']
+            neigh_name = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor',0,'neighborIpAddress']
+            neigh_ip = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor',0,'neighborPort']
+            interface = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor',0,'interfaceSpeed']
+            speed = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'name']
+            name = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'model']
+            model = self.parse_json.value(result, key_list, logger)
+            key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'locationHierarchy']
+            map_location = self.parse_json.value(result, key_list, logger)
+            #
+            logger.info("ap name :{}".format(name))
+            logger.info("ap model :{}".format(model))
+            logger.info("switch name :{}".format(neigh_name))
+            logger.info("switch ip   :{}".format(neigh_ip))
+            logger.info("interface   :{}".format(interface))
+            logger.info("speed :{}".format(speed))
+            logger.info("map location :{}".format(map_location))
+
+            if args.toggle:
+                Return = self.ap_reload(args, neigh_ip, interface)
+                success_string = "Shut/No Shut on {}({}): {}".format(neigh_name, neigh_ip,interface)
+
+                if Return.returncode == 0:
+                    success_string += " Successful"
+                else:
+                    success_string += " FAILED"
+                logger.info(success_string)
+                time.sleep(60)  # Give the AP some time to start up
+
+
+                #<TODO move this and previous into a function to reuse>
+                result = api_call.json_detailed(curr_id)
+                logger.info("------- Occurrence #{} POST RELOAD--------\n".format(dev_id_list.index(curr_id) + 1))
+
+                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
+                            'neighborName']
+                neigh_name = self.parse_json.value(result, key_list, logger)
+                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
+                            'neighborIpAddress']
+                neigh_ip = self.parse_json.value(result, key_list, logger)
+                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
+                            'neighborPort']
+                interface = self.parse_json.value(result, key_list, logger)
+                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'cdpNeighbors', 'cdpNeighbor', 0,
+                            'interfaceSpeed']
+                speed = self.parse_json.value(result, key_list, logger)
+                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'name']
+                name = self.parse_json.value(result, key_list, logger)
+                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'model']
+                model = self.parse_json.value(result, key_list, logger)
+                key_list = ['queryResponse', 'entity', 0, 'accessPointDetailsDTO', 'locationHierarchy']
+                map_location = self.parse_json.value(result, key_list, logger)
+                #
+                logger.info("ap name :{}".format(name))
+                logger.info("ap model :{}".format(model))
+                logger.info("switch name :{}".format(neigh_name))
+                logger.info("switch ip   :{}".format(neigh_ip))
+                logger.info("interface   :{}".format(interface))
+                logger.info("speed :{}".format(speed))
+                logger.info("map location :{}".format(map_location))
+
+                #End reload
+
 
 
 
