@@ -134,6 +134,16 @@ class CliCrafter:
         argcomplete.autocomplete(self.parser)
         ################NEW DONE
 
+        # -- reports_portcount ----
+        port_count = self.port_count_parser(reports_sp)
+        self.building_filter_arg(port_count)
+        self.verbose_arg(port_count)
+
+        # -- reports devcount ---
+        dev_count = self.dev_count_parser(reports_sp)
+        self.building_filter_arg(dev_count)
+        self.verbose_arg(dev_count)
+
 #############################################################################
     # Define possible CLI Options below
     # (subcategoried and Alphanumeric for viewing pleasure)
@@ -192,6 +202,11 @@ class CliCrafter:
     def vlan_parser(self, sp):
         return sp.add_parser('vlan', help="new vlan for client device")
 
+    def port_count_parser(self, sp):
+        return sp.add_parser('portcount', help="Count Connected and Notconnect for physical interfaces")
+
+    def dev_count_parser(self, sp):
+        return sp.add_parser('devcount', help="Count APs and VoIP phones")
 
 #############################################################################
         # Define sub-parsers to add
@@ -281,6 +296,9 @@ class CliCrafter:
     def vlan_arg(self, p):
         p.add_argument('-v', '--vlan', help="specify the new client VLAN ID", required=True)
 
+    def building_filter_arg(self, p):
+        p.add_argument('building_filter', help="Specify building or all,")
+
 #############################################################################
     # Define flags / arguments that take no additional info
     # ()
@@ -303,6 +321,10 @@ class CliCrafter:
 
     def toggle_arg(self, p):
         p.add_argument('-t', '--toggle', help="toggle port up and down", action="store_true")
+
+    def verbose_arg(self, p):
+        p.add_argument('-v', '--verbose', help="print additional detail", action="store_true")
+
 
 
 

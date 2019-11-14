@@ -71,8 +71,11 @@ class Capt:
                         logger = self.set_logger(args.tools, logging.INFO, log_file)
                     except AttributeError:
                         #do something here
-                        sys_logger.critical("Address and description not found.")
-                        sys.exit(1)
+                        try:
+                            logger = self.set_logger(args.reports, logging.INFO, log_file)
+                        except AttributeError:
+                            sys_logger.critical("Address and description not found.")
+                            sys.exit(1)
             # if'email' in args and args.email is not None:
             #     self.set_logger_email(config, args.email,logger)
 
@@ -115,7 +118,10 @@ class Capt:
                     poke.port(args,config,logger)
             elif cli_parse.args.sub_cmd == 'reports':
                 reports = Reports()
-                pass #placeholder <TODO Add reports functionality>
+                if cli_parse.args.reports == 'portcount':
+                    reports.port_count(args, config, logger)
+                elif cli_parse.args.reports == 'devcount':
+                    reports.dev_count(args, config, logger)
             elif cli_parse.args.sub_cmd == 'mock':
                 if cli_parse.args.mock =='upgrade':
                     MockUpgradeCode(args, config, logger)

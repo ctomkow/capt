@@ -153,6 +153,22 @@ class Switch(Connector):
 
         return id_list
 
+    def ids_by_location(self, sw_location): #Else needs to be fixed, group doesnt work
+        if sw_location == "all":
+            url = "https://{}/webacs/api/v3/data/Devices.json?.and_filter=true&.group=Edge%20Networking%20Devices&.maxResults=1000".format(
+                self.cpi_ipv4_address)
+        else:
+            url = "https://{}/webacs/api/v3/data/Devices.json?.and_filter=true&.group=Edge%20Networking%20Devices&deviceName=contains({})".format(
+                self.cpi_ipv4_address, sw_location)
+
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+
+        list_json = self.parse_json.value(result.json(),['queryResponse', 'entityId'], self.logger)
+        id_list = self.parse_json.ids_list(list_json)
+
+        return id_list
+
+
     def id_by_mac(self, address):
 
         url = "https://{}/webacs/api/v3/data/Devices.json?macAddress=\"{}\"".format(self.cpi_ipv4_address, address)
@@ -218,6 +234,13 @@ class Switch(Connector):
         url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
         key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'ethernetInterfaces', 'ethernetInterface']
+        return self.parse_json.value(result.json(), key_list, self.logger)
+
+    def physical_ports(self, dev_id):
+
+        url = "https://{}/webacs/api/v3/data/InventoryDetails/{}.json".format(self.cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['queryResponse', 'entity', 0, 'inventoryDetailsDTO', 'physicalPorts', 'physicalPort']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
     def port_detail_dict(self, dev_id, interface_name):
