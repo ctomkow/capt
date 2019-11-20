@@ -282,3 +282,28 @@ class Switch(Connector):
         print(json.dumps(result.json(), indent=4))
 
     # --- end print API calls, mainly for testing
+
+    def find_config_archive_id(self, dev_id):
+
+        url = "https://{}/webacs/api/v3/data/ConfigVersions.json?deviceName={}".format(self.cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['queryResponse', 'entityId', 0, '$']
+        return self.parse_json.value(result.json(), key_list, self.logger)
+
+    def config_archive_by_id(self, dev_id):
+
+        url = "https://{}/webacs/api/v3/data/ConfigVersions/{}.json".format(self.cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['queryResponse', 'entity', 0, 'configVersionsDTO', 'fileInfos', 'fileInfo']
+        temp = self.parse_json.value(result.json(), key_list, self.logger)
+        for i in temp:
+            if i['fileState'] == 'RUNNINGCONFIG':
+                config_id = i['fileId']
+                return config_id
+
+    def config_archive_content(self, dev_id):
+
+        url = "https://{}/webacs/api/v1/op/configArchiveService/extractSanitizedFile.json?fileId={}".format(self.cpi_ipv4_address, dev_id)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['mgmtResponse', 'extractFileResult']
+        return self.parse_json.value(result.json(), key_list, self.logger)

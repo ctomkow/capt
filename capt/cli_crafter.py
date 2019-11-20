@@ -138,11 +138,19 @@ class CliCrafter:
         port_count = self.port_count_parser(reports_sp)
         self.building_filter_arg(port_count)
         self.verbose_arg(port_count)
+        self.csv_arg(port_count)
 
         # -- reports devcount ---
         dev_count = self.dev_count_parser(reports_sp)
         self.building_filter_arg(dev_count)
         self.verbose_arg(dev_count)
+        self.csv_arg(dev_count)
+
+        # -- reports vlan_mapper ---
+        vlan_map = self.vlan_map_parser(reports_sp)
+        self.building_filter_arg(vlan_map)
+        self.verbose_arg(vlan_map)
+        self.csv_arg(vlan_map)
 
 #############################################################################
     # Define possible CLI Options below
@@ -207,6 +215,9 @@ class CliCrafter:
 
     def dev_count_parser(self, sp):
         return sp.add_parser('devcount', help="Count APs and VoIP phones")
+
+    def vlan_map_parser(self, sp):
+        return sp.add_parser('vlanmap', help="VLAN summary of switch")
 
 #############################################################################
         # Define sub-parsers to add
@@ -325,6 +336,8 @@ class CliCrafter:
     def verbose_arg(self, p):
         p.add_argument('-v', '--verbose', help="print additional detail", action="store_true")
 
+    def csv_arg(self, p):
+        p.add_argument('-c', '--csv', help="output in CSV format", action="store_true")
 
 
 
