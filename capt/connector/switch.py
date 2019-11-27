@@ -153,12 +153,12 @@ class Switch(Connector):
 
         return id_list
 
-    def ids_by_location(self, sw_location): #Else needs to be fixed, group doesnt work
+    def ids_by_location(self, sw_location):
         if sw_location == "all":
             url = "https://{}/webacs/api/v3/data/Devices.json?.and_filter=true&.group=Edge%20Networking%20Devices&.maxResults=1000".format(
                 self.cpi_ipv4_address)
         else:
-            url = "https://{}/webacs/api/v3/data/Devices.json?.and_filter=true&.group=Edge%20Networking%20Devices&deviceName=contains({})".format(
+            url = "https://{}/webacs/api/v3/data/Devices.json?.and_filter=true&.group=Edge%20Networking%20Devices&deviceName=startsWith({})".format(
                 self.cpi_ipv4_address, sw_location)
 
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
