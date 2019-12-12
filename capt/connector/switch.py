@@ -154,8 +154,14 @@ class Switch(Connector):
         return id_list
 
     def ids_by_location(self, sw_location):
-        if sw_location == "all":
+        if sw_location.lower() == "edgenet":
             url = "https://{}/webacs/api/v3/data/Devices.json?.and_filter=true&.group=Edge%20Networking%20Devices&.maxResults=1000".format(
+                self.cpi_ipv4_address)
+        elif sw_location.lower() == 'fmnet':
+            url = "https://{}/webacs/api/v3/data/Devices.json?.and_filter=true&.group=FMnet&.maxResults=1000".format(
+                self.cpi_ipv4_address)
+        elif sw_location.lower() == 'corenet':
+            url = "https://{}/webacs/api/v3/data/Devices.json?.and_filter=true&.group=Core%20Networking&.maxResults=1000".format(
                 self.cpi_ipv4_address)
         else:
             url = "https://{}/webacs/api/v3/data/Devices.json?.and_filter=true&.group=Edge%20Networking%20Devices&deviceName=startsWith({})".format(

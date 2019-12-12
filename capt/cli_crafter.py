@@ -152,6 +152,12 @@ class CliCrafter:
         self.verbose_arg(vlan_map)
         self.csv_arg(vlan_map)
 
+        # -- reports service_matrix ---
+        service_matrix = self.service_matrix_parser(reports_sp)
+        self.building_filter_arg(service_matrix)
+        self.verbose_arg(service_matrix)
+        self.csv_arg(service_matrix)
+
 #############################################################################
     # Define possible CLI Options below
     # (subcategoried and Alphanumeric for viewing pleasure)
@@ -218,6 +224,9 @@ class CliCrafter:
 
     def vlan_map_parser(self, sp):
         return sp.add_parser('vlanmap', help="VLAN summary of switch")
+
+    def service_matrix_parser(self, sp):
+        return sp.add_parser('servicematrix', help="Services on the switch")
 
 #############################################################################
         # Define sub-parsers to add

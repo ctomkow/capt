@@ -124,6 +124,8 @@ class Capt:
                     reports.dev_count(args, config, logger)
                 elif cli_parse.args.reports == 'vlanmap':
                     reports.vlanmap(args, config, logger)
+                elif cli_parse.args.reports == 'servicematrix':
+                    reports.service_matrix(args, config, logger)
             elif cli_parse.args.sub_cmd == 'mock':
                 if cli_parse.args.mock =='upgrade':
                     MockUpgradeCode(args, config, logger)
