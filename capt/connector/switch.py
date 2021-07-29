@@ -293,8 +293,9 @@ class Switch(Connector):
 
         url = "https://{}/webacs/api/v3/data/ConfigVersions.json?deviceName={}".format(self.cpi_ipv4_address, dev_id)
         result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
-        key_list = ['queryResponse', 'entityId', 0, '$']
-        return self.parse_json.value(result.json(), key_list, self.logger)
+        key_list = ['queryResponse', 'entityId']
+        temp = self.parse_json.value(result.json(), key_list, self.logger)
+        return temp[len(temp) - 1]['$']
 
     def config_archive_by_id(self, dev_id):
 
