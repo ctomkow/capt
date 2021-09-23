@@ -43,6 +43,26 @@ class AccessPoint(Connector):
         key_list = ['queryResponse', 'entityId', 0, '$']
         return self.parse_json.value(result.json(), key_list, self.logger)
 
+    def id_by_alarm_mac_detailed(self,mac):
+        url = "https://{}/webacs/api/v3/data/AccessPointDetails.json?macAddress=\"{}\"".format(self.cpi_ipv4_address, mac)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        key_list = ['queryResponse', 'entityId', 0, '$']
+        return self.parse_json.value(result.json(), key_list, self.logger)
+        #apmac = self.parse_json.value(result.json(), key_list, self.logger)[:16]
+        #return apmac
+
+    def get_slow_ports(self):
+        url = "https://{}/webacs/api/v4/data/AccessPointDetails.json?.and_filter=true&cdpNeighbor.interfaceSpeed=100Mbps&cdpNeighbor.neighborPort=contains(GigabitEthernet)".format(
+            self.cpi_ipv4_address)
+        result = self.error_handling(requests.get, 5, url, False, self.username, self.password)
+        #key_list = ['queryResponse', 'entityId', 0, '$']
+        list_json = self.parse_json.value(result.json(), ['queryResponse', 'entityId'], self.logger)
+        id_list = self.parse_json.ids_list(list_json)
+        return id_list
+        # return self.parse_json.value(result.json(), key_list, self.logger)
+
+
+
     def json_basic(self, dev_id):
 
         # API v3 call is deprecated, need to change when Cisco Prime is upgraded

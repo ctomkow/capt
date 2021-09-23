@@ -3,6 +3,7 @@
 import urllib3
 import time
 import sys
+import os
 import random
 import json
 
@@ -11,17 +12,24 @@ import requests
 
 # local imports
 from json_parser import JsonParser
+from utils.var_parser import VarParser
 
 
 class Connector:
 
-    def __init__(self, uname, passwd, cpi_ipv4_addr, log):
+    def __init__(self, config, log):
 
-        self.username = uname
-        self.password = passwd
-        self.cpi_ipv4_address = cpi_ipv4_addr
+
+        self.username = config.username
+        self.password = config.password
+        self.cpi_ipv4_address = config.cpi_ipv4_address
+        # self.username = uname
+        # self.password = passwd
+        # self.cpi_ipv4_address = cpi_ipv4_addr
         self.logger = log
         self.parse_json = JsonParser()
+        self.parse_var = VarParser()
+
 
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -94,6 +102,10 @@ class Connector:
                 self.logger.critical("Bad authentication. Check credentials.")
                 self.logger.critical(error)
                 sys.exit(1)
+            elif req.status_code == 400:  # added call to quit out if the API call fails
+                self.logger.critical("API call failed. Exiting program.")
+                self.logger.critical(error)
+                os._exit(1)
             else:
                 self.logger.critical("API call failed.")
                 self.logger.critical(error)
