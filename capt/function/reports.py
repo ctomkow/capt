@@ -23,6 +23,7 @@ class Reports:
         try:
             chassis = inventory_dto['queryResponse']['entity'][0]['inventoryDetailsDTO']['chassis']['chassis']
         except Exception as err:
+            print('Device Dictionary Chassis Error')
             return
         ethernet_interfaces = inventory_dto['queryResponse']['entity'][0]['inventoryDetailsDTO']['ethernetInterfaces'][
             'ethernetInterface']
@@ -54,6 +55,7 @@ class Reports:
                 device_detail[switch['name']]['sw_version'] = inventory_dto['queryResponse']['entity'][0]['inventoryDetailsDTO']['summary']['softwareVersion']
             except Exception as err:
                 device_detail[switch['name']]['sw_version'] = "Prime Error"
+                print('Device Dictionary SW Ver Error')
                 continue
         for switch in device_detail:
             ignore = ['Te', '/1/', '49', '50', '51', '52', '1/1', '1/2', '1/3', '1/4', '0/0', 'Port-channel',
@@ -117,6 +119,7 @@ class Reports:
                         device_detail[switch]['VLANS']['VLAN ' + str(port['accessVlan'])]['DOWN'] += 1
                 except Exception as err:
                     access_error = 'TRUE'
+                    print('Access VLAN Error')
                     continue
         if access_error == 'FALSE':
             for vlan in vlan_config:
@@ -155,7 +158,13 @@ class Reports:
                                  str(config_archive))  # Find VLAN names in config
         interface_vlan = re.findall(r'(?:interface\s)(Vlan\d{1,4})(?:\\n\sip\saddress\s)(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})',
             str(config_archive))
-        return vlan_config, interface_vlan
+        access_vlan_config = re.findall(r'(?:switchport\saccess\svlan\s)(\d{1,4})', str(config_archive))
+        vlan_count = {}
+        for vlan_id in access_vlan_config:
+            if vlan_id not in vlan_count.keys():
+                vlan_count[vlan_id] = 0
+            vlan_count[vlan_id] += 1
+        return vlan_config, interface_vlan, vlan_count
 
     def verbose_printer(self, print_string, flag, logger):
         if flag:
@@ -223,47 +232,32 @@ class Reports:
                 inventory_dto = api_call.json_detailed(curr_id)  # API Call for current device ID's inventory details
                 time.sleep(0.15)
                 device_detail = self.device_dictionary(inventory_dto)  # Populates dictionary wil device details
-                # try:
-                #     if 'ADM353' in device_detail['Switch 1']['dev_name']:
-                #         continue
-                #     if 'VAN-RB-' in device_detail['Switch 1']['dev_name']:
-                #         continue
-                # except Exception as err:
-                #     continue
                 self.sw_list.append(device_detail['Switch 1']['dev_name'])  # This list will contain all devices reported on
                 up, down, ap, phone, lc, pos, parking, sutv, kramer = 0, 0, 0, 0, 0, 0, 0, 0, 0  # Services for Service Matrix
                 print(device_detail['Switch 1']['dev_name'] + ' started.')
                 time.sleep(0.15)
-                vlan_config, int_vlan = self.vlan_names(api_call, device_detail)
+                vlan_config, int_vlan, vlan_count = self.vlan_names(api_call, device_detail)
                 vlan_names = {}
                 for vlan in vlan_config:
                     vlan_names[vlan[0]] = vlan[1].lower()
+                    if vlan[0] in vlan_count.keys():
+                        # counting configured vlans to bypass Prime issues with access vlan in port details
+                        if '-lc-' in vlan[1].lower() or 'lab' in '-lc-' in vlan[1].lower():
+                            lc += vlan_count[vlan[0]]
+                        if 'wirelessdisplay' in vlan[1].lower() or 'kramer' in vlan[1].lower():
+                            kramer += vlan_count[vlan[0]]
+                        if 'debit' in vlan[1].lower() or 'onecard' in vlan[1].lower():
+                            pos += vlan_count[vlan[0]]
+                        if 'parking' in vlan[1].lower():
+                            parking += vlan_count[vlan[0]]
+                        if 'sutv' in vlan[1].lower():
+                            sutv += vlan_count[vlan[0]]
                 for switch in device_detail:
                     for port in device_detail[switch]['ports']:
                         if port['operationalStatus'] == 'UP':
                             up += 1
                         elif port['operationalStatus'] == 'DOWN':
                             down += 1
-                        try:
-                            if str(port['accessVlan']) in vlan_names.keys():
-                                if 'ist_labs' in vlan_names[str(port['accessVlan'])] or 'labs' in vlan_names[str(port['accessVlan'])]:
-                                    lc += 1
-                                if 'ancillary_debit' in vlan_names[str(port['accessVlan'])]:
-                                    pos += 1
-                                if 'onecard_pos' in vlan_names[str(port['accessVlan'])] or 'pos' in vlan_names[
-                                    str(port['accessVlan'])]:
-                                    pos += 1
-                                if 'ancillary_parking' in vlan_names[str(port['accessVlan'])] or 'parking' in vlan_names[
-                                    str(port['accessVlan'])]:
-                                    parking += 1
-                                if 'su_sutv' in vlan_names[str(port['accessVlan'])] or 'sutv' in vlan_names[
-                                    str(port['accessVlan'])]:
-                                    sutv += 1
-                                if 'ist_kramer' in vlan_names[str(port['accessVlan'])] or 'kramer' in vlan_names[
-                                    str(port['accessVlan'])]:
-                                    kramer += 1
-                        except Exception as err:
-                            continue
                 cdp_uplink = []
                 cdp = api_call.cdp_neighbours(curr_id)  # API calls for CDP Neighbors
                 for cdp_curr in cdp:
@@ -276,6 +270,7 @@ class Reports:
                             if cdp_curr['neighborDeviceName'] not in cdp_uplink:
                                 cdp_uplink.append(cdp_curr['neighborDeviceName'] +': '+cdp_curr['farEndInterface'])
                     except Exception as err:
+                        print('CDP Error')
                         continue
                 if any('-ef-' in s for s in cdp_uplink):
                     core = 'BA'
@@ -290,6 +285,7 @@ class Reports:
                 print(device_detail[switch]['dev_name'] + ' complete.')
             except Exception as err:
                 error_list.append(curr_id)
+                print ('curr_id Report Error')
                 continue
             try:
                 self.csv_printer([device_detail[switch]['dev_name'], ', '.join([device_detail[switch]['dev_name'][:3]]), \

@@ -139,24 +139,28 @@ class CliCrafter:
         self.building_filter_arg(port_count)
         self.verbose_arg(port_count)
         self.csv_arg(port_count)
+        self.sync_arg(port_count)
 
         # -- reports devcount ---
         dev_count = self.dev_count_parser(reports_sp)
         self.building_filter_arg(dev_count)
         self.verbose_arg(dev_count)
         self.csv_arg(dev_count)
+        self.sync_arg(dev_count)
 
         # -- reports vlan_mapper ---
         vlan_map = self.vlan_map_parser(reports_sp)
         self.building_filter_arg(vlan_map)
         self.verbose_arg(vlan_map)
         self.csv_arg(vlan_map)
+        self.sync_arg(vlan_map)
 
         # -- reports service_matrix ---
         service_matrix = self.service_matrix_parser(reports_sp)
         self.building_filter_arg(service_matrix)
         self.verbose_arg(service_matrix)
         self.csv_arg(service_matrix)
+        self.sync_arg(service_matrix)
 
 #############################################################################
     # Define possible CLI Options below
@@ -347,6 +351,9 @@ class CliCrafter:
 
     def csv_arg(self, p):
         p.add_argument('-c', '--csv', help="output in CSV format", action="store_true")
+
+    def sync_arg(self, p):
+        p.add_argument('-s', '--sync', help="Force a sync before the report", action="store_true")
 
 
 
